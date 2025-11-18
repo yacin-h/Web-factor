@@ -2,6 +2,13 @@ import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
     index("routes/home.tsx"),
-    route("about","routes/About.tsx"),
-    route("invoice/:invoiceId","routes/invoice.tsx")
+    route("about", "routes/About.tsx"),
+    route("invoice/:invoiceId", "routes/invoice.tsx"),
+
+    // nested Routes
+    route("dashboard", "routes/dashboard.tsx", [
+        route("finances","routes/finances.tsx"),
+        route("personal-info","routes/personalInfo.tsx"),
+
+    ]),
 ] satisfies RouteConfig;
