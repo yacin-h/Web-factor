@@ -1,12 +1,16 @@
+import { NavLink } from "react-router";
 import type { Route } from "./+types/home";
+import { Button } from "~/components/ui/button";
 
 export function meta({}: Route.MetaArgs) {
     return [
-        { title: "New React Router App" },
-        { name: "description", content: "Welcome to React Router!" },
+        { title: "Invoice web app" },
+        { name: "description", content: "Welcome to Invoice maker!" },
     ];
 }
 
 export default function Home() {
-    return<>Home </>;
+    return<>
+        <Button>test</Button>
+    </>;
 }
