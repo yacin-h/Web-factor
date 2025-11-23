@@ -25,14 +25,14 @@ export async function clientAction({ params }: Route.ClientActionArgs) {
 export default function Invoice({ loaderData }: Route.ComponentProps) {
     const fetcher = useFetcher();
     const isDeleted = fetcher.data?.isDeleted;
-    const navigate=useNavigate()
+    const navigate = useNavigate();
     return (
         <>
             {!isDeleted && (
                 <>
                     <h1>title: {loaderData.title}</h1>
                     <p>body: {loaderData.body}</p>
-                    <button onClick={()=>navigate('/')}>home</button>
+                    <button onClick={() => navigate("/")}>home</button>
                     <Link to={"/about"}>about</Link>
                     <fetcher.Form method="delete">
                         <button type="submit">Delete</button>

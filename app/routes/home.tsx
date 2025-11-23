@@ -1,6 +1,7 @@
-import { NavLink } from "react-router";
-import type { Route } from "./+types/home";
 import { Button } from "~/components/ui/button";
+import type { Route } from "./+types/home";
+import Hero from "~/components/hero";
+import About from "~/components/about";
 
 export function meta({}: Route.MetaArgs) {
     return [
@@ -10,7 +11,10 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-    return<>
-        <Button>test</Button>
-    </>;
+    return (
+        <>
+            <Hero />
+            <About/>
+        </>
+    );
 }

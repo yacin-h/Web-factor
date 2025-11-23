@@ -3,13 +3,15 @@ import { Button } from "./ui/button";
 
 export default function Header() {
     return (
-        <header className="flex justify-between items-center">
+        <header className=" container mx-auto flex justify-between items-center pt-2 h-16">
             <Link to={"/"}>
-                <img className="size-20" src="logo.png" alt="invoice logo" />
+                <img className="size-16" src="logo.png" alt="invoice logo" />
             </Link>
             <div>
-            <Button className="text-lg">ورود/عضویت</Button>
-            <Button className="text-lg mr-2" variant={"outline"}>درباره فاکتور ساز</Button>
+                <Button className=" ">ورود/عضویت</Button>
+                <Button className="  mr-2" variant={"outline"}>
+                    درباره فاکتور ساز
+                </Button>
             </div>
         </header>
     );

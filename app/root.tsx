@@ -49,9 +49,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
     return (
         <>
-            <div className="container mx-auto">
-              <Header/>
-            <Outlet />
+            <div className=" font-vazir mx-auto">
+                <Header />
+                <Outlet />
             </div>
         </>
     );
