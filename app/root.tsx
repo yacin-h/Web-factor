@@ -50,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
     return (
         <>
-            <div className=" font-vazir mx-auto">
+            <div className=" font-vazir mx-auto sm:px-5">
                 <Header />
                 <Outlet />
             </div>
