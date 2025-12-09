@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, NavLink } from "react-router";
 import { Button } from "./ui/button";
 import { motion } from "motion/react";
 export default function Hero() {
@@ -26,7 +26,7 @@ export default function Hero() {
                 src="/hero-section.svg"
                 alt=""
             />
-            <div className="w-full sm:w-3/6 md:w-2/6">
+            <div className="w-full sm:w-3/6 md:w-2/6 flex flex-col gap-3">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
                     سریع، دقیق، آماده چاپ
                 </h1>
@@ -39,7 +39,9 @@ export default function Hero() {
                     همیشه قابل دسترس نگهش دار. همه‌چی ساده، تمیز و بدون دردسر.
                 </p>
                 <div className="flex gap-3 mt-2">
-                    <Button >شروع کنید</Button>
+                    <NavLink to={"/dashboard"}>
+                        <Button>شروع کنید</Button>
+                    </NavLink>
                     <Button variant={"outline"} onClick={scrollToAbout}>
                         درباره ما
                     </Button>

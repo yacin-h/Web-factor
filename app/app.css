@@ -28,6 +28,10 @@
     font-family: "vazir", sans-serif;
 }
 
+.ltr-input {
+    direction: ltr;
+    text-align: left;
+}
 
 @theme inline {
     --radius-sm: calc(var(--radius) - 4px);

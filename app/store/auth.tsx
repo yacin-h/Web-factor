@@ -1,18 +1,31 @@
-import type { AuthContext } from "@/types/authContext";
-import type { User } from "@/types/user";
+import type { AuthContextType } from "@/types/authContext";
+import type { Token } from "@/types/token";
 import React, { createContext, useContext, useState } from "react";
-const AuthContext = createContext<AuthContext | undefined>(undefined);
 
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-    const [user, setUser] = useState<User | null>(null);
-    const logIn = (user: User) => {
-        setUser(user);
+    // use local storage to persist the token data
+    const [token, setToken] = useState<Token | null>(() => {
+        const saved = localStorage.getItem('token');
+        return saved ? JSON.parse(saved) : null;
+    });
+
+    React.useEffect(() => {
+        if (token) {
+            localStorage.setItem('token', JSON.stringify(token));
+        } else {
+            localStorage.removeItem('token');
+        }
+    }, [token]);
+
+    const logIn = (token: Token) => {
+        setToken(token);
     };
     const logOut = () => {
-        setUser(null);
+        setToken(null);
     };
     return (
-        <AuthContext.Provider value={{ user, logIn, logOut }}>
+        <AuthContext.Provider value={{ token, logIn, logOut }}>
             {children}
         </AuthContext.Provider>
     );

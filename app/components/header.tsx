@@ -13,11 +13,11 @@ export default function Header() {
             </Link>
             <div>
                 <NavLink to={"/dashboard"} >
-                    <Button >ورود/عضویت</Button>
+                    <Button className="  mr-2">ورود/عضویت</Button>
                 </NavLink>
                 <Button
                     onClick={scrollToAbout}
-                    className="  mr-2"
+                    
                     variant={"outline"}
                 >
                     درباره فاکتور ساز

@@ -29,7 +29,7 @@ export const links: Route.LinksFunction = () => [
 
 export function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <html lang="en" dir="rtl">
+        <html lang="en" dir="ltr">
             <head>
                 <meta charSet="utf-8" />
                 <meta
@@ -51,7 +51,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
     return (
         <AuthProvider>
-            <div className=" font-vazir mx-auto sm:px-5">
+            <div className=" font-vazir mx-auto text-right">
                 <Outlet />
             </div>  
         </AuthProvider>

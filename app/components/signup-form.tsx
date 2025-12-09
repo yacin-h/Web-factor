@@ -10,249 +10,221 @@ import {
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router";
 
-import { useForm, type SubmitHandler } from "react-hook-form";
-// zod for validation
-import { z } from "zod";
-import { SignupSchema, type SignupFormType } from "@/schemas/auth.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { signupUser } from "@/lib/api";
+import { useForm } from "react-hook-form";
+import * as React from "react";
 
+import { requestOtp, verifyOtp } from "@/lib/api";
 import { useAuth } from "@/store/auth";
 import { useNavigate } from "react-router";
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSeparator,
+    InputOTPSlot,
+} from "@/components/ui/input-otp";
+
+type PhoneForm = { phone_number: string };
+
 export function SignupForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
-    const {
-        register,
-        handleSubmit,
-        setError,
-        formState: { errors, isSubmitting },
-    } = useForm<SignupFormType>({
-        resolver: zodResolver(SignupSchema),
-    });
+    const { register, handleSubmit, setError, formState } =
+        useForm<PhoneForm>();
+    const { errors, isSubmitting } = formState as any;
 
     const { logIn } = useAuth();
     const navigate = useNavigate();
-    const onSubmit: SubmitHandler<SignupFormType> = async (data) => {
+
+    const [step, setStep] = React.useState<"phone" | "otp">("phone");
+
+    // for test. remove after implementing sms verification
+    const [displayOTP, setDisplayOTP] = React.useState<string>("");
+    const [phone, setPhone] = React.useState<string>("");
+    const [otp, setOtp] = React.useState<string>("");
+    const [loadingOtpRequest, setLoadingOtpRequest] = React.useState(false);
+    const [loadingVerify, setLoadingVerify] = React.useState(false);
+
+    async function onSubmitPhone(data: PhoneForm) {
         try {
-            // use API to submit form data
-            const result = await signupUser(data);
-            // throw new Error("Submission failed");
-            console.log("User Created:", result);
-            alert("ثبت‌نام با موفقیت انجام شد 🎉");
-            logIn(result);
-            navigate("/dashboard");
+            setLoadingOtpRequest(true);
+            // request backend to send OTP to phone
+            const res=await requestOtp({ phone_number: data.phone_number });
 
-            
+            // test !! remove after adding sms verification
+            console.log("OTP request response:", res.code ,res);
+            setDisplayOTP(res.Code);
 
+            setPhone(data.phone_number);
+            setStep("otp");
+            setLoadingOtpRequest(false);
         } catch (error) {
-            //set error from API response
-            const errorMessage = error instanceof Object && "detail" in error 
-                ? (error as Record<string, string>).detail 
-                : "مشکلی پیش آمده است";
+            setLoadingOtpRequest(false);
+            const errorMessage =
+                error instanceof Object && "detail" in error
+                    ? (error as Record<string, string>).detail
+                    : "مشکلی پیش آمده است";
+            setError("phone_number", { message: errorMessage });
+            console.log(error);
+        }
+    }
+
+    async function onSubmitOtp(e?: React.FormEvent) {
+        e?.preventDefault();
+        if (!phone) {
+            setError("phone_number", { message: "شماره تلفن یافت نشد" });
+            setStep("phone");
+            return;
+        }
+
+        try {
+            setLoadingVerify(true);
+            const result = await verifyOtp({ phone_number: phone, otp_code: otp });
+            // assume backend returns user/session data similar to previous flow
+            logIn(result);
+            setLoadingVerify(false);
+            navigate("/dashboard");
+        } catch (error) {
+            setLoadingVerify(false);
+            const errorMessage =
+                error instanceof Object && "detail" in error
+                    ? (error as Record<string, string>).detail
+                    : "کد اشتباه است یا مشکلی پیش آمده";
             setError("root", { message: errorMessage });
             console.log(error);
         }
-    };
+    }
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card className="overflow-hidden p-0">
                 <CardContent className="grid p-0 md:grid-cols-2">
-                    <form
-                        className="p-6 md:p-8"
-                        onSubmit={handleSubmit(onSubmit)}
-                    >
-                        <FieldGroup>
-                            <div className="flex flex-col items-center gap-2 text-center">
-                                <h1 className="text-2xl font-bold">
-                                    ایجاد حساب
-                                </h1>
-                            </div>
+                    {step === "phone" ? (
+                        <form
+                            className="p-6 md:p-8"
+                            onSubmit={handleSubmit(onSubmitPhone)}
+                        >
+                            <FieldGroup>
+                                <div className="flex flex-col items-center gap-2 text-center">
+                                    <h1 className="text-2xl font-bold">
+                                        ایجاد حساب
+                                    </h1>
+                                </div>
 
-                            <Field>
-                                <Field className="grid grid-cols-2 gap-4">
-                                    <Field>
-                                        <FieldLabel htmlFor="name">
-                                            نام
-                                        </FieldLabel>
-                                        <Input
-                                            {...register("name")}
-                                            id="name"
-                                            type="text"
-                                            required
-                                        />
-                                        {errors.name && (
-                                            <span className="text-red-500">
-                                                {errors.name.message}
-                                            </span>
-                                        )}
-                                    </Field>
-                                    <Field>
-                                        <FieldLabel htmlFor="email">
-                                            ایمیل
-                                        </FieldLabel>
-                                        <Input
-                                            {...register("email")}
-                                            id="email"
-                                            type="email"
-                                            required
-                                        />
-                                        {errors.email && (
-                                            <span className="text-red-500">
-                                                {errors.email.message}
-                                            </span>
-                                        )}
-                                    </Field>
-                                </Field>
-
-                                <Field className="grid grid-cols-2 gap-4">
-                                    <Field>
-                                        <FieldLabel htmlFor="storeName">
-                                            نام فروشگاه
-                                        </FieldLabel>
-                                        <Input
-                                            {...register("store_name")}
-                                            id="storeName"
-                                            type="text"
-                                            required
-                                        />
-                                        {errors.store_name && (
-                                            <span className="text-red-500">
-                                                {errors.store_name.message}
-                                            </span>
-                                        )}
-                                    </Field>
-
-                                    <Field>
-                                        <FieldLabel htmlFor="phone_number">
-                                            تلفن
-                                        </FieldLabel>
-                                        <Input
-                                            {...register("phone_number")}
-                                            id="phone_number"
-                                            type="tel"
-                                            required
-                                        />
-                                        {errors.phone_number && (
-                                            <span className="text-red-500">
-                                                {errors.phone_number.message}
-                                            </span>
-                                        )}
-                                    </Field>
-                                </Field>
-                            </Field>
-
-                            <Field className="grid grid-cols-2 gap-4">
                                 <Field>
-                                    <FieldLabel htmlFor="insta_link">
-                                        لینک اینستاگرام
-                                    </FieldLabel>
+                                    <label className="w-full" htmlFor="phone_number">
+                                        تلفن
+                                    </label>
                                     <Input
-                                        {...register("insta_link")}
-                                        id="insta_link"
+                                        {...register("phone_number", {
+                                            required: "شماره تلفن الزامی است",
+                                            pattern: {
+                                                value: /^09[0-9]{9}$/,
+                                                message:
+                                                    "شماره موبایل باید با 09 شروع شده و 11 رقم باشد",
+                                            },
+                                        })}
+                                        id="phone_number"
                                         type="text"
-                                        required
                                     />
-                                    {errors.insta_link && (
+                                    {errors?.phone_number && (
                                         <span className="text-red-500">
-                                            {errors.insta_link.message}
+                                            {
+                                                (errors as any).phone_number
+                                                    .message
+                                            }
                                         </span>
                                     )}
                                 </Field>
 
                                 <Field>
-                                    <FieldLabel htmlFor="store_description">
-                                        توضیحات فروشگاه
-                                    </FieldLabel>
-                                    <Input
-                                        {...register("store_description")}
-                                        id="store_description"
-                                        type="text"
-                                        required
-                                    />
-                                    {errors.store_description && (
+                                    <Button
+                                        disabled={loadingOtpRequest}
+                                        type="submit"
+                                    >
+                                        {loadingOtpRequest ? (
+                                            <span>در حال ارسال...</span>
+                                        ) : (
+                                            "دریافت کد"
+                                        )}
+                                    </Button>
+                                    {(errors as any)?.root && (
                                         <span className="text-red-500">
-                                            {errors.store_description.message}
+                                            {(errors as any).root.message}
                                         </span>
                                     )}
                                 </Field>
-                            </Field>
 
-                            <Field>
-                                <Field>
-                                    <FieldLabel htmlFor="store_address">
-                                        آدرس فروشگاه
-                                    </FieldLabel>
-                                    <Input
-                                        {...register("store_address")}
-                                        id="store_address"
-                                        type="text"
-                                        required
-                                    />
-                                    {errors.store_address && (
-                                        <span className="text-red-500">
-                                            {errors.store_address.message}
-                                        </span>
-                                    )}
-                                </Field>
-                            </Field>
-                            <Field className="grid grid-cols-2 gap-4">
-                                <Field>
-                                    <FieldLabel htmlFor="password">
-                                        کلمه عبور
-                                    </FieldLabel>
-                                    <Input
-                                        {...register("password")}
-                                        id="password"
-                                        type="password"
-                                        required
-                                    />
-                                    {errors.password && (
-                                        <span className="text-red-500">
-                                            {errors.password.message}
-                                        </span>
-                                    )}
-                                </Field>
-                                <Field>
-                                    <FieldLabel htmlFor="confirm-password">
-                                        تائید کلمه عبور
-                                    </FieldLabel>
-                                    <Input
-                                        {...register("confirmPassword")}
-                                        id="confirm-password"
-                                        type="password"
-                                        required
-                                    />
-                                    {errors.confirmPassword && (
-                                        <span className="text-red-500">
-                                            {errors.confirmPassword.message}
-                                        </span>
-                                    )}
-                                </Field>
-                            </Field>
+                                <FieldDescription className="text-center">
+                                    حساب کاربری دارید؟{" "}
+                                    <Link to={"/login"}>ورود</Link>
+                                </FieldDescription>
+                            </FieldGroup>
+                        </form>
+                    ) : (
+                        <form className="p-6 md:p-8" onSubmit={onSubmitOtp}>
+                            <FieldGroup>
+                                <div className="flex flex-col items-center gap-2 text-center">
+                                    <h1 className="text-2xl font-bold">
+                                        تایید شماره
+                                    </h1>
+                                    <p className="text-sm">
+                                        کدی به {phone} ارسال شد
+                                    </p>
+                                </div>
 
-                            <Field>
-                                <Button disabled={isSubmitting} type="submit">
-                                    {isSubmitting ? (
-                                        <span>در حال ارسال...</span>
-                                    ) : (
-                                        "ایجاد حساب"
-                                    )}
-                                </Button>
-                                {errors.root && (
-                                    <span className="text-red-500">
-                                        {errors.root.message}
-                                    </span>
-                                )}
-                            </Field>
+                                <Field>
+                                    <FieldLabel>کد تایید</FieldLabel>
+                                    <p>کد تائید تست:</p>
+                                    <h2 className="text-center text-lg font-semibold">{displayOTP}</h2>
+                                    <InputOTP
+                                        maxLength={6}
+                                        value={otp}
+                                        onChange={(v: any) =>
+                                            setOtp(String(v || ""))
+                                        }
+                                    >
+                                        <InputOTPGroup>
+                                            <InputOTPSlot index={0} />
+                                            <InputOTPSlot index={1} />
+                                            <InputOTPSlot index={2} />
+                                        </InputOTPGroup>
+                                        <InputOTPSeparator />
+                                        <InputOTPGroup>
+                                            <InputOTPSlot index={3} />
+                                            <InputOTPSlot index={4} />
+                                            <InputOTPSlot index={5} />
+                                        </InputOTPGroup>
+                                    </InputOTP>
+                                </Field>
 
-                            <FieldDescription className="text-center">
-                                حساب کاربری دارید؟{" "}
-                                <Link to={"/login"}>ورود</Link>
-                            </FieldDescription>
-                        </FieldGroup>
-                    </form>
+                                <Field className="flex items-center gap-2">
+                                    <Button
+                                        disabled={loadingVerify}
+                                        type="submit"
+                                    >
+                                        {loadingVerify ? (
+                                            <span>در حال بررسی...</span>
+                                        ) : (
+                                            "تایید و ورود"
+                                        )}
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        type="button"
+                                        onClick={() => setStep("phone")}
+                                    >
+                                        اصلاح شماره
+                                    </Button>
+                                </Field>
+
+                                <FieldDescription className="text-center">
+                                    اگر کد را دریافت نکردید، دوباره تلاش کنید یا
+                                    شماره را بررسی کنید.
+                                </FieldDescription>
+                            </FieldGroup>
+                        </form>
+                    )}
 
                     <div className="bg-secondary relative hidden md:block">
                         <img

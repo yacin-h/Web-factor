@@ -13,7 +13,8 @@ export default function About() {
         >
                 {/* context */}
                 <div className="w-11/12 shadow-lg bg-white rounded mx-auto p-3 sm:p-8 md:p-14">
-                    <h2 className=" sm:w-7/12 mb-10  font-bold text-xl">
+                <div className="flex flex-col"></div>
+                    <h2 className="mb-10  font-bold text-xl">
                         با چند کلیک فاکتور بساز، و لینک فاکتور رو با لینک پرداخت
                         به مشتری بفرست . بدون دردسر، بدون پیچیدگی.
                     </h2>
