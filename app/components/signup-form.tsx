@@ -13,7 +13,7 @@ import { Link } from "react-router";
 import { useForm } from "react-hook-form";
 import * as React from "react";
 
-import { requestOtp, verifyOtp } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 import { useAuth } from "@/store/auth";
 import { useNavigate } from "react-router";
 import {
@@ -49,11 +49,13 @@ export function SignupForm({
         try {
             setLoadingOtpRequest(true);
             // request backend to send OTP to phone
-            const res=await requestOtp({ phone_number: data.phone_number });
+            const res = await apiFetch("/account/request_otp/", {
+                method: "POST",
+                body: JSON.stringify({ phone_number: data.phone_number }),
+            });
 
             // test !! remove after adding sms verification
-            console.log("OTP request response:", res.code ,res);
-            setDisplayOTP(res.Code);
+            setDisplayOTP(res?.Code);
 
             setPhone(data.phone_number);
             setStep("otp");
@@ -79,7 +81,10 @@ export function SignupForm({
 
         try {
             setLoadingVerify(true);
-            const result = await verifyOtp({ phone_number: phone, otp_code: otp });
+            const result = await apiFetch("/account/register/", {
+                method: "POST",
+                body: JSON.stringify({ phone_number: phone, otp_code: otp }),
+            });
             // assume backend returns user/session data similar to previous flow
             logIn(result);
             setLoadingVerify(false);

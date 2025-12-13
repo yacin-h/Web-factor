@@ -1,100 +1,240 @@
-import { cn } from "~/lib/utils";
-import { Button } from "~/components/ui/button";
-import { Card, CardContent } from "~/components/ui/card";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
     Field,
     FieldDescription,
     FieldGroup,
     FieldLabel,
-} from "~/components/ui/field";
-import { Input } from "~/components/ui/input";
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
 import { Link } from "react-router";
-import { useForm, type SubmitHandler } from "react-hook-form";
-import { LoginSchema, type LoginFormType } from "@/schemas/auth.schema";
-import { zodResolver } from "@hookform/resolvers/zod";
+
+import { useForm } from "react-hook-form";
+import * as React from "react";
+
+import { apiFetch } from "@/lib/api";
+import { useAuth } from "@/store/auth";
+import { useNavigate } from "react-router";
+import {
+    InputOTP,
+    InputOTPGroup,
+    InputOTPSeparator,
+    InputOTPSlot,
+} from "@/components/ui/input-otp";
+
+type PhoneForm = { phone_number: string };
 
 export function LoginForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
-    const {
-        register,
-        handleSubmit,
-        setError,
-        formState: { errors, isSubmitting },
-    } = useForm<LoginFormType>({
-        resolver: zodResolver(LoginSchema),
-    });
+    const { register, handleSubmit, setError, formState } =
+        useForm<PhoneForm>();
+    const { errors, isSubmitting } = formState as any;
+
+    const { logIn } = useAuth();
+    const navigate = useNavigate();
+
+    const [step, setStep] = React.useState<"phone" | "otp">("phone");
+
+    // for test. remove after implementing sms verification
+    const [displayOTP, setDisplayOTP] = React.useState<string>("");
+    const [phone, setPhone] = React.useState<string>("");
+    const [otp, setOtp] = React.useState<string>("");
+    const [loadingOtpRequest, setLoadingOtpRequest] = React.useState(false);
+    const [loadingVerify, setLoadingVerify] = React.useState(false);
+
+    async function onSubmitPhone(data: PhoneForm) {
+        try {
+            setLoadingOtpRequest(true);
+            // request backend to send OTP to phone
+            const res = await apiFetch("/account/request_otp/", {
+                method: "POST",
+                body: JSON.stringify({ phone_number: data.phone_number }),
+            });
+
+            // test !! remove after adding sms verification
+            setDisplayOTP(res?.Code);
+
+            setPhone(data.phone_number);
+            setStep("otp");
+            setLoadingOtpRequest(false);
+        } catch (error) {
+            setLoadingOtpRequest(false);
+            const errorMessage =
+                error instanceof Object && "detail" in error
+                    ? (error as Record<string, string>).detail
+                    : "مشکلی پیش آمده است";
+            setError("phone_number", { message: errorMessage });
+            console.log(error);
+        }
+    }
+
+    async function onSubmitOtp(e?: React.FormEvent) {
+        e?.preventDefault();
+        if (!phone) {
+            setError("phone_number", { message: "شماره تلفن یافت نشد" });
+            setStep("phone");
+            return;
+        }
+
+        try {
+            setLoadingVerify(true);
+            const result = await apiFetch("/account/register/", {
+                method: "POST",
+                body: JSON.stringify({ phone_number: phone, otp_code: otp }),
+            });
+            // assume backend returns user/session data similar to previous flow
+            logIn(result);
+            setLoadingVerify(false);
+            navigate("/dashboard");
+        } catch (error) {
+            setLoadingVerify(false);
+            const errorMessage =
+                error instanceof Object && "detail" in error
+                    ? (error as Record<string, string>).detail
+                    : "کد اشتباه است یا مشکلی پیش آمده";
+            setError("root", { message: errorMessage });
+            console.log(error);
+        }
+    }
+
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card className="overflow-hidden p-0">
                 <CardContent className="grid p-0 md:grid-cols-2">
-                    <form className="p-6 md:p-8">
-                        <FieldGroup>
-                            <div className="flex flex-col items-center gap-2 text-center">
-                                <h1 className="text-2xl font-bold">
-                                    خوش آمدید
-                                </h1>
-                                <p className="text-muted-foreground text-balance">
-                                    ورود به حساب کاربری
-                                </p>
-                            </div>
-                            <Field>
-                                <FieldLabel htmlFor="email">ایمیل</FieldLabel>
-                                <Input
-                                    {...register("email")}
-                                    id="email"
-                                    type="email"
-                                    placeholder="m@example.com"
-                                    required
-                                />
-                                {errors.email && (
-                                    <span className="text-red-500">
-                                        {errors.email.message}
-                                    </span>
-                                )}
-                            </Field>
-                            <Field>
-                                <div className="flex items-center">
-                                    <FieldLabel htmlFor="password">
-                                        کلمه ی عبور
-                                    </FieldLabel>
-                                    <a
-                                        href="#"
-                                        className="ml-auto text-sm text-primary underline-offset-2 hover:underline"
-                                    >
-                                        (کلمه ی عبوررا فراموش کرده اید؟)
-                                    </a>
+                    {step === "phone" ? (
+                        <form
+                            className="p-6 md:p-8"
+                            onSubmit={handleSubmit(onSubmitPhone)}
+                        >
+                            <FieldGroup>
+                                <div className="flex flex-col items-center gap-2 text-center">
+                                    <h1 className="text-2xl font-bold">
+                                        ورود به حساب
+                                    </h1>
                                 </div>
-                                <Input
-                                    {...register("password")}
-                                    id="password"
-                                    type="password"
-                                    required
-                                />
-                                {errors.password && (
-                                    <span className="text-red-500">
-                                        {errors.password.message}
-                                    </span>
-                                )}
-                            </Field>
-                            <Field>
-                                <Button disabled={isSubmitting} type="submit">
-                                  {isSubmitting ? "در حال ورود..." : "ورود"}
-                                  </Button>
-                            </Field>
 
-                            <FieldDescription className="text-center">
-                                اکانتی ندارید ؟{" "}
-                                <Link to={"/signup"}>ایجاد اکانت</Link>
-                            </FieldDescription>
-                        </FieldGroup>
-                    </form>
+                                <Field>
+                                    <label className="w-full" htmlFor="phone_number">
+                                        تلفن
+                                    </label>
+                                    <Input
+                                        {...register("phone_number", {
+                                            required: "شماره تلفن الزامی است",
+                                            pattern: {
+                                                value: /^09[0-9]{9}$/,
+                                                message:
+                                                    "شماره موبایل باید با 09 شروع شده و 11 رقم باشد",
+                                            },
+                                        })}
+                                        id="phone_number"
+                                        type="text"
+                                    />
+                                    {errors?.phone_number && (
+                                        <span className="text-red-500">
+                                            {
+                                                (errors as any).phone_number
+                                                    .message
+                                            }
+                                        </span>
+                                    )}
+                                </Field>
+
+                                <Field>
+                                    <Button
+                                        disabled={loadingOtpRequest}
+                                        type="submit"
+                                    >
+                                        {loadingOtpRequest ? (
+                                            <span>در حال ارسال...</span>
+                                        ) : (
+                                            "دریافت کد"
+                                        )}
+                                    </Button>
+                                    {(errors as any)?.root && (
+                                        <span className="text-red-500">
+                                            {(errors as any).root.message}
+                                        </span>
+                                    )}
+                                </Field>
+
+                                <FieldDescription className="text-center">
+                                    حساب کاربری ندارید؟{" "}
+                                    <Link to={"/login"}>ورود</Link>
+                                </FieldDescription>
+                            </FieldGroup>
+                        </form>
+                    ) : (
+                        <form className="p-6 md:p-8" onSubmit={onSubmitOtp}>
+                            <FieldGroup>
+                                <div className="flex flex-col items-center gap-2 text-center">
+                                    <h1 className="text-2xl font-bold">
+                                        تایید شماره
+                                    </h1>
+                                    <p className="text-sm">
+                                        کدی به {phone} ارسال شد
+                                    </p>
+                                </div>
+
+                                <Field>
+                                    <FieldLabel>کد تایید</FieldLabel>
+                                    <p>کد تائید تست:</p>
+                                    <h2 className="text-center text-lg font-semibold">{displayOTP}</h2>
+                                    <InputOTP
+                                        maxLength={6}
+                                        value={otp}
+                                        onChange={(v: any) =>
+                                            setOtp(String(v || ""))
+                                        }
+                                    >
+                                        <InputOTPGroup>
+                                            <InputOTPSlot index={0} />
+                                            <InputOTPSlot index={1} />
+                                            <InputOTPSlot index={2} />
+                                        </InputOTPGroup>
+                                        <InputOTPSeparator />
+                                        <InputOTPGroup>
+                                            <InputOTPSlot index={3} />
+                                            <InputOTPSlot index={4} />
+                                            <InputOTPSlot index={5} />
+                                        </InputOTPGroup>
+                                    </InputOTP>
+                                </Field>
+
+                                <Field className="flex items-center gap-2">
+                                    <Button
+                                        disabled={loadingVerify}
+                                        type="submit"
+                                    >
+                                        {loadingVerify ? (
+                                            <span>در حال بررسی...</span>
+                                        ) : (
+                                            "تایید و ورود"
+                                        )}
+                                    </Button>
+                                    <Button
+                                        variant="ghost"
+                                        type="button"
+                                        onClick={() => setStep("phone")}
+                                    >
+                                        اصلاح شماره
+                                    </Button>
+                                </Field>
+
+                                <FieldDescription className="text-center">
+                                    اگر کد را دریافت نکردید، دوباره تلاش کنید یا
+                                    شماره را بررسی کنید.
+                                </FieldDescription>
+                            </FieldGroup>
+                        </form>
+                    )}
 
                     <div className="bg-secondary relative hidden md:block">
                         <img
-                            src="/login.svg"
-                            alt="login picture"
+                            src="/signup.svg"
+                            alt="Image"
                             className="absolute inset-0 h-full w-full  dark:brightness-[0.2] dark:grayscale p-5"
                         />
                     </div>

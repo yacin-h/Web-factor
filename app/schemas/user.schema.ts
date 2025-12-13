@@ -1,16 +1,13 @@
 import { z } from "zod";
 export const UserSchema = z.object({
-    name: z
+    last_name: z
         .string()
         .min(2, "نام باید حداقل ۲ کاراکتر باشد")
         .max(50, "نام نمی‌تواند بیشتر از ۵۰ کاراکتر باشد"),
-
-    email: z.string().email("ایمیل وارد شده معتبر نیست"),
-
-    password: z
+        first_name: z
         .string()
-        .min(8, "رمز عبور باید حداقل 8 کاراکتر باشد")
-        .max(50, "رمز عبور خیلی طولانی است"),
+        .min(2, "نام باید حداقل ۲ کاراکتر باشد")
+        .max(50, "نام نمی‌تواند بیشتر از ۵۰ کاراکتر باشد"),
 
     phone_number: z
         .string()

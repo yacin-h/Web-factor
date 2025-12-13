@@ -13,8 +13,9 @@ export default [
     layout("routes/protected.tsx", [
         layout("routes/dashboardLayout.tsx", [
             route("dashboard", "routes/dashboard.tsx"),
+            route("products", "routes/products.tsx"),
         ]),
     ]),
-    route("login","routes/logIn.tsx"),
-    route("signup","routes/signUp.tsx")
+    route("login", "routes/logIn.tsx"),
+    route("signup", "routes/signUp.tsx"),
 ] satisfies RouteConfig;

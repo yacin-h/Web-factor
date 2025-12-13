@@ -1,13 +1,12 @@
 import type { Product } from "./product";
 
 export type User = {
-    name: string;
-    email: string;
+    first_name: string;
+    last_name: string;
     phone_number: string;
     store_name: string;
     store_description: string;
     store_address: string;
     insta_link: string;
-    id: string; // UUID
-    products: Product[];
+    date_joined:string;
 };

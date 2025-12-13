@@ -1,76 +1,64 @@
-import type { SignupFormType } from "@/schemas/auth.schema";
-import type { Token } from "@/types/token";
+const API_BASE_URL = "https://invociemanager-production.up.railway.app";
 
-export async function signupUser(data: SignupFormType) {
-    const res = await fetch("https://tesrepo-final.onrender.com/api/v1/signup", {
+async function refreshToken() {
+    const saved = localStorage.getItem("token");
+    if (!saved) return null;
+
+    const { refresh } = JSON.parse(saved);
+    const res = await fetch(`${API_BASE_URL}/api/token/refresh/`, {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ refresh }),
     });
 
-    if (!res.ok) {
-        const error = await res.json();
-        throw error;
-    }
+    if (!res.ok) return null;
 
-    return res.json();
+    const newToken = await res.json();
+    const updated = { ...JSON.parse(saved), access: newToken.access };
+    localStorage.setItem("token", JSON.stringify(updated));
+    return updated.access;
 }
 
-export async function loginUser(data: Token) {
-    const res = await fetch("https://tesrepo-final.onrender.com/api/v1/login", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-    });
+export async function apiFetch(url: string, options: RequestInit = {}) {
+    const saved = localStorage.getItem("token");
+    const token = saved ? JSON.parse(saved) : null;
 
-    if (!res.ok) {
-        const error = await res.json();
-        throw error;
-    }
+    let headers: Record<string, string> = {
+        "Content-Type": "application/json",
+        ...(options.headers as Record<string, string>),
+    };
 
-    return res.json();
-}
+    if (token?.access) headers["Authorization"] = `Bearer ${token.access}`;
 
-export async function requestOtp(phone: { phone_number: string }) {
-    const res = await fetch(
-        "https://invociemanager-production.up.railway.app/account/request_otp/",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(phone),
+    let res = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
+
+    // Refresh token if 401
+    if (res.status === 401) {
+        const newAccess = await refreshToken();
+        if (!newAccess) {
+            localStorage.removeItem("token");
+            window.location.href = "/login";
+            return;
         }
-    );
-
-    if (!res.ok) {
-        const error = await res.json();
-        throw error;
+        headers["Authorization"] = `Bearer ${newAccess}`;
+        res = await fetch(`${API_BASE_URL}${url}`, { ...options, headers });
     }
 
-    return res.json();
-}
-
-export async function verifyOtp(payload: { phone_number: string; otp_code: string }) {
-    const res = await fetch(
-        "https://invociemanager-production.up.railway.app/account/register/",
-        {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
+    // فقط اگر body داشته باشه JSON بگیر
+    const text = await res.text();
+    let data: any = null;
+    if (text) {
+        try {
+            data = JSON.parse(text);
+        } catch {
+            data = text; // اگر JSON نبود، متن خام رو برگردون
         }
-    );
-
-    if (!res.ok) {
-        const error = await res.json();
-        throw error;
     }
 
-    return res.json();
+    if (!res.ok) {
+        console.error("API Error:", data);
+        throw data;
+    }
+
+    return data;
 }

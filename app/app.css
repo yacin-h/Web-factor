@@ -28,6 +28,7 @@
     font-family: "vazir", sans-serif;
 }
 
+
 .ltr-input {
     direction: ltr;
     text-align: left;
@@ -241,5 +242,11 @@
     body {
         @apply bg-background text-foreground;
         letter-spacing: var(--tracking-normal);
+    }
+    
+}
+@layer components {
+    .title{
+        @apply text-3xl font-semibold tracking-tight my-5;
     }
 }
