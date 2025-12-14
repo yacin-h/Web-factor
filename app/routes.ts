@@ -7,15 +7,17 @@ import {
 
 export default [
     index("routes/home.tsx"),
-    route("invoice/:invoiceId", "routes/invoice.tsx"),
+    route("invoice/:invoiceId", "routes/invoices/invoice.tsx"),
 
     // layout
-    layout("routes/protected.tsx", [
-        layout("routes/dashboardLayout.tsx", [
-            route("dashboard", "routes/dashboard.tsx"),
+    layout("routes/dashboard/protected.tsx", [
+        layout("routes/dashboard/dashboardLayout.tsx", [
+            route("dashboard", "routes/dashboard/dashboard.tsx"),
             route("products", "routes/products.tsx"),
+            route("invoices", "routes/invoices/invoices.tsx"),
+            route("invoices/new", "routes/invoices/newInvoice.tsx"),
         ]),
+        route("login", "routes/logIn.tsx"),
+        route("signup", "routes/signUp.tsx"),
     ]),
-    route("login", "routes/logIn.tsx"),
-    route("signup", "routes/signUp.tsx"),
 ] satisfies RouteConfig;
