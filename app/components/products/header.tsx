@@ -5,10 +5,9 @@ import {
     InputGroupButton,
     InputGroupInput,
 } from "../ui/input-group";
-import { Button } from "../ui/button";
 import AddProductModal from "./addProductModal";
 
-export default function ProductHeader({ onAdded }: { onAdded: () => void }) {
+export default function Header({ onAdded }: { onAdded: () => void }) {
     return (
         <header className="mx-5">
             <h1 className="title">کالا ها</h1>

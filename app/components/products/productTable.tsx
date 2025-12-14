@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import ProductsSkeleton from "@/components/products/productsSkeleton";
-import ProductHeader from "@/components/products/productsHeader";
 import {
     Table,
     TableBody,
@@ -9,28 +8,28 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { useAuth } from "@/store/auth";
 import type { Product } from "@/types/product";
 import { apiFetch } from "@/lib/api";
 import { Button } from "../ui/button";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination";
 export default function ProductTable({ reload }: { reload: number }) {
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
     const [page, setPage] = useState(1);
     const pageSize = 10;
-    const { token } = useAuth();
+    const [count, setCount] = useState(0);
+    const totalPages = Math.ceil(count / pageSize);
 
     useEffect(() => {
         const fetchProducts = async () => {
             setLoading(true);
 
             try {
-                const accessToken = token?.access;
-
                 const data = await apiFetch(
                     `/user/products/?page=${page}&page_size=${pageSize}`
                 );
-                setProducts(data);
+                setProducts(data.results);
+                setCount(data.count);
             } catch (err) {
                 console.log(err);
             }
@@ -53,34 +52,115 @@ export default function ProductTable({ reload }: { reload: number }) {
             {loading ? (
                 <ProductsSkeleton />
             ) : (
-                <Table className="my-5">
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead className="text-right">عملیات</TableHead>
-                            <TableHead className="text-right">قیمت</TableHead>
-                            <TableHead className="text-right">
-                                توضیحات
-                            </TableHead>
-                            <TableHead className="text-right">نام</TableHead>
-                        </TableRow>
-                    </TableHeader>
-
-                    <TableBody>
-                        {products?.map((p: Product) => (
-                            <TableRow key={p.id}>
-                                <TableCell><Button onClick={() => handleDelete(p.id)} variant="destructive">حذف</Button></TableCell>
-                                <TableCell className="font-medium flex gap-2 justify-end">
-                                    <span>تومان</span>
-                                    <span>{p.price}</span>
-                                </TableCell>
-                                <TableCell>{p.description || "-"}</TableCell>
-                                <TableCell className="text-right">
-                                    {p.name}
-                                </TableCell>
+                <>
+                    <Table className="my-5">
+                        <TableHeader className="bg-muted rounded-sm">
+                            <TableRow>
+                                <TableHead className="text-right">
+                                    عملیات
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    قیمت
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    توضیحات
+                                </TableHead>
+                                <TableHead className="text-right">
+                                    نام
+                                </TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+
+                        <TableBody>
+                            {products?.map((p: Product) => (
+                                <TableRow key={p.id}>
+                                    <TableCell>
+                                        <Button
+                                            onClick={() => {
+                                                const ok = confirm(
+                                                    "آیا از حذف محصول اطمینان دارید؟"
+                                                );
+                                                if (ok) {
+                                                    handleDelete(p.id);
+                                                }
+                                            }}
+                                            variant="destructive"
+                                        >
+                                            حذف
+                                        </Button>
+                                    </TableCell>
+                                    <TableCell className="flex items-center gap-2  justify-end">
+                                        <span>تومان</span>
+                                        <span>{p.price}</span>
+                                    </TableCell>
+                                    <TableCell>
+                                        {p.description || "-"}
+                                    </TableCell>
+                                    <TableCell className="text-right">
+                                        {p.name}
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+
+                    {totalPages > 1 && (
+                        <Pagination className="mt-4">
+                            <PaginationContent>
+                                {/* Previous */}
+                                <PaginationItem>
+                                    <PaginationPrevious
+                                        onClick={() =>
+                                            page > 1 && setPage(page - 1)
+                                        }
+                                        className={
+                                            page === 1
+                                                ? "pointer-events-none opacity-50"
+                                                : ""
+                                        }
+                                    />
+                                </PaginationItem>
+
+                                {/* Page numbers */}
+                                {Array.from({ length: totalPages }).map(
+                                    (_, i) => {
+                                        const pageNumber = i + 1;
+
+                                        return (
+                                            <PaginationItem key={pageNumber}>
+                                                <PaginationLink
+                                                    isActive={
+                                                        page === pageNumber
+                                                    }
+                                                    onClick={() =>
+                                                        setPage(pageNumber)
+                                                    }
+                                                >
+                                                    {pageNumber}
+                                                </PaginationLink>
+                                            </PaginationItem>
+                                        );
+                                    }
+                                )}
+
+                                {/* Next */}
+                                <PaginationItem>
+                                    <PaginationNext
+                                        onClick={() =>
+                                            page < totalPages &&
+                                            setPage(page + 1)
+                                        }
+                                        className={
+                                            page === totalPages
+                                                ? "pointer-events-none opacity-50"
+                                                : ""
+                                        }
+                                    />
+                                </PaginationItem>
+                            </PaginationContent>
+                        </Pagination>
+                    )}
+                </>
             )}
         </>
     );
