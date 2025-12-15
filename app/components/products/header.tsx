@@ -12,6 +12,7 @@ export default function Header({ onAdded }: { onAdded: () => void }) {
         <header className="mx-5">
             <h1 className="title">کالا ها</h1>
             <div className="flex justify-between gap-3">
+                <AddProductModal onAdded={onAdded} />
                 {/* search btn */}
                 <InputGroup>
                     <InputGroupInput placeholder="جستجو..." />
@@ -22,8 +23,6 @@ export default function Header({ onAdded }: { onAdded: () => void }) {
                         <InputGroupButton>جستجو</InputGroupButton>
                     </InputGroupAddon>
                 </InputGroup>
-
-                <AddProductModal onAdded={onAdded}/>
             </div>
         </header>
     );

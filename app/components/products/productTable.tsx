@@ -11,7 +11,14 @@ import {
 import type { Product } from "@/types/product";
 import { apiFetch } from "@/lib/api";
 import { Button } from "../ui/button";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "../ui/pagination";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "../ui/pagination";
 export default function ProductTable({ reload }: { reload: number }) {
     const [loading, setLoading] = useState(true);
     const [products, setProducts] = useState([]);
@@ -56,24 +63,26 @@ export default function ProductTable({ reload }: { reload: number }) {
                     <Table className="my-5">
                         <TableHeader className="bg-muted rounded-sm">
                             <TableRow>
-                                <TableHead className="text-right">
-                                    عملیات
-                                </TableHead>
-                                <TableHead className="text-right">
-                                    قیمت
-                                </TableHead>
-                                <TableHead className="text-right">
-                                    توضیحات
-                                </TableHead>
-                                <TableHead className="text-right">
-                                    نام
-                                </TableHead>
+                                <TableHead>نام</TableHead>
+                                <TableHead>توضیحات</TableHead>
+                                <TableHead>قیمت</TableHead>
+                                <TableHead>عملیات</TableHead>
                             </TableRow>
                         </TableHeader>
 
                         <TableBody>
                             {products?.map((p: Product) => (
                                 <TableRow key={p.id}>
+                                    <TableCell className="text-right">
+                                        {p.name}
+                                    </TableCell>
+                                    <TableCell>
+                                        {p.description || "-"}
+                                    </TableCell>
+                                    <TableCell className="flex items-center gap-2">
+                                        <span>{p.price}</span>
+                                        <span>تومان</span>
+                                    </TableCell>
                                     <TableCell>
                                         <Button
                                             onClick={() => {
@@ -88,16 +97,6 @@ export default function ProductTable({ reload }: { reload: number }) {
                                         >
                                             حذف
                                         </Button>
-                                    </TableCell>
-                                    <TableCell className="flex items-center gap-2  justify-end">
-                                        <span>تومان</span>
-                                        <span>{p.price}</span>
-                                    </TableCell>
-                                    <TableCell>
-                                        {p.description || "-"}
-                                    </TableCell>
-                                    <TableCell className="text-right">
-                                        {p.name}
                                     </TableCell>
                                 </TableRow>
                             ))}

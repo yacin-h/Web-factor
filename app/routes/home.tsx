@@ -13,11 +13,11 @@ export function meta({}: Route.MetaArgs) {
 
 export default function Home() {
     return (
-        <>
+        <main className="mx-auto px-4 sm:px-10 md:px-20 lg:px-32">
             <Header />
             <Hero />
             <About />
             <Footer />
-        </>
+        </main>
     );
 }

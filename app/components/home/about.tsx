@@ -4,7 +4,7 @@ import AboutCard from "./aboutCard";
 export default function About() {
     return (
         <motion.div
-            className="min-h-screen flex  container mx-auto mb-10"
+            className="flex  mx-auto mb-10"
             id="about"
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -12,14 +12,14 @@ export default function About() {
             transition={{ duration: 0.6 }}
         >
             {/* context */}
-            <div className="w-11/12 shadow-lg bg-white rounded mx-auto p-3 sm:p-8 md:p-14">
+            <div className="w-11/12 shadow-lg bg-muted rounded mx-auto p-3 sm:p-8 md:p-14">
                 <div className="flex flex-col"></div>
                 <h2 className="mb-10  font-bold text-xl">
                     با چند کلیک فاکتور بساز، و لینک فاکتور رو با لینک پرداخت به
                     مشتری بفرست . بدون دردسر، بدون پیچیدگی.
                 </h2>
 
-                <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 items-stretch">
+                <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
                     <AboutCard
                         title="تولید فاکتور با QR  لینک فاکتور"
                         description="جهت سهولت دسترسی به لینک فاکتور ها در آینده"

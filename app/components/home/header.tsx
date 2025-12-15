@@ -7,21 +7,21 @@ export default function Header() {
         aboutSection?.scrollIntoView({ behavior: "smooth" });
     };
     return (
-        <header className=" container mx-auto flex justify-between items-center  pt-2 h-16">
+        <header className=" container mx-auto flex justify-between items-center  pt-4 h-16">
             <Link to={"/"}>
                 <img className="size-16" src="logo.png" alt="invoice logo" />
             </Link>
             <div>
-                <NavLink to={"/dashboard"} >
-                    <Button className="  mr-2">ورود/عضویت</Button>
-                </NavLink>
                 <Button
+                
                     onClick={scrollToAbout}
-                    
                     variant={"outline"}
                 >
                     درباره فاکتور ساز
                 </Button>
+                <NavLink to={"/dashboard"} >
+                    <Button className="mr-4">ورود/عضویت</Button>
+                </NavLink>
             </div>
         </header>
     );
