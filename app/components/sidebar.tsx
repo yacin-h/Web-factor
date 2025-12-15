@@ -1,8 +1,18 @@
-import { Users, Home, Package, Settings, ScrollText } from "lucide-react";
+import {
+    Users,
+    Home,
+    Package,
+    Settings,
+    ScrollText,
+    User2,
+    ChevronUp,
+    LogOut,
+} from "lucide-react";
 
 import {
     Sidebar,
     SidebarContent,
+    SidebarFooter,
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
@@ -12,7 +22,15 @@ import {
     SidebarSeparator,
 } from "@/components/ui/sidebar";
 import { NavLink } from "react-router";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
+import { useAuth } from "@/store/auth";
+import { Button } from "./ui/button";
 // Menu items.
 const productItems = [
     {
@@ -44,11 +62,11 @@ const productItems = [
 ];
 
 export function AppSidebar() {
+    const { logOut } = useAuth();
     return (
-        <Sidebar>
+        <Sidebar side="right">
             <SidebarContent>
                 <SidebarGroup>
-                    <SidebarGroupLabel>دشبورد</SidebarGroupLabel>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {productItems.map((item) => (
@@ -66,6 +84,31 @@ export function AppSidebar() {
                     </SidebarGroupContent>
                 </SidebarGroup>
             </SidebarContent>
+            <SidebarFooter>
+                <SidebarMenu>
+                    <SidebarMenuItem>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <SidebarMenuButton>
+                                    <User2 /> حساب کاربری
+                                    <ChevronUp className="ml-auto" />
+                                </SidebarMenuButton>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                                side="top"
+                                className="w-[--radix-popper-anchor-width]"
+                            >
+                                <Button onClick={logOut} asChild>
+                                    <DropdownMenuItem className="flex justify-end">
+                                        <span>خروج</span>
+                                        <LogOut />
+                                    </DropdownMenuItem>
+                                </Button>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    </SidebarMenuItem>
+                </SidebarMenu>
+            </SidebarFooter>
         </Sidebar>
     );
 }

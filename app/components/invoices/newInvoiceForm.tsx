@@ -1,3 +1,21 @@
+import { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { InvoiceSchema, type InvoiceFormType } from "@/schemas/invoice.schema";
+import { apiFetch } from "@/lib/api";
+import type { Product } from "@/types/product";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import {
     MultiSelect,
     MultiSelectContent,
@@ -6,39 +24,251 @@ import {
     MultiSelectTrigger,
     MultiSelectValue,
 } from "@/components/ui/multi-select";
-import { Label } from "../ui/label";
 
 export default function NewInvoiceForm() {
+    const [products, setProducts] = useState<Product[]>([]);
+
+    const {
+        control,
+        register,
+        handleSubmit,
+        formState: { errors, isSubmitting },
+        watch,
+    } = useForm<InvoiceFormType>({
+        resolver: zodResolver(InvoiceSchema),
+        defaultValues: {
+            items: [],
+            customer_name: "",
+            customer_phone_number: "",
+            customer_email: "",
+            customer_address: "",
+            status: "pending",
+            payment_mode: "cash",
+        },
+    });
+
+    const watchedItems = watch("items");
+
+    // Fetch all products
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const data = await apiFetch("/user/products/?page_size=1000");
+                setProducts(data.results);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    const onSubmit = async (data: InvoiceFormType) => {
+        try {
+            const payload = {
+                ...data,
+                items: data.items.map((item) => ({
+                    ...item,
+                    quantity: Number(item.quantity),
+                    price: Number(item.price),
+                })),
+            };
+
+
+            const response = await apiFetch("/user/invoices/", {
+                method: "POST",
+                body: JSON.stringify(payload),
+            });
+            console.log(response);
+            alert("Invoice created successfully!");
+        } catch (error) {
+            console.error(error);
+            alert("Error creating invoice");
+        }
+    };
+
     return (
-        <>
-            <div className="flex flex-col gap-2">
-        <Label>Frameworks</Label>
-        <MultiSelect
-          defaultValues={[
-            "next.js",
-            "sveltekit",
-            "nuxt.js",
-            "remix",
-            "astro",
-            "vue",
-          ]}
-        >
-          <MultiSelectTrigger className="w-full">
-            <MultiSelectValue overflowBehavior={"wrap"} />
-          </MultiSelectTrigger>
-          <MultiSelectContent>
-            <MultiSelectGroup>
-              <MultiSelectItem value="next.js">Next.js</MultiSelectItem>
-              <MultiSelectItem value="sveltekit">SvelteKit</MultiSelectItem>
-              <MultiSelectItem value="nuxt.js">Nuxt.js</MultiSelectItem>
-              <MultiSelectItem value="remix">Remix</MultiSelectItem>
-              <MultiSelectItem value="astro">Astro</MultiSelectItem>
-              <MultiSelectItem value="vue">Vue.js</MultiSelectItem>
-              <MultiSelectItem value="react">React</MultiSelectItem>
-            </MultiSelectGroup>
-          </MultiSelectContent>
-        </MultiSelect>
-      </div>
-        </>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            {/* Product Selection */}
+            <Controller
+                control={control}
+                name="items"
+                render={({ field }) => (
+                    <div className="flex flex-col gap-2">
+                        <Label>انتخاب کالاها</Label>
+                        <MultiSelect
+                            values={field.value.map((item) =>
+                                String(item.product)
+                            )}
+                            onValuesChange={(vals) => {
+                                const newItems = vals.map((val) => {
+                                    const existing = field.value.find(
+                                        (i) => i.product === Number(val)
+                                    );
+                                    if (existing) return existing;
+                                    const product = products.find(
+                                        (p) => p.id === Number(val)
+                                    );
+                                    return {
+                                        product: Number(val),
+                                        quantity: 1,
+                                        price: product?.price.toString() || "0",
+                                    };
+                                });
+                                field.onChange(newItems);
+                            }}
+                        >
+                            <MultiSelectTrigger className="w-full hover:bg-primary-foreground bg-primary-foreground">
+                                <MultiSelectValue
+                                    placeholder="کالا رو جستجو کن"
+                                    overflowBehavior="wrap"
+                                />
+                            </MultiSelectTrigger>
+
+                            <MultiSelectContent search>
+                                <MultiSelectGroup>
+                                    {products.map((product) => (
+                                        <MultiSelectItem
+                                            key={product.id}
+                                            value={String(product.id)}
+                                        >
+                                            {product.name}
+                                        </MultiSelectItem>
+                                    ))}
+                                </MultiSelectGroup>
+                            </MultiSelectContent>
+                        </MultiSelect>
+                        {errors.items && (
+                            <span className="text-red-500">
+                                {errors.items.message ||
+                                    "حداقل یک آیتم الزامی است"}
+                            </span>
+                        )}
+                    </div>
+                )}
+            />
+
+            {/* Items Table */}
+            {watchedItems.length > 0 && (
+                <div>
+                    <Label>کالاها</Label>
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="bg-muted">
+                                <TableHead>نام کالا</TableHead>
+                                <TableHead>مقدار</TableHead>
+                                <TableHead>قیمت</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {watchedItems.map((item, index) => {
+                                const product = products.find(
+                                    (p) => p.id === item.product
+                                );
+                                return (
+                                    <TableRow key={item.product}>
+                                        <TableCell>
+                                            {product?.name || "Unknown"}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Input
+                                                type="number"
+                                                min={1}
+                                                max={999999}
+                                                {...register(
+                                                    `items.${index}.quantity` as const
+                                                )}
+                                                defaultValue={item.quantity}
+                                            />
+                                            {errors.items?.[index]
+                                                ?.quantity && (
+                                                <span className="text-red-500">
+                                                    {
+                                                        errors.items[index]
+                                                            .quantity.message
+                                                    }
+                                                </span>
+                                            )}
+                                        </TableCell>
+                                        <TableCell>
+                                            <Input
+                                                type="number"
+                                                min={0}
+                                                step="0.01"
+                                                {...register(
+                                                    `items.${index}.price` as const
+                                                )}
+                                                defaultValue={item.price}
+                                            />
+                                            {errors.items?.[index]?.price && (
+                                                <span className="text-red-500">
+                                                    {
+                                                        errors.items[index]
+                                                            .price.message
+                                                    }
+                                                </span>
+                                            )}
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    </Table>
+                </div>
+            )}
+
+            {/* Customer Details */}
+            <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-3">
+                    <Label htmlFor="customer_name">نام مشتری</Label>
+                    <Input {...register("customer_name")} id="customer_name" />
+                    {errors.customer_name && (
+                        <span className="text-red-500">
+                            {errors.customer_name.message}
+                        </span>
+                    )}
+                </div>
+                <div className="space-y-3">
+                    <Label htmlFor="customer_phone_number">شماره تلفن</Label>
+                    <Input
+                        {...register("customer_phone_number")}
+                        id="customer_phone_number"
+                    />
+                    {errors.customer_phone_number && (
+                        <span className="text-red-500">
+                            {errors.customer_phone_number.message}
+                        </span>
+                    )}
+                </div>
+                <div className="space-y-3">
+                    <Label htmlFor="customer_email">ایمیل</Label>
+                    <Input
+                        {...register("customer_email")}
+                        id="customer_email"
+                        type="email"
+                    />
+                    {errors.customer_email && (
+                        <span className="text-red-500">
+                            {errors.customer_email.message}
+                        </span>
+                    )}
+                </div>
+                <div className="space-y-3">
+                    <Label htmlFor="customer_address">آدرس</Label>
+                    <Input
+                        {...register("customer_address")}
+                        id="customer_address"
+                    />
+                    {errors.customer_address && (
+                        <span className="text-red-500">
+                            {errors.customer_address.message}
+                        </span>
+                    )}
+                </div>
+            </div>
+
+            <Button type="submit" disabled={isSubmitting}>
+                {isSubmitting ? "در حال ساخت..." : "ساخت فاکتور"}
+            </Button>
+        </form>
     );
 }
