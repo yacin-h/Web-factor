@@ -19,9 +19,9 @@ export default function Hero() {
             transition={{
                 duration: 0.6,
             }}
-            className="container mx-auto min-h-[calc(100vh-80px)] flex flex-col sm:flex-row  sm:justify-between  items-center"
+            className="container mx-auto mt-10 md:mt-0 min-h-[calc(100vh-80px)] flex flex-col sm:flex-row  sm:justify-between  items-center"
         >
-            <div className="w-full sm:w-3/6 md:w-2/6 flex flex-col gap-3">
+            <div className="w-full sm:w-3/6  flex flex-col gap-3 space-y-0 md:space-y-8">
                 <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold">
                     سریع، دقیق، آماده چاپ
                 </h1>
@@ -43,7 +43,7 @@ export default function Hero() {
                 </div>
             </div>
             <img
-                className="sm:w-3/6 md:w-4/6 w-full sm:block"
+                className="sm:w-3/6  w-full sm:block mt-5"
                 src="/hero-section.svg"
                 alt=""
             />
