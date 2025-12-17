@@ -12,13 +12,13 @@ import type { ProductCreate } from "@/types/product";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { apiFetch } from "@/lib/api";
-import * as React from "react";
 import num2persian from "num2persian";
+import { useState } from "react";
 
 export default function AddProductModal({ onAdded }: { onAdded?: () => void }) {
-    const [loading, setLoading] = React.useState(false);
-    const [success, setSuccess] = React.useState(false);
-    const [numPersian, setNumPersian] = React.useState("");
+    const [loading, setLoading] = useState(false);
+    const [success, setSuccess] =useState(false);
+    const [numPersian, setNumPersian] =useState("");
 
     const {
         register,

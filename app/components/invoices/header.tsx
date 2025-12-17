@@ -13,6 +13,9 @@ export default function Header() {
         <header className="mx-5">
             <h1 className="title">فاکتور ها</h1>
             <div className="flex justify-between gap-3">
+                <Button asChild>
+                    <Link to="/invoices/new">افزودن فاکتور</Link>
+                </Button>
                 {/* search btn */}
                 <InputGroup>
                     <InputGroupInput placeholder="جستجو..." />
@@ -23,9 +26,6 @@ export default function Header() {
                         <InputGroupButton>جستجو</InputGroupButton>
                     </InputGroupAddon>
                 </InputGroup>
-                <Button asChild>
-                    <Link to="/invoices/new">افزودن فاکتور</Link>
-                </Button>
             </div>
         </header>
     );

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ProductsSkeleton from "@/components/products/productsSkeleton";
+import InvoiceSkeleton from "./invoiceSkeleton";
 import {
     Table,
     TableBody,
@@ -51,7 +51,7 @@ export default function InvoiceTable() {
     return (
         <>
             {loading ? (
-                <ProductsSkeleton />
+                <InvoiceSkeleton />
             ) : (
                 <div className="my-5 ">
                     <Table className="my-5">
