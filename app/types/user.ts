@@ -10,3 +10,11 @@ export type User = {
     insta_link: string;
     date_joined:string;
 };
+export type UserCreate = {
+    first_name: string;
+    last_name: string;
+    store_name: string;
+    store_description: string;
+    store_address: string;
+    insta_link: string;
+};

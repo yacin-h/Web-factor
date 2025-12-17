@@ -7,6 +7,8 @@ import {
     User2,
     ChevronUp,
     LogOut,
+    CircleUserRound,
+    ChevronDown,
 } from "lucide-react";
 
 import {
@@ -31,6 +33,7 @@ import {
 
 import { useAuth } from "@/store/auth";
 import { Button } from "./ui/button";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./ui/collapsible";
 // Menu items.
 const productItems = [
     {
@@ -53,7 +56,14 @@ const productItems = [
         url: "#",
         icon: Users,
     },
+];
 
+const userItems = [
+    {
+        title: "پروفایل",
+        url: "/profile",
+        icon: CircleUserRound,
+    },
     {
         title: "تنظیمات",
         url: "#",
@@ -83,6 +93,37 @@ export function AppSidebar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
+                <Collapsible defaultOpen className="group/collapsible">
+                    <SidebarGroup>
+                        <SidebarGroupLabel asChild>
+                            <CollapsibleTrigger>
+                                تنظیمات
+                                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                            </CollapsibleTrigger>
+                        </SidebarGroupLabel>
+                        <CollapsibleContent>
+                            <SidebarGroupContent />
+                            <SidebarGroup>
+                                <SidebarGroupContent>
+                                    <SidebarMenu>
+                                        {userItems.map((item) => (
+                                            <SidebarMenuItem key={item.title}>
+                                                <SidebarMenuButton asChild>
+                                                    <NavLink to={item.url}>
+                                                        <item.icon />
+                                                        <span>
+                                                            {item.title}
+                                                        </span>
+                                                    </NavLink>
+                                                </SidebarMenuButton>
+                                            </SidebarMenuItem>
+                                        ))}
+                                    </SidebarMenu>
+                                </SidebarGroupContent>
+                            </SidebarGroup>
+                        </CollapsibleContent>
+                    </SidebarGroup>
+                </Collapsible>
             </SidebarContent>
             <SidebarFooter>
                 <SidebarMenu>
@@ -98,7 +139,7 @@ export function AppSidebar() {
                                 side="top"
                                 className="w-[--radix-popper-anchor-width]"
                             >
-                                <Button onClick={logOut} asChild>
+                                <Button variant={"ghost"} onClick={logOut} asChild>
                                     <DropdownMenuItem className="flex justify-end">
                                         <span>خروج</span>
                                         <LogOut />
