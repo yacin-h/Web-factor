@@ -20,6 +20,7 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "../ui/pagination";
+import { Link } from "react-router";
 
 export default function InvoiceTable() {
     const [loading, setLoading] = useState(true);
@@ -104,24 +105,16 @@ export default function InvoiceTable() {
                                         ).toLocaleDateString("fa-IR")}
                                     </TableCell>
                                     <TableCell>
-                                        <Button
-                                            onClick={() => {
-                                                // Placeholder for view or edit action
-                                                console.log(
-                                                    "View invoice",
-                                                    invoice.id
-                                                );
-                                            }}
-                                            variant="outline"
-                                        >
-                                            مشاهده
-                                        </Button>
+                                        <Link to={`/invoices/${invoice.id}`} >
+                                            <Button variant="outline">
+                                                مشاهده
+                                            </Button>
+                                        </Link>
                                     </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
                     </Table>
-                    
 
                     {totalPages > 1 && (
                         <Pagination className="mt-4">

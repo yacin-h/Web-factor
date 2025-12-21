@@ -7,7 +7,6 @@ import {
 
 export default [
     index("routes/home.tsx"),
-    route("invoice/:invoiceId", "routes/invoices/invoice.tsx"),
 
     layout("routes/guestOnly.tsx", [
         route("login", "routes/logIn.tsx"),
@@ -18,11 +17,13 @@ export default [
         layout("routes/dashboard/dashboardLayout.tsx", [
             route("dashboard", "routes/dashboard/dashboard.tsx"),
             route("products", "routes/products.tsx"),
-            
+
             route("invoices", "routes/invoices/invoices.tsx"),
             route("invoices/new", "routes/invoices/newInvoice.tsx"),
+            route("invoices/:id", "routes/invoices/invoice.tsx"),
 
-            route("profile", "routes/profile.tsx")
+            route("profile", "routes/profile.tsx"),
+            route("branding", "routes/branding.tsx"),
         ]),
     ]),
 ] satisfies RouteConfig;
