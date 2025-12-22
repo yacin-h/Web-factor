@@ -4,7 +4,7 @@ import { useState } from "react";
 import useBranding from "@/store/branding";
 
 export default function Branding() {
-    const { color, image, setColor, setImage } = useBranding();
+    const { color, logo, setColor, setLogo } = useBranding();
     const [loading, setLoading] = useState(false);
 
     const handleColorChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,7 +16,7 @@ export default function Branding() {
         if (file) {
             const reader = new FileReader();
             reader.onload = (event) => {
-                setImage(event.target?.result as string);
+                setLogo(event.target?.result as string);
             };
             reader.readAsDataURL(file);
         }
@@ -62,11 +62,11 @@ export default function Branding() {
                         onChange={handleLogoUpload}
                         className="block mb-4"
                     />
-                    {image && (
+                    {logo && (
                         <div>
                             <p className="text-gray-600 mb-2">Preview:</p>
                             <img
-                                src={image}
+                                src={logo}
                                 alt="Logo preview"
                                 className="w-32 h-32 object-contain border rounded"
                             />

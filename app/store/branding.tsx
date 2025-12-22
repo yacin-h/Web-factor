@@ -6,9 +6,9 @@ const useBranding = create<BrandingContextType>()(
     persist(
         (set) => ({
             color: null,
-            image: null,
+            logo: null,
             setColor: (color: string) => set({ color }),
-            setImage: (image: string) => set({ image }),
+            setLogo: (logo: string) => set({ logo }),
         }),
         {
             name: "branding", // Key for localStorage
