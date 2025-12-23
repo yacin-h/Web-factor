@@ -117,12 +117,12 @@ export default function Modern({ invoice, user }: invoiceProps) {
                 className=" w-3/12 p-2 flex flex-col justify-between"
             >
                 <div className="mt-4 space-y-20">
-                    <div className="flex justify-center">
+                    <div className="flex flex-col items-center">
                         {brandingLogo ? (
                             <img
                                 src={brandingLogo}
                                 alt="Logo"
-                                className="h-24 w-auto "
+                                className="h-24 w-fit "
                             />
                         ) : (
                             <h2 className="text-3xl font-bold">
