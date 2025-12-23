@@ -7,18 +7,14 @@ import { invoiceStatusFa, paymentModeFa } from "@/constants/invoice";
 import type { Product } from "@/types/product";
 import num2persian from "num2persian";
 import { Instagram, MapPinHouse, PhoneCall } from "lucide-react";
-type invoiceProps={
-    invoice:Invoice;
-    user:User | null,
-    products:Product[],
-}
-export default function Classic({
-    invoice,
-    user,
-    products,
-}: invoiceProps) {
-    const brandingColor = useBranding((state) => state.color);
+type invoiceProps = {
+    invoice: Invoice;
+    user: User | null;
+    products: Product[];
+};
+export default function Classic({ invoice, user, products }: invoiceProps) {
     const brandingLogo = useBranding((state) => state.logo);
+    const { colors } = useBranding();
     console.log("Invoice:", invoice);
     console.log("User:", user);
     return (
@@ -36,7 +32,7 @@ export default function Classic({
                             {user?.store_name}
                         </h2>
                     )}
-                    {user && (
+                    {user && brandingLogo && (
                         <p className="ml-4 text-xl font-light">
                             {user.store_name}
                         </p>
@@ -61,7 +57,6 @@ export default function Classic({
                 <div className="text-left">
                     <h2
                         className="font-semibold text-lg"
-                        style={{ color: brandingColor || "#000" }}
                     >
                         اطلاعات مشتری
                     </h2>
@@ -89,7 +84,9 @@ export default function Classic({
                         <TableHeader>
                             <TableRow
                                 style={{
-                                    backgroundColor: brandingColor || "#000",
+                                    backgroundColor: colors?.base,
+                                    color: colors?.text,
+                                    borderColor: colors?.border,
                                 }}
                             >
                                 <th className="border border-gray-300 p-2 text-right">
@@ -176,4 +173,3 @@ export default function Classic({
         </div>
     );
 }
-
