@@ -12,7 +12,7 @@ export default function Modern({ invoice, user }: invoiceProps) {
     const brandingLogo = useBranding((state) => state.logo);
     const { colors } = useBranding();
     return (
-        <div className="w-[794px] min-h-[1123px] mx-auto bg-white dark:bg-muted  print:dark:bg-white  flex ">
+        <div className="w-[210mm] min-h-[297mm] mx-auto bg-white dark:bg-muted  print:dark:bg-white  flex print:page-break-inside-avoid">
             <section className=" w-9/12 p-5 flex flex-col justify-between">
                 <div>
                     <p className="flex flex-col w-fit mb-20 ">

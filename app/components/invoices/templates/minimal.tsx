@@ -10,7 +10,7 @@ type invoiceProps = {
 export default function Minimal({ invoice, user }: invoiceProps) {
     const brandingLogo = useBranding((state) => state.logo);
     return (
-        <div className="w-[794px] min-h-[1123px] mx-auto bg-white dark:bg-muted  print:dark:bg-white p-10 flex flex-col">
+        <div className="w-[210mm] min-h-[297mm] mx-auto bg-white dark:bg-muted  print:dark:bg-white p-10 flex flex-col print:page-break-inside-avoid">
             <header className="flex justify-between pb-8">
                 <div className="mt-3 space-y-5">
                     <div>
@@ -50,33 +50,30 @@ export default function Minimal({ invoice, user }: invoiceProps) {
 
                 {/* branding */}
                 <div className="flex flex-col items-center">
-                        {brandingLogo ? (
-                            <img
-                                src={brandingLogo}
-                                alt="Logo"
-                                className="h-24 w-fit "
-                            />
-                        ) : (
-                            <h2 className="text-3xl font-bold">
-                                {user?.store_name}
-                            </h2>
-                        )}
-                        {user && brandingLogo && (
-                            <p className="ml-4 text-xl font-light">
-                                {user.store_name}
-                            </p>
-                        )}
-                    </div>
+                    {brandingLogo ? (
+                        <img
+                            src={brandingLogo}
+                            alt="Logo"
+                            className="h-24 w-fit "
+                        />
+                    ) : (
+                        <h2 className="text-3xl font-bold">
+                            {user?.store_name}
+                        </h2>
+                    )}
+                    {user && brandingLogo && (
+                        <p className="ml-4 text-xl font-light">
+                            {user.store_name}
+                        </p>
+                    )}
+                </div>
             </header>
             <hr className="border-t border-gray-300" />
             <section>
                 <div className="mt-10">
-                    <Table  className="w-full border-collapse">
+                    <Table className="w-full border-collapse">
                         <TableHeader>
-                            <TableRow
-                                className="border-b border-gray-300"
-                                
-                            >
+                            <TableRow className="border-b border-gray-300">
                                 <th className=" p-2 text-right">نام محصول</th>
                                 <th className="p-2 text-right">تعداد</th>
                                 <th className="p-2 text-right">قیمت واحد</th>

@@ -28,7 +28,6 @@
     font-family: "vazir", sans-serif;
 }
 
-
 @font-face {
     font-family: "VazirText";
     src: url("/fonts/Vazir.ttf") format("truetype");
@@ -37,6 +36,11 @@
 }
 
 @media print {
+    @page {
+        size: A4;
+        margin: 0;
+    }
+
     * {
         -webkit-print-color-adjust: exact !important;
         color-adjust: exact !important;
