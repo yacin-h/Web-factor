@@ -49,19 +49,24 @@ export default function Minimal({ invoice, user }: invoiceProps) {
                 </div>
 
                 {/* branding */}
-                <div>
-                    {brandingLogo ? (
-                        <img
-                            src={brandingLogo}
-                            alt="Logo"
-                            className="h-24 w-auto"
-                        />
-                    ) : (
-                        <h2 className="text-3xl font-bold">
-                            {user?.store_name}
-                        </h2>
-                    )}
-                </div>
+                <div className="flex flex-col items-center">
+                        {brandingLogo ? (
+                            <img
+                                src={brandingLogo}
+                                alt="Logo"
+                                className="h-24 w-fit "
+                            />
+                        ) : (
+                            <h2 className="text-3xl font-bold">
+                                {user?.store_name}
+                            </h2>
+                        )}
+                        {user && brandingLogo && (
+                            <p className="ml-4 text-xl font-light">
+                                {user.store_name}
+                            </p>
+                        )}
+                    </div>
             </header>
             <hr className="border-t border-gray-300" />
             <section>

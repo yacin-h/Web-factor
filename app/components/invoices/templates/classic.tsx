@@ -13,12 +13,12 @@ export default function Classic({ invoice, user }: invoiceProps) {
     return (
         <div className="w-[794px] min-h-[1123px] mx-auto bg-white p-10 flex flex-col">
             <header className="pb-8">
-                <div>
+                <div className="flex flex-col items-center">
                     {brandingLogo ? (
                         <img
                             src={brandingLogo}
                             alt="Logo"
-                            className="h-24 w-auto"
+                            className="h-24 w-fit "
                         />
                     ) : (
                         <h2 className="text-3xl font-bold">
