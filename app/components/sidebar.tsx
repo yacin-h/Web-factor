@@ -39,6 +39,7 @@ import {
     CollapsibleTrigger,
 } from "./ui/collapsible";
 import useAuth from "@/store/auth";
+import { ModeToggle } from "./modeToggle";
 // Menu items.
 const productItems = [
     {
@@ -128,6 +129,9 @@ export function AppSidebar() {
                                                 </SidebarMenuButton>
                                             </SidebarMenuItem>
                                         ))}
+                                        <SidebarMenuItem>
+                                            <ModeToggle/>
+                                        </SidebarMenuItem>
                                     </SidebarMenu>
                                 </SidebarGroupContent>
                             </SidebarGroup>

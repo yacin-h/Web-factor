@@ -81,8 +81,7 @@ export default function Invoice() {
                 </Select>
                 <Button onClick={() => window.print()}>چاپ</Button>
             </div>
-            <div className="overflow-x-scroll bg-muted p-5 space-y-3 print:bg-white print:p-0 print:m-0 print:overflow-visible">
-                <div>
+            <div className="overflow-x-scroll bg-muted p-5 space-y-3 text-black print:bg-white print:p-0 print:m-0 print:overflow-visible">
                     {template === "classic" ? (
                         <Classic invoice={viewModel} user={user} />
                     ) : template === "modern" ? (
@@ -90,7 +89,6 @@ export default function Invoice() {
                     ) : (
                         <Minimal invoice={viewModel} user={user} />
                     )}
-                </div>
             </div>
         </>
     );
