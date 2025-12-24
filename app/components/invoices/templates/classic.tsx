@@ -11,7 +11,7 @@ export default function Classic({ invoice, user }: invoiceProps) {
     const brandingLogo = useBranding((state) => state.logo);
     const { colors } = useBranding();
     return (
-        <div className="w-[794px] min-h-[1123px] mx-auto bg-white p-10 flex flex-col">
+        <div className="w-[794px] min-h-[1123px] mx-auto bg-white dark:bg-muted  print:dark:bg-white p-10 flex flex-col">
             <header className="pb-8">
                 <div className="flex flex-col items-center">
                     {brandingLogo ? (
