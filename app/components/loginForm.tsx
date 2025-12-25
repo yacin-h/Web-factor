@@ -61,11 +61,12 @@ export function LoginForm({
             setStep("otp");
             setLoadingOtpRequest(false);
         } catch (error) {
+            console.log(error);
             setLoadingOtpRequest(false);
             const errorMessage =
                 error instanceof Object && "detail" in error
                     ? (error as Record<string, string>).detail
-                    : "مشکلی پیش آمده است";
+                    : "پس از یک دقیقه مجددا تلاش کنید.";
             setError("phone_number", { message: errorMessage });
             console.log(error);
         }
