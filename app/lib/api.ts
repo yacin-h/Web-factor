@@ -17,9 +17,9 @@ async function refreshToken() {
     const newToken = await res.json();
 
     // update zustand persisted state
-    const saved = JSON.parse(localStorage.getItem("token")!);
+    const saved = JSON.parse(localStorage.getItem("auth")!);
     saved.state.token.access = newToken.access;
-    localStorage.setItem("token", JSON.stringify(saved));
+    localStorage.setItem("auth", JSON.stringify(saved));
 
     return newToken.access;
 }
@@ -45,7 +45,7 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
         const newAccess = await refreshToken();
 
         if (!newAccess) {
-            localStorage.removeItem("token");
+            localStorage.removeItem("auth");
             window.location.href = "/login";
             return;
         }
@@ -58,9 +58,17 @@ export async function apiFetch(url: string, options: RequestInit = {}) {
     }
 
     const text = await res.text();
-    const data = text ? JSON.parse(text) : null;
+    let data;
+    try {
+        data = text ? JSON.parse(text) : null;
+    } catch {
+        data = { message: text };
+    }
 
-    if (!res.ok) throw data;
+    if (!res.ok) {
+        console.log(data);
+        throw data;
+    }
 
     return data;
 }

@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import EditProfileModal from "./editProfileModal";
 import type { User } from "@/types/user";
 import { apiFetch } from "@/lib/api";
+import useAuth from "@/store/auth";
 
 export default function ProfileCard() {
-    const [profile, setProfile] = useState<User | null>(null);
+    const { setProfile } = useAuth();
+    const [profile, setProfileState] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [reload, setReload] = useState(1);
 
@@ -12,6 +14,7 @@ export default function ProfileCard() {
         const fetchProfile = async () => {
             try {
                 const data = await apiFetch("/account/profile/");
+                setProfileState(data);
                 setProfile(data);
             } catch (err) {
                 console.error("error fetching profile", err);
@@ -21,13 +24,13 @@ export default function ProfileCard() {
         };
 
         fetchProfile();
-    }, [reload]);
+    }, [reload, setProfile]);
 
     if (loading) return <p>در حال بارگذاری...</p>;
     if (!profile) return <p>پروفایل پیدا نشد</p>;
 
     return (
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div className=" rounded-lg shadow-md p-6">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-xl font-semibold">پروفایل کاربری</h2>
 
@@ -35,55 +38,97 @@ export default function ProfileCard() {
             </div>
 
             <div className="space-y-4 gap-5 grid md:grid-cols-2 lg:grid-cols-3">
-                <div >
-                    <label className="block text-sm font-medium text-gray-700">
+                <div>
+                    <label className="block text-sm font-medium ">
                         نام
                     </label>
                     <p className="bg-muted rounded-sm p-2">
-                        {profile.first_name } {profile.last_name || "-"}  
+                        {profile.first_name} {profile.last_name || "-"}
                     </p>
                 </div>
 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium ">
                         شماره تماس
                     </label>
-                    <p className="bg-muted rounded-sm p-2">{profile.phone_number || "-"}</p>
+                    <p className="bg-muted rounded-sm p-2">
+                        {profile.phone_number || "-"}
+                    </p>
                 </div>
 
-
-                <div >
-                    <label className="block text-sm font-medium text-gray-700">
-                        نام فروشگاه
-                    </label>
-                    <p  className="bg-muted rounded-sm p-2">{profile.store_name || "-"}</p>
-                </div>
-                <div >
-                    <label className="block text-sm font-medium text-gray-700">
-                        توضیحات فروشگاه
-                    </label>
-                    <p  className="bg-muted rounded-sm p-2">{profile.store_description || "-"}</p>
-                </div>
-                <div  >
-                    <label className="block text-sm font-medium text-gray-700">
-                        آدرس فروشگاه
-                    </label>
-                    <p  className="bg-muted rounded-sm p-2">{profile.store_address || "-"}</p>
-                </div>
-                <div >
-                    <label className="block text-sm font-medium text-gray-700">
-                        آدرس اینستاگرام
-                    </label>
-                    <p className="bg-muted rounded-sm p-2">{profile.insta_link || "-"}</p>
-                </div>
-                <div >
-                    <label className="block text-sm font-medium text-gray-700">
+                <div>
+                    <label className="block text-sm font-medium ">
                         تاریخ عضویت
                     </label>
-                    <p className="bg-muted rounded-sm p-2">{profile.date_joined || "-"}</p>
+                    <p className="bg-muted rounded-sm p-2">
+                        {profile.date_joined || "-"}
+                    </p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-medium ">
+                        نام فروشگاه
+                    </label>
+                    <p className="bg-muted rounded-sm p-2">
+                        {profile.profile.store_name || "-"}
+                    </p>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium ">
+                        توضیحات فروشگاه
+                    </label>
+                    <p className="bg-muted rounded-sm p-2">
+                        {profile.profile.store_description || "-"}
+                    </p>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium ">
+                        آدرس فروشگاه
+                    </label>
+                    <p className="bg-muted rounded-sm p-2">
+                        {profile.profile.store_address || "-"}
+                    </p>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium ">
+                        آدرس اینستاگرام
+                    </label>
+                    <p className="bg-muted rounded-sm p-2">
+                        {profile.profile.insta_link || "-"}
+                    </p>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium ">
+                        رنگ برند
+                    </label>
+                    <div className="bg-muted rounded-sm p-2 flex items-center gap-2">
+                        <div
+                            className="w-6 h-6 rounded border"
+                            style={{
+                                backgroundColor: profile.profile.hexcolor,
+                            }}
+                        ></div>
+                        {profile.profile.hexcolor}
+                    </div>
+                </div>
+                <div>
+                    <label className="block text-sm font-medium ">
+                        لوگو
+                        {profile.profile.logo}
+                    </label>
+                    <div className="bg-muted rounded-sm p-2">
+                        {profile.profile.logo ? (
+                            <img
+                                src={`https://invociemanager-production.up.railway.app/account${profile.profile.logo}`}
+                                alt="Logo"
+                                className="w-16 h-16 object-contain"
+                            />
+                        ) : (
+                            "-"
+                        )}
+                    </div>
                 </div>
             </div>
-
         </div>
     );
 }

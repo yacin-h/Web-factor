@@ -1,4 +1,6 @@
-import useBranding from "@/store/branding";
+import useAuth from "@/store/auth";
+import { generateBrandingColors } from "@/lib/brandingColors";
+
 import type { User } from "@/types/user";
 import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
 import { Instagram, MapPinHouse, PhoneCall } from "lucide-react";
@@ -8,26 +10,30 @@ type invoiceProps = {
     user: User | null;
 };
 export default function Classic({ invoice, user }: invoiceProps) {
-    const brandingLogo = useBranding((state) => state.logo);
-    const { colors } = useBranding();
+    const { profile } = useAuth();
+
+    const colors = profile
+        ? generateBrandingColors(profile.profile.hexcolor)
+        : null;
+    const brandingLogo = profile?.profile.logo;
     return (
         <div className="w-[210mm] min-h-[297mm] mx-auto bg-white dark:bg-muted  print:dark:bg-white p-10 flex flex-col print:page-break-inside-avoid">
             <header className="pb-8">
                 <div className="flex flex-col items-center">
                     {brandingLogo ? (
                         <img
-                            src={brandingLogo}
+                            src={`https://invociemanager-production.up.railway.app/account${profile.profile.logo}`}
                             alt="Logo"
-                            className="h-24 w-fit "
+                            className="w-36"
                         />
                     ) : (
                         <h2 className="text-3xl font-bold">
-                            {user?.store_name}
+                            {user?.profile.store_name}
                         </h2>
                     )}
                     {user && brandingLogo && (
                         <p className="ml-4 text-xl font-light">
-                            {user.store_name}
+                            {user.profile.store_name}
                         </p>
                     )}
                 </div>
@@ -136,19 +142,31 @@ export default function Classic({ invoice, user }: invoiceProps) {
                     </p>
                 </div>
             </section>
-            <footer className="mt-auto flex gap-5 justify-between">
-                <div className="flex gap-2">
-                    <Instagram />
-                    {user?.insta_link}
-                </div>
-                <div className="flex gap-2">
-                    <PhoneCall />
-                    {user?.phone_number}
-                </div>
-                <div className="flex gap-2">
-                    <MapPinHouse />
-                    {user?.store_address}
-                </div>
+            <footer className="mt-auto flex gap-5 justify-around">
+                {
+                        user?.profile.insta_link && (
+                            <div className="flex gap-2">
+                                <Instagram />
+                                {user?.profile.insta_link}
+                            </div>
+                        )
+                    }
+                    {
+                        user?.phone_number && (
+                            <div className="flex gap-2">
+                                <PhoneCall />
+                                {user?.phone_number}
+                            </div>
+                        )
+                    }
+                    {
+                        user?.profile.store_address && (
+                            <div className="flex gap-2">
+                                <MapPinHouse />
+                                {user?.profile.store_address}
+                            </div>
+                        )
+                    }
             </footer>
         </div>
     );

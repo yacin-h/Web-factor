@@ -2,16 +2,28 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import type { Token } from "@/types/token";
 import type { AuthContextType } from "@/types/authContext";
+import type { User } from "@/types/user";
 
+const BASE_URL = "https://invociemanager-production.up.railway.app/account";
 const useAuth = create<AuthContextType>()(
     persist(
         (set) => ({
             token: null,
+            profile: null,
             logIn: (token: Token) => set({ token }),
-            logOut: () => set({ token: null }),
+            logOut: () => set({ token: null, profile: null }),
+            setProfile: (profile: User) => {
+                const updatedProfile = {
+                    ...profile,
+                    logo: profile.profile.logo
+                        ? `${BASE_URL}${profile.profile.logo}`
+                        : null,
+                };
+                set({ profile: updatedProfile });
+            },
         }),
         {
-            name: "token", // Key for localStorage
+            name: "auth", // Key for localStorage
         }
     )
 );

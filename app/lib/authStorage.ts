@@ -1,7 +1,7 @@
 import type { Token } from "@/types/token";
 
 export function getStoredToken(): Token | null {
-    const saved = localStorage.getItem("token");
+    const saved = localStorage.getItem("auth");
     if (!saved) return null;
 
     try {
