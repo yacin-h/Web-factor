@@ -23,7 +23,10 @@ export default function Modern({ invoice, user }: invoiceProps) {
                         <span className="font-semibold">شماره فاکتور:</span>
                         <span
                             className="p-1 text-center print:bg-gray-200 print:text-black"
-                            style={{ backgroundColor: colors?.hover }}
+                            style={{
+                                backgroundColor: colors?.hover,
+                                color: colors?.text,
+                            }}
                         >
                             {invoice.invoiceNumber}
                         </span>
@@ -98,30 +101,24 @@ export default function Modern({ invoice, user }: invoiceProps) {
                     </p>
                 </div>
                 <footer className="mt-auto flex gap-5 justify-around">
-                    {
-                        user?.profile.insta_link && (
-                            <div className="flex gap-2">
-                                <Instagram />
-                                {user?.profile.insta_link}
-                            </div>
-                        )
-                    }
-                    {
-                        user?.phone_number && (
-                            <div className="flex gap-2">
-                                <PhoneCall />
-                                {user?.phone_number}
-                            </div>
-                        )
-                    }
-                    {
-                        user?.profile.store_address && (
-                            <div className="flex gap-2">
-                                <MapPinHouse />
-                                {user?.profile.store_address}
-                            </div>
-                        )
-                    }
+                    {user?.profile.insta_link && (
+                        <div className="flex gap-2">
+                            <Instagram />
+                            {user?.profile.insta_link}
+                        </div>
+                    )}
+                    {user?.phone_number && (
+                        <div className="flex gap-2">
+                            <PhoneCall />
+                            {user?.phone_number}
+                        </div>
+                    )}
+                    {user?.profile.store_address && (
+                        <div className="flex gap-2">
+                            <MapPinHouse />
+                            {user?.profile.store_address}
+                        </div>
+                    )}
                 </footer>
             </section>
 
@@ -137,10 +134,10 @@ export default function Modern({ invoice, user }: invoiceProps) {
                     <div className="flex flex-col items-center">
                         {brandingLogo ? (
                             <img
-                            src={`https://invociemanager-production.up.railway.app/account${profile.profile.logo}`}
-                            alt="Logo"
-                            className="w-36"
-                        />
+                                src={`https://invociemanager-production.up.railway.app/account${profile.profile.logo}`}
+                                alt="Logo"
+                                className="w-36"
+                            />
                         ) : (
                             <h2 className="text-3xl font-bold">
                                 {user?.profile.store_name}
@@ -163,7 +160,7 @@ export default function Modern({ invoice, user }: invoiceProps) {
                             <span className="font-semibold">آدرس: </span>
                             <span>{invoice.customer.address}</span>
                         </p>
-                        
+
                         <p>
                             <span className="font-semibold">تلفن: </span>
                             <span>{invoice.customer.phone}</span>
