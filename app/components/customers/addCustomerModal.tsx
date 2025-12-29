@@ -41,17 +41,25 @@ export default function AddCustomerModal({
             reset();
             onAdded?.();
         } catch (err: any) {
-            console.error(err);
+            console.log("BACKEND ERROR 👉", err);
 
+            // ارورهای فیلدی
+            if (typeof err === "object") {
+                Object.entries(err).forEach(([field, messages]) => {
+                    if (Array.isArray(messages)) {
+                        setError(field as keyof CustomerCreate, {
+                            type: "server",
+                            message: messages[0],
+                        });
+                    }
+                });
+            }
+
+            // ارور عمومی
             if (err?.non_field_errors?.length) {
                 setError("root", {
-                    type: "custom",
-                    message: "نام یا شماره مشتری نباید تکراری باشد   ",
-                });
-            } else {
-                setError("root", {
-                    type: "custom",
-                    message: "خطای ناشناخته‌ای رخ داد",
+                    type: "server",
+                    message: err.non_field_errors[0],
                 });
             }
         } finally {
@@ -89,11 +97,9 @@ export default function AddCustomerModal({
                     </p>
 
                     <Input
-                        type="text"
+                        type="email"
                         placeholder="ایمیل مشتری"
-                        {...register("customer_email", {
-                        })}
-                        typeof="email"
+                        {...register("customer_email", {})}
                     />
                     <p className="text-red-500 text-sm">
                         {errors.customer_email?.message}
@@ -111,7 +117,7 @@ export default function AddCustomerModal({
                     </p>
                     <Input
                         placeholder=" آدرس مشتری"
-                        {...register("customer_address")}
+                        {...register("customer_address", {})}
                     />
                     <p className="text-red-500 text-sm">
                         {errors.customer_address?.message}
