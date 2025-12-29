@@ -46,7 +46,7 @@ export default function AddCustomerModal({
             if (err?.non_field_errors?.length) {
                 setError("root", {
                     type: "custom",
-                    message: "نام کالا نباید تکراری باشد",
+                    message: "نام یا شماره مشتری نباید تکراری باشد   ",
                 });
             } else {
                 setError("root", {
