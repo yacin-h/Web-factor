@@ -8,6 +8,6 @@ export type Customer = {
 export type CustomerCreate = {
     customer_name: string;
     customer_phone_number: string;
-    customer_email: string;
-    customer_address: string;
+    customer_email?: string;
+    customer_address?: string;
 };
