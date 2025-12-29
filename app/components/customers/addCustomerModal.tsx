@@ -43,7 +43,6 @@ export default function AddCustomerModal({
         } catch (err: any) {
             console.log("BACKEND ERROR 👉", err);
 
-            // ارورهای فیلدی
             if (typeof err === "object") {
                 Object.entries(err).forEach(([field, messages]) => {
                     if (Array.isArray(messages)) {
@@ -55,7 +54,6 @@ export default function AddCustomerModal({
                 });
             }
 
-            // ارور عمومی
             if (err?.non_field_errors?.length) {
                 setError("root", {
                     type: "server",
