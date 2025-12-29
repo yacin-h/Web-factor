@@ -34,11 +34,13 @@ import {
 import type { Customer } from "@/types/customer";
 import { set } from "zod";
 import { Combobox } from "../ui/comboBox";
+import { useNavigate } from "react-router";
 
 export default function NewInvoiceForm() {
     const [products, setProducts] = useState<Product[]>([]);
     const [customers, setCustomers] = useState<Customer[]>([]);
 
+    const Navigate = useNavigate();
     const {
         control,
         register,
@@ -107,6 +109,7 @@ export default function NewInvoiceForm() {
                 body: JSON.stringify(payload),
             });
             console.log(response);
+            Navigate(`/invoices/${response.id}`);
             alert("Invoice created successfully!");
         } catch (error) {
             console.error("error:", error);
