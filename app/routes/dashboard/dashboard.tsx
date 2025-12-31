@@ -2,33 +2,51 @@ import { useEffect, useState } from "react";
 import useAuth from "@/store/auth";
 import { apiFetch } from "@/lib/api";
 import type { User } from "@/types/user";
+import type { DashboardData } from "@/types/dashboardData";
 
 export default function Dashboard() {
     const { setProfile } = useAuth();
     const [loading, setLoading] = useState(true);
     const [profile, setProfileState] = useState<User | null>(null);
 
+    const [dashboardData, setDashboardData] = useState<DashboardData>({
+        total_revenue: 0,
+        outstanding_amount: 0,
+        pending_count: 0,
+        trends: [
+            {
+                month: "2025-12-31T06:50:15.300Z",
+                total: 0,
+            },
+        ],
+        top_products: [
+            {
+                product__name: "string",
+                revenue: 0,
+            },
+        ],
+    });
+
     useEffect(() => {
-        const fetchProfile = async () => {
+        const init = async () => {
             try {
-                const data = await apiFetch("/account/profile/");
-                // ذخیره توی state محلی
-                setProfileState(data);
-                // اضافه کردن لینک کامل لوگو و ذخیره در context
-                setProfile({
-                    ...data,
-                    logo: data.profile.logo
-                        ? `https://invociemanager-production.up.railway.app/account${data.profile.logo}`
-                        : null,
-                });
+                const [profileData, dashboardData] = await Promise.all([
+                    apiFetch<User>("/account/profile/"),
+                    apiFetch<DashboardData>("/user/dashboard/"),
+                ]);
+
+                setProfileState(profileData);
+                setDashboardData(dashboardData);
+
+                setProfile(profileData);
             } catch (err) {
-                console.error("error fetching profile", err);
+                console.error("error fetching dashboard data", err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProfile();
+        init();
     }, [setProfile]);
 
     if (loading) return <p>در حال بارگذاری...</p>;
@@ -36,20 +54,48 @@ export default function Dashboard() {
 
     return (
         <div className="text-right">
-            <h1 className="font-semibold text-4xl">اطلاعات کلی</h1>
-            <p>در این قسمت اطلاعات آماری اضافه می‌شود.</p>
-            <p>
-                Lorem, ipsum dolor sit amet consectetur adipisicing elit. Optio
-                tempore eum eaque, sit est blanditiis tenetur placeat? Eaque
-                molestias repudiandae debitis quae placeat! Molestias atque
-                repellendus magni ipsa sapiente debitis?
-            </p>
-            <div className="space-y-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="w-full h-20  bg-muted" />
-                <div className="w-full h-20  bg-primary" />
-                <div className="w-full h-20  bg-primary-foreground" />
-                <div className="w-full h-20  bg-secondary-foreground" />
-                <div className="w-full h-20  bg-secondary" />
+            <h1 className="text-2xl font-bold mb-4">داشبورد</h1>
+            <p className="mb-2">خوش آمدید، {profile.first_name}!</p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="bg-muted p-4 rounded-lg">
+                    <h2 className="font-semibold">درآمد کل</h2>
+                    <p>{dashboardData.total_revenue}</p>
+                </div>
+                <div className="bg-muted p-4 rounded-lg">
+                    <h2 className="font-semibold">outstanding_amount</h2>
+                    <p>{dashboardData.outstanding_amount}</p>
+                </div>
+                <div className="bg-muted p-4 rounded-lg">
+                    <h2 className="font-semibold">فاکتورهای در انتظار</h2>
+                    <p>{dashboardData.pending_count}</p>
+                </div>
+                {dashboardData.trends.length > 0 && (
+                    <div>
+                        <div className="bg-muted p-4 rounded-lg md:col-span-2">
+                            <h2 className="font-semibold mb-2">روندها</h2>
+                        </div>
+                        {dashboardData.trends.map((trend) => (
+                            <div key={trend.month}>
+                                <p>{trend.month}</p>
+                                <p>{trend.total}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {dashboardData.top_products.length > 0 && (
+                    <div>
+                        <div className="bg-muted p-4 rounded-lg md:col-span-1">
+                            <h2 className="font-semibold mb-2">محصولات برتر</h2>
+                        </div>
+                        {dashboardData.top_products.map((product) => (
+                            <div key={product.product__name}>
+                                <p>{product.product__name}</p>
+                                <p>{product.revenue}</p>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
