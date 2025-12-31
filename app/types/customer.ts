@@ -11,3 +11,10 @@ export type CustomerCreate = {
     email?: string;
     address?: string;
 };
+
+export type PaginatedCustomerList = {
+    count: number;
+    next?: string | null;
+    previous?: string | null;
+    results: Customer[];
+};
