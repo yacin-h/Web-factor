@@ -3,6 +3,7 @@ import EditProfileModal from "./editProfileModal";
 import type { User } from "@/types/user";
 import { apiFetch } from "@/lib/api";
 import useAuth from "@/store/auth";
+import LoadingSpinner from "../ui/loadingSpinner";
 
 export default function ProfileCard() {
     const { setProfile } = useAuth();
@@ -13,7 +14,7 @@ export default function ProfileCard() {
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const data = await apiFetch("/account/profile/");
+                const data = await apiFetch<User>("/account/profile/");
                 setProfileState(data);
                 setProfile(data);
             } catch (err) {
@@ -26,7 +27,7 @@ export default function ProfileCard() {
         fetchProfile();
     }, [reload, setProfile]);
 
-    if (loading) return <p>در حال بارگذاری...</p>;
+    if (loading) return <LoadingSpinner />;
     if (!profile) return <p>پروفایل پیدا نشد</p>;
 
     return (
