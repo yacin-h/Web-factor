@@ -21,6 +21,7 @@ import {
     PaginationPrevious,
 } from "../ui/pagination";
 import { Link } from "react-router";
+import { invoiceStatusFa, paymentModeFa } from "@/constants/invoice";
 
 export default function InvoiceTable() {
     const [loading, setLoading] = useState(true);
@@ -85,10 +86,10 @@ export default function InvoiceTable() {
                                         {invoice.customer_address || "-"}
                                     </TableCell>
                                     <TableCell>
-                                        {invoice.status || "-"}
+                                        {invoice.status ? invoiceStatusFa[invoice.status] : "-"}
                                     </TableCell>
                                     <TableCell>
-                                        {invoice.payment_mode || "-"}
+                                        {invoice.payment_mode ? paymentModeFa[invoice.payment_mode] : "-"}
                                     </TableCell>
                                     <TableCell className="flex items-center gap-2">
                                         <span>{invoice.total_amount}</span>
