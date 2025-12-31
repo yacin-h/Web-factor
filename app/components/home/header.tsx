@@ -1,5 +1,6 @@
 import { Link, NavLink } from "react-router";
 import { Button } from "@/components/ui/button";
+import ThemeToggler from "./themeToggler";
 
 export default function Header() {
     const scrollToAbout = () => {
@@ -11,7 +12,8 @@ export default function Header() {
             <Link to={"/"}>
                 <img className="size-16" src="logo.png" alt="invoice logo" />
             </Link>
-            <div>
+            <div className="flex items-center gap-3">
+                <ThemeToggler/>
                 <Button
                 
                     onClick={scrollToAbout}
@@ -20,7 +22,7 @@ export default function Header() {
                     درباره فاکتور ساز
                 </Button>
                 <NavLink to={"/dashboard"} >
-                    <Button className="mr-4">ورود/عضویت</Button>
+                    <Button>ورود/عضویت</Button>
                 </NavLink>
             </div>
         </header>
