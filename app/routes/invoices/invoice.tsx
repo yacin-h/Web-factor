@@ -16,13 +16,11 @@ import {
 import { apiFetch } from "@/lib/api";
 import { buildInvoiceViewModel } from "@/lib/invoiceViewModel";
 import type { Invoice } from "@/types/invoice";
-import type { PaginatedProductList, Product } from "@/types/product";
 import type { User } from "@/types/user";
 
 export default function Invoice() {
     const { id } = useParams<{ id: string }>();
     const [invoice, setInvoice] = useState<Invoice | null>(null);
-    const [products, setProducts] = useState<Product[]>([]);
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -35,12 +33,9 @@ export default function Invoice() {
             setError(null);
             try {
                 const result = await apiFetch<Invoice>(`/user/invoices/${id}/`);
-                const productsResult = await apiFetch<PaginatedProductList>(
-                    `/user/products/?page=1&page_size=10000`
-                );
+                
 
                 setInvoice(result);
-                setProducts(productsResult.results);
             } catch (err: any) {
                 console.error(err);
                 setError("Failed to load invoice");

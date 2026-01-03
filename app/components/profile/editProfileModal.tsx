@@ -10,7 +10,6 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
-import { apiFetch } from "@/lib/api";
 import { getStoredToken } from "@/lib/authStorage";
 import type { User, UserUpdate } from "@/types/user";
 
@@ -28,7 +27,6 @@ export default function EditProfileModal({
     // max size of logo file
     const MAX_SIZE = 25 * 1024; // 25KB
     const [loading, setLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
     const [open, setOpen] = useState(false);
     const [logoFile, setLogoFile] = useState<File | null>(null);
 
@@ -64,13 +62,12 @@ export default function EditProfileModal({
     const onSubmit = async (data: UserUpdate) => {
         try {
             setLoading(true);
-            setSuccess(false);
             const formData = new FormData();
             if (data.first_name !== undefined)
                 formData.append("first_name", data.first_name);
             if (data.last_name !== undefined)
                 formData.append("last_name", data.last_name);
-            
+
             if (data.store_name != null)
                 formData.append("store_name", data.store_name);
             if (data.store_description != null)
@@ -103,10 +100,8 @@ export default function EditProfileModal({
                 const errorData = await response.json();
                 throw errorData;
             }
-            setSuccess(true);
             toast.success("پروفایل با موفقیت ویرایش شد!");
-            
-            
+
             setReload((prev) => prev + 1);
             setOpen(false);
         } catch (err: any) {
@@ -135,7 +130,7 @@ export default function EditProfileModal({
                 <DialogTrigger asChild onClick={() => setOpen(true)}>
                     <Button>ویرایش پروفایل</Button>
                 </DialogTrigger>
-                <DialogContent >
+                <DialogContent>
                     <DialogHeader>
                         <DialogTitle>ویرایش پروفایل</DialogTitle>
                         <DialogDescription>
@@ -191,9 +186,7 @@ export default function EditProfileModal({
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="store_name">
-                                نام فروشگاه
-                            </Label>
+                            <Label htmlFor="store_name">نام فروشگاه</Label>
                             <Input
                                 type="text"
                                 id="store_name"
@@ -225,9 +218,7 @@ export default function EditProfileModal({
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="store_address">
-                                آدرس فروشگاه
-                            </Label>
+                            <Label htmlFor="store_address">آدرس فروشگاه</Label>
                             <Input
                                 type="text"
                                 id="store_address"
@@ -245,9 +236,7 @@ export default function EditProfileModal({
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="insta_link">
-                                لینک اینستاگرام
-                            </Label>
+                            <Label htmlFor="insta_link">لینک اینستاگرام</Label>
                             <Input
                                 type="text"
                                 id="insta_link"
@@ -288,8 +277,9 @@ export default function EditProfileModal({
                                     if (!file) return;
 
                                     if (file.size > MAX_SIZE) {
-                                        
-                                        toast.success("حجم فایل باید کمتر از 25 باشد");
+                                        toast.success(
+                                            "حجم فایل باید کمتر از 25 باشد"
+                                        );
                                         e.target.value = ""; // ریست input
                                         setLogoFile(null);
                                         return;

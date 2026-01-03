@@ -1,7 +1,6 @@
-import { ChevronDown, Moon, Sun } from "lucide-react";
+import { Moon, Sun } from "lucide-react";
 
 import { useTheme } from "@/components/themeProvider";
-import { Button } from "@/components/ui/button";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -38,7 +37,6 @@ export function ModeToggle() {
                     </DropdownMenuItem>
                 </DropdownMenuContent>
             </DropdownMenu>
-           
         </>
     );
 }

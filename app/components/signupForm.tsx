@@ -31,7 +31,7 @@ export function SignupForm({
 }: React.ComponentProps<"div">) {
     const { register, handleSubmit, setError, formState } =
         useForm<PhoneForm>();
-    const { errors, isSubmitting } = formState as any;
+    const { errors} = formState as any;
 
     const logIn = useAuth((state) => state.logIn);
     const navigate = useNavigate();

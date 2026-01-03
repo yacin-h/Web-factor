@@ -5,7 +5,6 @@ import {
     Home,
     LogOut,
     Package,
-    Palette,
     ScrollText,
     Settings,
     User2,
@@ -28,7 +27,6 @@ import {
 import useAuth from "@/store/auth";
 
 import { ModeToggle } from "./modeToggle";
-import { Button } from "./ui/button";
 import {
     Collapsible,
     CollapsibleContent,

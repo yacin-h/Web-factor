@@ -3,9 +3,8 @@ import Footer from "@/components/home/footer";
 import Header from "@/components/home/header";
 import Hero from "~/components/home/hero";
 
-import type { Route } from "./+types/home";
 
-export function meta({}: Route.MetaArgs) {
+export function meta() {
     return [
         { title: "Invoice web app" },
         { name: "description", content: "Welcome to Invoice maker!" },
