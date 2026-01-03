@@ -20,6 +20,7 @@ export default [
 
             route("invoices", "routes/invoices/invoices.tsx"),
             route("invoices/new", "routes/invoices/newInvoice.tsx"),
+            route("invoices/:id/edit", "routes/invoices/invoice-form.tsx"),
             route("invoices/:id", "routes/invoices/invoice.tsx"),
 
             route("profile", "routes/profile.tsx"),
