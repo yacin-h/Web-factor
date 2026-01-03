@@ -19,14 +19,20 @@ export default [
             route("products", "routes/products.tsx"),
 
             route("invoices", "routes/invoices/invoices.tsx"),
-            route("invoices/new", "routes/invoices/newInvoice.tsx"),
-            route("invoices/:id/edit", "routes/invoices/newInvoice.tsx"),
+
+            route("invoices/new", "routes/invoices/newInvoice.tsx", {
+                id: "invoice-new",
+            }),
+
+            route("invoices/:id/edit", "routes/invoices/newInvoice.tsx", {
+                id: "invoice-edit",
+            }),
 
             route("invoices/:id", "routes/invoices/invoice.tsx"),
 
             route("profile", "routes/profile.tsx"),
 
-            route("customers","routes/customers.tsx")
+            route("customers", "routes/customers.tsx"),
         ]),
     ]),
 ] satisfies RouteConfig;
