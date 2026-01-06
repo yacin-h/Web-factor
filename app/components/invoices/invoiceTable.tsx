@@ -85,8 +85,12 @@ export default function InvoiceTable({ searchQuery }: { searchQuery: string }) {
         }
         try {
             await apiFetch(`/user/invoices/${id}/paid/`, { method: "POST" });
-            setInvoices(invoices.filter((inv: Invoice) => inv.id== id));
-            toast.success("فاکتور با موفقیت به پرداخت شده تغییر یافت")
+            setInvoices(
+                invoices.map((inv: Invoice) =>
+                    inv.id === id ? { ...inv, status: "paid" } : inv
+                )
+            );
+            toast.success("فاکتور با موفقیت به پرداخت شده تغییر یافت");
         } catch (err) {
             console.log(err);
             toast.error("خطا در تغییر وضعیت فاکتور");
