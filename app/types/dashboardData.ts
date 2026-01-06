@@ -1,12 +1,13 @@
 type Trends = {
     month: string;
-  total: number;
-}
+    total: number;
+};
 type TopProducts = {
     product__name: string;
-    revenue: number;
-}
+    quantity: number;
+};
 export type DashboardData = {
+    total_invoice: number;
     total_revenue: number;
     outstanding_amount: number;
     pending_count: number;
