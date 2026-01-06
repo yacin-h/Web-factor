@@ -4,7 +4,6 @@ import num2persian from "num2persian";
 import { invoiceStatusFa, paymentModeFa } from "@/constants/invoice";
 import type { Invoice } from "@/types/invoice";
 
-import { toJalali } from "./jalali";
 
 type InvoiceViewModelProps = {
     invoice: Invoice;
@@ -12,7 +11,7 @@ type InvoiceViewModelProps = {
 export function buildInvoiceViewModel({ invoice }: InvoiceViewModelProps) {
     return {
         invoiceNumber: invoice.invoice_number,
-        createdAt: toJalali(invoice.created),
+        createdAt: invoice.created,
         customer: {
             name: invoice.customer_name,
             address: invoice.customer_address,
