@@ -1,4 +1,10 @@
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import {
+    Line,
+    LineChart,
+    CartesianGrid,
+    XAxis,
+    YAxis,
+} from "recharts";
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -13,6 +19,7 @@ const chartConfig = {
         label: "فروش کل",
     },
 } satisfies ChartConfig;
+
 export function TrendChart({
     chartData,
 }: {
@@ -25,13 +32,16 @@ export function TrendChart({
                     config={chartConfig}
                     className="min-h-[250px] w-full"
                 >
-                    <BarChart accessibilityLayer data={chartData}>
+                    <LineChart data={chartData}>
                         <CartesianGrid vertical={false} />
 
                         <XAxis
                             dataKey="date"
-                            tickFormatter={(value) => value.slice(0, 7)}
+                            tickFormatter={(value) => value.slice(5)} 
                         />
+
+                        <YAxis />
+
                         <ChartTooltip
                             content={
                                 <ChartTooltipContent
@@ -41,17 +51,21 @@ export function TrendChart({
                                 />
                             }
                         />
-                        <Bar
-                            barSize={24}
-                            name={"فروش کل: "}
+
+                        <Line
+                            type="monotone"
                             dataKey="total"
-                            fill="var(--color-primary)"
-                            radius={7}
+                            name="فروش کل"
+                            stroke="var(--color-primary)"
+                            strokeWidth={3}
+                            dot={{ r: 4 }}
+                            activeDot={{ r: 6 }}
                         />
-                    </BarChart>
+                    </LineChart>
                 </ChartContainer>
+
                 <p className="text-center mt-2 text-sm text-muted-foreground">
-                    فروش ماهیانه
+                    ترند فروش هفتگی
                 </p>
             </CardContent>
         </Card>
