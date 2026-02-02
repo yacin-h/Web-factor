@@ -1,6 +1,6 @@
 import { getStoredToken } from "./authStorage";
 
-const API_BASE_URL = "https://yasinhossini94.pythonanywhere.com/api/schema/swagger-ui";
+const API_BASE_URL = "https://yasinhossini94.pythonanywhere.com";
 
 async function refreshToken() {
     const token = getStoredToken();
