@@ -53,10 +53,10 @@
     --card-foreground: #1d1f20;
     --popover: #ffffff;
     --popover-foreground: #1d1f20;
-    --primary: #257f8d;
+    --primary: #2a8e9e;
     --primary-foreground: #ffffff;
-    --secondary: #b0dae0;
-    --secondary-foreground: #1d1f20;
+    --secondary: #e9f5f3;
+    --secondary-foreground: #127a7e;
     --muted: #d9e6e9;
     --muted-foreground: #5a6d72;
     --accent: #023347;
@@ -108,37 +108,37 @@
 }
 
 .dark {
-    --background: #1b1b1b;
+    --background: #0f1416;
     --foreground: #e9f2f4;
-    --card: #023347;
+    --card: #151c1f;
     --card-foreground: #e9f2f4;
-    --popover: #023347;
+    --popover: #182126;
     --popover-foreground: #e9f2f4;
     --primary: #2a8e9e;
-    --primary-foreground: #1d1f20;
-    --secondary: #075d6d;
-    --secondary-foreground: #e9f2f4;
-    --muted: #0f2531;
-    --muted-foreground: #8a9ba0;
-    --accent: #e9f2f4;
-    --accent-foreground: #023347;
+    --primary-foreground: #e9f2f4;
+    --secondary: #1f737c;
+    --secondary-foreground: #0f1416;
+    --muted: #1e2a2e;
+    --muted-foreground: #9fb3b8;
+    --accent: #0b4a63;
+    --accent-foreground: #e9f2f4;
     --destructive: #e57373;
-    --destructive-foreground: #1d1f20;
-    --border: #273e49;
-    --input: #1f333b;
+    --destructive-foreground: #0f1416;
+    --border: #26343a;
+    --input: #1e2a2e;
     --ring: #2a8e9e;
-    --chart-1: #2a8e9e;
-    --chart-2: #e9f2f4;
-    --chart-3: #77b8a1;
-    --chart-4: #f0c88d;
-    --chart-5: #a0bbe3;
-    --sidebar: #0a131a;
+    --chart-1: #4cb7c5;
+    --chart-2: #0b4a63;
+    --chart-3: #8fd3b8;
+    --chart-4: #f3d7a5;
+    --chart-5: #b6cdf0;
+    --sidebar: #0f1a1e;
     --sidebar-foreground: #e9f2f4;
     --sidebar-primary: #2a8e9e;
-    --sidebar-primary-foreground: #1d1f20;
-    --sidebar-accent: #e9f2f4;
-    --sidebar-accent-foreground: #023347;
-    --sidebar-border: #1f333b;
+    --sidebar-primary-foreground: #0f1416;
+    --sidebar-accent: #0b4a63;
+    --sidebar-accent-foreground: #e9f2f4;
+    --sidebar-border: #26343a;
     --sidebar-ring: #2a8e9e;
     --font-sans: Geist, sans-serif;
     --font-serif: "Lora", Georgia, serif;
@@ -167,6 +167,7 @@
 }
 
 @theme inline {
+    --font-main: "vazir";
     --color-background: var(--background);
     --color-foreground: var(--foreground);
     --color-card: var(--card);

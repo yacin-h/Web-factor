@@ -1,10 +1,4 @@
-import {
-    Line,
-    LineChart,
-    CartesianGrid,
-    XAxis,
-    YAxis,
-} from "recharts";
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -30,14 +24,14 @@ export function TrendChart({
             <CardContent>
                 <ChartContainer
                     config={chartConfig}
-                    className="min-h-[250px] w-full"
+                    className="min-h-62.5 w-full"
                 >
                     <LineChart data={chartData}>
                         <CartesianGrid vertical={false} />
 
                         <XAxis
                             dataKey="date"
-                            tickFormatter={(value) => value.slice(5)} 
+                            tickFormatter={(value) => value.slice(5)}
                         />
 
                         <YAxis />

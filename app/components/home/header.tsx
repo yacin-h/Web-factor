@@ -15,15 +15,13 @@ export default function Header() {
                 <img className="size-16" src="logo.png" alt="invoice logo" />
             </Link>
             <div className="flex items-center gap-3">
-                <ThemeToggler/>
-                <Button
-                
-                    onClick={scrollToAbout}
-                    variant={"outline"}
-                >
-                    درباره فاکتور ساز
-                </Button>
-                <NavLink to={"/dashboard"} >
+                <ThemeToggler />
+                <Link to={"/demo"}>
+                    <Button onClick={scrollToAbout} variant={"outline"}>
+                        دمو
+                    </Button>
+                </Link>
+                <NavLink to={"/dashboard"}>
                     <Button>ورود/عضویت</Button>
                 </NavLink>
             </div>
