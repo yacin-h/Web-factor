@@ -16,13 +16,13 @@ import {
 } from "@/components/ui/select";
 import { apiFetch } from "@/lib/api";
 import { buildInvoiceViewModel } from "@/lib/invoiceViewModel";
+import type { Invoice, PublicInvoice } from "@/types/invoice";
 import type { User } from "@/types/user";
 
-export type InvoiceViewModel = ReturnType<typeof buildInvoiceViewModel>;
 export default function PublicInvoice() {
     const { invoiceToken } = useParams<{ invoiceToken: string }>();
     const { theme, setTheme } = useTheme();
-    const [invoice, setInvoice] = useState<InvoiceViewModel | null>(null);
+    const [invoice, setInvoice] = useState<Invoice | null>(null);
     const [user, setUser] = useState<User | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -37,19 +37,48 @@ export default function PublicInvoice() {
             }
             try {
                 setLoading(true);
-                const response = await apiFetch<any>(
+                const response = await apiFetch<PublicInvoice>(
                     `/api/public/invoices/${invoiceToken}/`,
                 );
-                // API response has invoice_details nested
-                const invoiceData = response.invoice_details || response;
-                setInvoice(buildInvoiceViewModel({ invoice: invoiceData }));
-                // Extract user data if available
-                if (invoiceData.creator_details) {
-                    setUser(invoiceData.creator_details);
+
+                console.log("API Response:", response);
+
+                // Extract invoice from nested structure
+                const invoiceData = response.invoice;
+
+                console.log("Invoice Data:", invoiceData);
+
+                if (!invoiceData || !invoiceData.id) {
+                    console.error("Invoice data is invalid:", invoiceData);
+                    setError("فاکتور یافت نشد یا دادهٔ نامعتبر است");
+                    return;
                 }
-            } catch (err) {
-                console.log(err);
-                setError("خطا در بارگذاری فاکتور");
+
+                // Map PublicInvoice data to Invoice format for templates
+                setInvoice(invoiceData as any);
+
+                // Build user/creator object from seller info at top level
+                const sellerInfo: User = {
+                    id: response.id,
+                    phone_number: response.phone_number || "",
+                    first_name: response.creator?.split(" ")[0] || "",
+                    last_name: response.creator?.split(" ")[1] || "",
+                    date_joined: response.created_at,
+                    profile: {
+                        store_name: response.creator || "فروشگاه",
+                        store_description: response.store_description || "",
+                        store_address: response.store_address || "",
+                        insta_link: response.insta_link || "",
+                        hexcolor: response.hexcolor || "#000000",
+                        logo: response.logo || "",
+                    },
+                };
+
+                console.log("Seller Info:", sellerInfo);
+                setUser(sellerInfo);
+            } catch (err: any) {
+                console.error("Error fetching invoice:", err);
+                setError(err?.message || "خطا در بارگذاری فاکتور");
             } finally {
                 setLoading(false);
             }
@@ -67,8 +96,22 @@ export default function PublicInvoice() {
 
     if (error) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
-                <div className="text-red-500">{error}</div>
+            <div className="flex items-center justify-center min-h-screen flex-col gap-4">
+                <div className="text-red-500 text-center">
+                    <p className="font-semibold">{error}</p>
+                    <p className="text-sm text-gray-600 mt-2">
+                        توکن: {invoiceToken}
+                    </p>
+                </div>
+                <details className="bg-gray-100 p-4 rounded text-sm max-w-md">
+                    <summary className="cursor-pointer font-semibold">
+                        جزئیات خطا (مشاهدهٔ کنسول مرورگر)
+                    </summary>
+                    <p className="mt-2 text-gray-700">
+                        لطفاً کنسول مرورگر (F12) را باز کنید و خطاهای قرمز را
+                        بررسی کنید
+                    </p>
+                </details>
             </div>
         );
     }
@@ -80,6 +123,8 @@ export default function PublicInvoice() {
             </div>
         );
     }
+
+    const viewModel = buildInvoiceViewModel({ invoice });
 
     return (
         <>
@@ -109,11 +154,11 @@ export default function PublicInvoice() {
             </div>
             <div className="overflow-x-scroll bg-muted p-5 space-y-3 dark:bg-muted-foreground print:text-black print:bg-white print:p-0 print:m-0 print:overflow-visible">
                 {template === "classic" ? (
-                    <Classic invoice={invoice} user={user} />
+                    <Classic invoice={viewModel} user={user} />
                 ) : template === "modern" ? (
-                    <Modern invoice={invoice} user={user} />
+                    <Modern invoice={viewModel} user={user} />
                 ) : (
-                    <Minimal invoice={invoice} user={user} />
+                    <Minimal invoice={viewModel} user={user} />
                 )}
             </div>
         </>

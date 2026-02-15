@@ -1,6 +1,8 @@
 import { Instagram, MapPinHouse, PhoneCall } from "lucide-react";
 
 import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
+import { generateBrandingColors } from "@/lib/brandingColors";
+import { buildLogoUrl } from "@/lib/utils";
 import useAuth from "@/store/auth";
 import type { InvoiceViewModel } from "@/types/invoice";
 import type { User } from "@/types/user";
@@ -12,6 +14,9 @@ export default function Minimal({ invoice, user }: invoiceProps) {
     const { profile } = useAuth();
     // Use passed user prop for public invoices, fallback to authenticated user profile
     const displayUser = user || profile;
+    const colors = displayUser
+        ? generateBrandingColors(displayUser.profile.hexcolor)
+        : null;
     const brandingLogo = displayUser?.profile?.logo;
     return (
         <div className="w-[210mm] min-h-[297mm] mx-auto bg-white dark:bg-muted  print:dark:bg-white p-10 flex flex-col print:page-break-inside-avoid">
@@ -56,7 +61,7 @@ export default function Minimal({ invoice, user }: invoiceProps) {
                 <div className="flex flex-col items-center">
                     {brandingLogo ? (
                         <img
-                            src={`https://yasinhossini94.pythonanywhere.com/account${brandingLogo}`}
+                            src={buildLogoUrl(brandingLogo) || ""}
                             alt="Logo"
                             className="w-36 "
                         />
@@ -77,7 +82,14 @@ export default function Minimal({ invoice, user }: invoiceProps) {
                 <div className="mt-10">
                     <Table className="w-full border-collapse">
                         <TableHeader>
-                            <TableRow className="border-b border-gray-300">
+                            <TableRow
+                                style={{
+                                    backgroundColor: colors?.base,
+                                    color: colors?.text,
+                                    borderColor: colors?.border,
+                                }}
+                                className="border-b border-gray-300 print:bg-gray-200 print:text-black"
+                            >
                                 <th className=" p-2 text-right">نام محصول</th>
                                 <th className="p-2 text-right">تعداد</th>
                                 <th className="p-2 text-right">قیمت واحد</th>
@@ -115,7 +127,12 @@ export default function Minimal({ invoice, user }: invoiceProps) {
                         <span>{invoice.paymentText}</span>
                     </p>
 
-                    <div className="border-y-4 border-gray-600 w-fit py-2">
+                    <div
+                        style={{
+                            borderColor: colors?.base,
+                        }}
+                        className="border-y-4 border-gray-600 w-fit py-2 print:border-gray-600"
+                    >
                         <p>
                             <span className="font-semibold pl-2">مجموع:</span>
                             <span>{invoice.total}</span>

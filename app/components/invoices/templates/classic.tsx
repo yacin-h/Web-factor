@@ -2,6 +2,7 @@ import { Instagram, MapPinHouse, PhoneCall } from "lucide-react";
 
 import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
 import { generateBrandingColors } from "@/lib/brandingColors";
+import { buildLogoUrl } from "@/lib/utils";
 import useAuth from "@/store/auth";
 import type { InvoiceViewModel } from "@/types/invoice";
 import type { User } from "@/types/user";
@@ -11,29 +12,31 @@ type invoiceProps = {
 };
 export default function Classic({ invoice, user }: invoiceProps) {
     const { profile } = useAuth();
-    
-    const colors = profile
-        ? generateBrandingColors(profile.profile.hexcolor)
+
+    // Use passed user for public invoices, fallback to authenticated user profile
+    const displayUser = user || profile;
+    const colors = displayUser
+        ? generateBrandingColors(displayUser.profile.hexcolor)
         : null;
-    const brandingLogo = profile?.profile.logo;
+    const brandingLogo = displayUser?.profile.logo;
     return (
         <div className="w-[210mm] min-h-[297mm] mx-auto bg-white dark:bg-muted  print:dark:bg-white p-10 flex flex-col print:page-break-inside-avoid">
             <header className="pb-8">
                 <div className="flex flex-col items-center">
                     {brandingLogo ? (
                         <img
-                            src={`https://yasinhossini94.pythonanywhere.com/account${profile.profile.logo}`}
+                            src={buildLogoUrl(displayUser.profile.logo) || ""}
                             alt="Logo"
                             className="w-36"
                         />
                     ) : (
                         <h2 className="text-3xl font-bold">
-                            {user?.profile.store_name}
+                            {displayUser?.profile.store_name}
                         </h2>
                     )}
-                    {user && brandingLogo && (
+                    {displayUser && brandingLogo && (
                         <p className="ml-4 text-xl font-light">
-                            {user.profile.store_name}
+                            {displayUser.profile.store_name}
                         </p>
                     )}
                 </div>
@@ -143,30 +146,24 @@ export default function Classic({ invoice, user }: invoiceProps) {
                 </div>
             </section>
             <footer className="mt-auto flex gap-5 justify-around">
-                {
-                        user?.profile.insta_link && (
-                            <div className="flex gap-2">
-                                <Instagram />
-                                {user?.profile.insta_link}
-                            </div>
-                        )
-                    }
-                    {
-                        user?.phone_number && (
-                            <div className="flex gap-2">
-                                <PhoneCall />
-                                {user?.phone_number}
-                            </div>
-                        )
-                    }
-                    {
-                        user?.profile.store_address && (
-                            <div className="flex gap-2">
-                                <MapPinHouse />
-                                {user?.profile.store_address}
-                            </div>
-                        )
-                    }
+                {displayUser?.profile.insta_link && (
+                    <div className="flex gap-2">
+                        <Instagram />
+                        {displayUser.profile.insta_link}
+                    </div>
+                )}
+                {displayUser?.phone_number && (
+                    <div className="flex gap-2">
+                        <PhoneCall />
+                        {displayUser.phone_number}
+                    </div>
+                )}
+                {displayUser?.profile.store_address && (
+                    <div className="flex gap-2">
+                        <MapPinHouse />
+                        {displayUser.profile.store_address}
+                    </div>
+                )}
             </footer>
         </div>
     );
