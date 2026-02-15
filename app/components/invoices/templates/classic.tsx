@@ -41,22 +41,10 @@ export default function Classic({ invoice, user }: invoiceProps) {
                     )}
                 </div>
                 <p className="text-center text-2xl my-5 font-semibold">
-                    فاکتور
                 </p>
             </header>
             <section className="flex justify-between">
-                <div>
-                    <p>
-                        <span className="font-semibold">شماره فاکتور:</span>
-                        <span>{invoice.invoiceNumber}</span>
-                    </p>
-                    <p>
-                        <span className="font-semibold">تاریخ ایجاد: </span>
-                        <span>{invoice.createdAt}</span>
-                    </p>
-                </div>
-
-                <div className="text-left">
+                <div className="text-right w-5/12">
                     <h2 className="font-semibold text-lg">اطلاعات مشتری</h2>
                     <p>
                         <span className="font-semibold">نام : </span>
@@ -75,6 +63,18 @@ export default function Classic({ invoice, user }: invoiceProps) {
                         <span>{invoice.customer.phone}</span>
                     </p>
                 </div>
+                <div>
+                    <p>
+                        <span className="font-semibold">شماره فاکتور:</span>
+                        <span>{invoice.invoiceNumber}</span>
+                    </p>
+                    <p>
+                        <span className="font-semibold">تاریخ ایجاد: </span>
+                        <span>{invoice.createdAt}</span>
+                    </p>
+                </div>
+
+                
             </section>
             <section>
                 <div className="mt-10">

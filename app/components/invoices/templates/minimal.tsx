@@ -66,12 +66,12 @@ export default function Minimal({ invoice, user }: invoiceProps) {
                             className="w-36 "
                         />
                     ) : (
-                        <h2 className="text-3xl font-bold">
+                        <h2 className="text-3xl  font-bold">
                             {displayUser?.profile?.store_name || "فاکتور"}
                         </h2>
                     )}
                     {brandingLogo && displayUser?.profile?.store_name && (
-                        <p className="ml-4 text-xl font-light">
+                        <p className="ml-4 text-xl text-nowrap font-light">
                             {displayUser.profile.store_name}
                         </p>
                     )}
