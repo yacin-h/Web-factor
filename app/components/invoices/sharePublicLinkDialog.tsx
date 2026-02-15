@@ -32,7 +32,7 @@ export default function SharePublicLinkDialog({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button variant="outline" size="icon" title="اشتراک لینک عمومی">
+                <Button variant="outline" size="icon" title="اشتراک لینک عمومی" className="rounded-none">
                     <Share2 className="w-4 h-4" />
                 </Button>
             </DialogTrigger>

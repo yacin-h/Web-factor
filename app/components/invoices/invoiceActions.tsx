@@ -30,19 +30,20 @@ export default function InvoiceActions({
     handlePaid,
 }: InvoiceActionsProps) {
     return (
-        <ButtonGroup>
-            <Link to={`/invoices/${invoiceId}`}>
-                <Button variant="outline">
+        <>
+            <Link to={`/invoices/${invoiceId}`} >
+                <Button variant="outline" className="rounded-r-full">
                     <Eye className="w-4 h-4" />
                 </Button>
             </Link>
             <SharePublicLinkDialog invoiceToken={invoiceToken} />
             <DropdownMenu>
-                <DropdownMenuTrigger asChild>
+                <DropdownMenuTrigger  asChild >
                     <Button
                         variant="outline"
                         size="icon"
                         aria-label="More Options"
+                        className="rounded-l-full rounded-r-null "
                     >
                         <MoreHorizontalIcon />
                     </Button>
@@ -93,6 +94,6 @@ export default function InvoiceActions({
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
-        </ButtonGroup>
+            </>
     );
 }
