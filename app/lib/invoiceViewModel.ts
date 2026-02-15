@@ -2,6 +2,7 @@
 import num2persian from "num2persian";
 
 import { invoiceStatusFa, paymentModeFa } from "@/constants/invoice";
+import { formatPersianDateTime } from "@/lib/dateFormatter";
 import type { Invoice } from "@/types/invoice";
 
 type InvoiceViewModelProps = {
@@ -10,7 +11,7 @@ type InvoiceViewModelProps = {
 export function buildInvoiceViewModel({ invoice }: InvoiceViewModelProps) {
     return {
         invoiceNumber: invoice.invoice_number,
-        createdAt: invoice.created,
+        createdAt: formatPersianDateTime(invoice.created),
         customer: {
             name: invoice.customer_name,
             address: invoice.customer_address,
