@@ -9,7 +9,7 @@ import {
     User2,
     Users,
 } from "lucide-react";
-import { NavLink } from "react-router";
+import { NavLink, useLocation } from "react-router";
 
 import {
     Sidebar,
@@ -71,16 +71,22 @@ const userItems = [
 ];
 
 export function AppSidebar() {
+    const path = useLocation().pathname;
+    console.log(path);
     const logOut = useAuth((state: AuthContextType) => state.logOut);
     return (
-        <Sidebar className="print:hidden print:m-0"  dir="ltr" side="right">
+        <Sidebar className="print:hidden print:m-0" dir="ltr" side="right">
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {productItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton asChild className="flex-row-reverse sm:flex-row">
+                                    <SidebarMenuButton
+                                        asChild
+                                        className="flex-row-reverse sm:flex-row"
+                                        isActive={path === item.url}
+                                    >
                                         <NavLink to={item.url}>
                                             <item.icon />
                                             <span>{item.title}</span>
@@ -107,7 +113,11 @@ export function AppSidebar() {
                                     <SidebarMenu>
                                         {userItems.map((item) => (
                                             <SidebarMenuItem key={item.title}>
-                                                <SidebarMenuButton asChild className="flex-row-reverse sm:flex-row">
+                                                <SidebarMenuButton
+                                                    asChild
+                                                    className="flex-row-reverse sm:flex-row"
+                                                    isActive={path === item.url}
+                                                >
                                                     <NavLink to={item.url}>
                                                         <item.icon />
                                                         <span>
@@ -132,7 +142,7 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton className="flex-row-reverse sm:flex-row">
+                                <SidebarMenuButton className="flex-row-reverse sm:flex-row" >
                                     <User2 /> حساب کاربری
                                     <ChevronUp className="ml-auto" />
                                 </SidebarMenuButton>
