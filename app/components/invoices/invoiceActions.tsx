@@ -2,7 +2,6 @@ import { Check, Eye, MoreHorizontalIcon, SquarePen, Trash } from "lucide-react";
 import { Link } from "react-router";
 
 import { Button } from "../ui/button";
-import { ButtonGroup } from "../ui/button-group";
 import DeleteConfirm from "../ui/deleteConfirm";
 import {
     DropdownMenu,
@@ -31,14 +30,14 @@ export default function InvoiceActions({
 }: InvoiceActionsProps) {
     return (
         <>
-            <Link to={`/invoices/${invoiceId}`} >
+            <Link to={`/invoices/${invoiceId}`}>
                 <Button variant="outline" className="rounded-r-full">
                     <Eye className="w-4 h-4" />
                 </Button>
             </Link>
             <SharePublicLinkDialog invoiceToken={invoiceToken} />
             <DropdownMenu>
-                <DropdownMenuTrigger  asChild >
+                <DropdownMenuTrigger asChild>
                     <Button
                         variant="outline"
                         size="icon"
@@ -94,6 +93,6 @@ export default function InvoiceActions({
                     </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
-            </>
+        </>
     );
 }
