@@ -13,11 +13,11 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import Zoomable from "@/components/zoomable";
 import { apiFetch } from "@/lib/api";
 import { buildInvoiceViewModel } from "@/lib/invoiceViewModel";
 import type { Invoice } from "@/types/invoice";
 import type { User } from "@/types/user";
-
 export default function Invoice() {
     const { id } = useParams<{ id: string }>();
     const [invoice, setInvoice] = useState<Invoice | null>(null);
@@ -33,7 +33,6 @@ export default function Invoice() {
             setError(null);
             try {
                 const result = await apiFetch<Invoice>(`/user/invoices/${id}/`);
-                
 
                 setInvoice(result);
             } catch (err: any) {
@@ -77,14 +76,17 @@ export default function Invoice() {
                 </Select>
                 <Button onClick={() => window.print()}>چاپ</Button>
             </div>
-            <div className="overflow-x-scroll bg-muted p-5 space-y-3 dark:bg-muted-foreground print:text-black print:bg-white print:p-0 print:m-0 print:overflow-visible">
-                    {template === "classic" ? (
-                        <Classic invoice={viewModel} user={user} />
-                    ) : template === "modern" ? (
-                        <Modern invoice={viewModel} user={user} />
-                    ) : (
-                        <Minimal invoice={viewModel} user={user} />
-                    )}
+            <div className="overflow-x-scroll  overflow-hidden flex justify-center bg-muted p-5 space-y-3 dark:bg-muted-foreground print:text-black print:bg-white print:p-0 print:m-0 print:overflow-visible">
+                <Zoomable>
+
+                        {template === "classic" ? (
+                            <Classic invoice={viewModel} user={user}  />
+                        ) : template === "modern" ? (
+                            <Modern invoice={viewModel} user={user} />
+                        ) : (
+                            <Minimal invoice={viewModel} user={user} />
+                        )}
+                        </Zoomable>
             </div>
         </>
     );
