@@ -14,6 +14,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from "@/components/ui/select";
+import Zoomable from "@/components/zoomable";
 import { apiFetch } from "@/lib/api";
 import { buildInvoiceViewModel } from "@/lib/invoiceViewModel";
 import type { Invoice, PublicInvoice } from "@/types/invoice";
@@ -152,14 +153,26 @@ export default function PublicInvoice() {
                     <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
                 </Button>
             </div>
-            <div className="overflow-x-scroll bg-muted p-5 space-y-3 dark:bg-muted-foreground print:text-black print:bg-white print:p-0 print:m-0 print:overflow-visible">
-                {template === "classic" ? (
-                    <Classic invoice={viewModel} user={user} />
-                ) : template === "modern" ? (
-                    <Modern invoice={viewModel} user={user} />
-                ) : (
-                    <Minimal invoice={viewModel} user={user} />
-                )}
+            <div
+                className="
+                                    relative
+                                    w-full min-h-screen
+                                    overflow-hidden
+                                    bg-muted p-5
+                                    flex justify-center items-start
+                                    dark:bg-muted-foreground
+                                    print:text-black print:bg-white print:p-0 print:m-0 print:overflow-visible
+                                "
+            >
+                <Zoomable>
+                    {template === "classic" ? (
+                        <Classic invoice={viewModel} user={user} />
+                    ) : template === "modern" ? (
+                        <Modern invoice={viewModel} user={user} />
+                    ) : (
+                        <Minimal invoice={viewModel} user={user} />
+                    )}
+                </Zoomable>
             </div>
         </>
     );
