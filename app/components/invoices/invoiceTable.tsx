@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
@@ -10,10 +11,11 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { invoiceStatusFa, } from "@/constants/invoice";
+import { invoiceStatusFa } from "@/constants/invoice";
 import { apiFetch } from "@/lib/api";
 import type { Invoice, PaginatedInvoiceList } from "@/types/invoice";
 
+import { Badge } from "../ui/badge";
 import {
     Pagination,
     PaginationContent,
@@ -131,9 +133,30 @@ export default function InvoiceTable({ searchQuery }: { searchQuery: string }) {
                                         </div>
                                     </TableCell>
                                     <TableCell className="text-right">
-                                        {invoice.status
-                                            ? invoiceStatusFa[invoice.status]
-                                            : "-"}
+                                        {invoice.status ? (
+                                            <Badge
+                                                className={clsx(
+                                                    "bg-slate-600", // یا هر چی badge لازم داره
+                                                    {
+                                                        "bg-green-100 text-green-900":
+                                                            invoice.status ===
+                                                            "paid",
+                                                        "bg-yellow-100 text-yellow-900":
+                                                            invoice.status ===
+                                                            "pending",
+                                                        
+                                                    },
+                                                )}
+                                            >
+                                                {
+                                                    invoiceStatusFa[
+                                                        invoice.status
+                                                    ]
+                                                }
+                                            </Badge>
+                                        ) : (
+                                            "-"
+                                        )}
                                     </TableCell>
 
                                     <TableCell className="text-right whitespace-nowrap">
