@@ -140,6 +140,7 @@ export function LoginForm({
                                         تلفن
                                     </label>
                                     <Input
+                                    placeholder="09345677891"
                                         {...register("phone_number", {
                                             required: "شماره تلفن الزامی است",
                                             pattern: {

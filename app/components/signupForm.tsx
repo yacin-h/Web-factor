@@ -31,7 +31,7 @@ export function SignupForm({
 }: React.ComponentProps<"div">) {
     const { register, handleSubmit, setError, formState } =
         useForm<PhoneForm>();
-    const { errors} = formState as any;
+    const { errors } = formState as any;
 
     const logIn = useAuth((state) => state.logIn);
     const navigate = useNavigate();
@@ -136,6 +136,7 @@ export function SignupForm({
                                         تلفن
                                     </label>
                                     <Input
+                                        placeholder="09345677891"
                                         {...register("phone_number", {
                                             required: "شماره تلفن الزامی است",
                                             pattern: {
