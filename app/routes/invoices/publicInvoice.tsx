@@ -99,20 +99,12 @@ export default function PublicInvoice() {
         return (
             <div className="flex items-center justify-center min-h-screen flex-col gap-4">
                 <div className="text-red-500 text-center">
-                    <p className="font-semibold">{error}</p>
+                    <p className="font-semibold">فاکتوری با این لینک موجود نمی باشد</p>
                     <p className="text-sm text-gray-600 mt-2">
                         توکن: {invoiceToken}
                     </p>
                 </div>
-                <details className="bg-gray-100 p-4 rounded text-sm max-w-md">
-                    <summary className="cursor-pointer font-semibold">
-                        جزئیات خطا (مشاهدهٔ کنسول مرورگر)
-                    </summary>
-                    <p className="mt-2 text-gray-700">
-                        لطفاً کنسول مرورگر (F12) را باز کنید و خطاهای قرمز را
-                        بررسی کنید
-                    </p>
-                </details>
+                
             </div>
         );
     }
