@@ -1,4 +1,4 @@
-import {  z } from "zod";
+import { z } from "zod";
 
 // InvoiceItem schema
 const InvoiceItemSchema = z.object({
@@ -6,36 +6,39 @@ const InvoiceItemSchema = z.object({
         .number()
         .int()
         .positive({ message: "محصول معتبر انتخاب شود" }),
-    quantity: z.coerce
+
+    quantity: z
         .number()
         .int()
         .min(1, "تعداد باید حداقل 1 باشد")
         .max(9223372036854776000, "تعداد بسیار زیاد است"),
-    price: z.string(),
+
+    price: z.number().nonnegative("قیمت نمی‌تواند منفی باشد"),
 });
 
 // Main Invoice schema
 export const InvoiceSchema = z.object({
-    items: z
-        .array(InvoiceItemSchema)
-        .nonempty("حداقل یک آیتم الزامی است")
-        .min(1, "حداقل یک آیتم الزامی است"),
+    items: z.array(InvoiceItemSchema).nonempty("حداقل یک آیتم الزامی است"),
+
     id: z.number().int().positive().optional(),
+
     customer_name: z
         .string()
         .min(2, "نام مشتری باید حداقل 2 کاراکتر باشد")
         .max(255, "نام مشتری نمی‌تواند بیشتر از 255 کاراکتر باشد"),
-    customer_phone_number: z
-        .string(),
-    customer_email: z
-        .string(),
-    customer_address: z
-        .string(),
-    status: z.enum(["pending", "paid", "cancelled"], "وضعیت نامعتبر است"),
-    payment_mode: z.enum(
-        ["cash", "card", "bank", "others"],
-        "روش پرداخت نامعتبر است"
-    ),
+
+    customer_phone_number: z.string(),
+    customer_email: z.string(),
+    customer_address: z.string(),
+    descriptions: z
+        .string()
+        .max(500, "توضیحات نباید بیشتر از ۵۰۰ کاراکتر باشد")
+        .optional(),
+    status: z.enum(["pending", "paid", "cancelled"]),
+    payment_mode: z.enum(["cash", "card", "bank", "others"]),
+
+    added_value: z.number().min(0, "ارزش اضافه نمی‌تواند منفی باشد"),
+    discount: z.number().min(0, "تخفیف نمی‌تواند منفی باشد"),
 });
 
 export type InvoiceFormType = z.infer<typeof InvoiceSchema>;

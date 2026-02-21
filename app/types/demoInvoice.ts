@@ -29,6 +29,9 @@ export type DemoInvoice = {
     customer_phone_number: string;
     customer_email: string;
     customer_address: string;
+    descriptions?: string | null;
+    added_value: number;
+    discount: number;
     status: InvoiceStatus;
     payment_mode: PaymentMode;
     total_amount: number;
@@ -56,7 +59,10 @@ export type DemoInvoiceFormType = {
     customer_phone_number: string;
     customer_email: string;
     customer_address: string;
+    descriptions?: string | null;
     status: InvoiceStatus;
     payment_mode: PaymentMode;
     items: DemoInvoiceFormItem[];
+    added_value: number;
+    discount: number;
 };

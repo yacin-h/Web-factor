@@ -71,12 +71,15 @@ export default function DemoInvoiceForm() {
                 created: data.created,
                 customer_name: data.customer_name,
                 customer_address: data.customer_address,
+                descriptions: data.descriptions,
                 customer_email: data.customer_email,
                 customer_phone_number: data.customer_phone_number,
                 status: data.status,
                 payment_mode: data.payment_mode,
                 items: invoiceItems,
                 total_amount,
+                added_value: data.added_value ?? 0,
+                discount: data.discount ?? 0,
                 updated: new Date().toISOString(),
             });
 

@@ -67,15 +67,19 @@ export const generateInvoiceId = (): string => {
  * @returns Default form values
  */
 export const getDefaultInvoiceFormValues = (): DemoInvoiceFormType => ({
-    invoice_number: "",
-    created: getTodayDateString(),
-    customer_name: "",
-    customer_address: "",
-    customer_email: "",
-    customer_phone_number: "",
-    status: InvoiceStatus.PENDING,
-    payment_mode: PaymentMode.CASH,
-    items: [{ product_name: "", quantity: 1, price: 0 }],
+  invoice_number: "",
+  created: getTodayDateString(),
+  customer_name: "",
+  customer_address: "",
+  customer_email: "",
+  customer_phone_number: "",
+  descriptions: "",
+  status: InvoiceStatus.PENDING,
+  payment_mode: PaymentMode.CASH,
+  items: [{ product_name: "", quantity: 1, price: 0 }],
+  
+  added_value: 0, // ← اضافه شد
+  discount: 0,    // ← اضافه شد
 });
 
 /**

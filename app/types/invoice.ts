@@ -15,11 +15,15 @@ export type Invoice = {
     customer_phone_number?: string | null;
     customer_email?: string | null;
     customer_address?: string | null;
+    descriptions?: string | null;
     public_token: string;
     status?: "pending" | "paid" | "cancelled";
     payment_mode?: "cash" | "card" | "bank" | "others";
     created: string;
     updated: string;
+    added_value: number;
+    discount: number;
+
 };
 
 /**
@@ -45,11 +49,14 @@ export type PublicInvoice = {
         customer_phone_number?: string | null;
         customer_email?: string | null;
         customer_address?: string | null;
+        descriptions?: string | null;
         public_token: string;
         status?: "pending" | "paid" | "cancelled";
         payment_mode?: "cash" | "card" | "bank" | "others";
         created: string;
         updated: string;
+        added_value: number;
+        discount: number;
     };
     // Seller/Store Information
     id: number;
@@ -100,6 +107,9 @@ export type InvoiceViewModel = {
         total: number;
     }[];
     total: number;
+    added_value: number;
+    discount: number;
+    descriptions: string| null | undefined;
     totalText: string;
     statusText: string;
     paymentText: string;

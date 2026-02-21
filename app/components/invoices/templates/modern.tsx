@@ -83,29 +83,55 @@ export default function Modern({ invoice, user }: invoiceProps) {
                             ))}
                         </TableBody>
                     </Table>
-                    <p className="mt-5">
-                        <span className="font-semibold pl-2">مجموع:</span>
-                        <span>{invoice.total}</span>
-                    </p>
-                    <p>
-                        <span className="font-semibold pl-2">
+                    <div className="mt-5">
+                        {invoice.added_value > 0 && (
+                            <p>
+                                <span className="font-semibold pl-2">
+                                    مالیات بر ارزش افزوده (۱۰٪):
+                                </span>
+                                <span>{invoice.added_value}</span>
+                            </p>
+                        )}
+                        {invoice.added_value > 0 && (
+                            <p>
+                                <span className="font-semibold pl-2">
+                                    تخفیف:
+                                </span>
+                                <span>{invoice.discount}</span>
+                            </p>
+                        )}
+                        <p>
+                            <span className="font-semibold pl-2">مجموع:</span>
+                            <span>{invoice.total}</span>
+                        </p>
+                        <p>
+                            <span className="font-semibold pl-2">
+                                {" "}
+                                مجموع به حروف:
+                            </span>
+                            <span>{invoice.totalText}</span>
+                        </p>
+                        <p>
                             {" "}
-                            مجموع به حروف:
-                        </span>
-                        <span>{invoice.totalText}</span>
-                    </p>
-                    <p>
-                        {" "}
-                        <span className="font-semibold">وضعیت: </span>{" "}
-                        <span>{invoice.statusText}</span>{" "}
-                    </p>{" "}
-                    <p>
-                        {" "}
-                        <span className="font-semibold">روش پرداخت: </span>{" "}
-                        <span>{invoice.paymentText}</span>{" "}
-                    </p>
+                            <span className="font-semibold">وضعیت: </span>{" "}
+                            <span>{invoice.statusText}</span>{" "}
+                        </p>{" "}
+                        <p>
+                            {" "}
+                            <span className="font-semibold">
+                                روش پرداخت:{" "}
+                            </span>{" "}
+                            <span>{invoice.paymentText}</span>{" "}
+                        </p>
+                    </div>
+                    {invoice.descriptions !== "" && (
+                    <div className="mt-5 border-2 border-dashed bg-slate-200">
+                        <span className="font-semibold ">توضیحات: </span>
+                        {invoice.descriptions}
+                    </div>
+                )}
                 </div>
-                <footer className="mt-auto flex gap-5 justify-around">
+                <footer className="mt-auto border-t-2 border-slate-300 text-sm pt-2 flex gap-5 justify-around">
                     {displayUser?.profile.insta_link && (
                         <div className="flex gap-2">
                             <Instagram />

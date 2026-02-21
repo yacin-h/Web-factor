@@ -38,11 +38,13 @@ import type { PaginatedProductList, Product } from "@/types/product";
 
 import { Combobox } from "../ui/comboBox";
 import LoadingSpinner from "../ui/loadingSpinner";
+import { Switch } from "../ui/switch";
 
 export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
     const [products, setProducts] = useState<Product[]>([]);
     const [customers, setCustomers] = useState<Customer[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [vatEnabled, setVatEnabled] = useState(false);
     const isEdit = Boolean(invoiceID);
     const Navigate = useNavigate();
     const {
@@ -53,7 +55,7 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
         formState: { errors, isSubmitting },
         watch,
         setValue,
-    } = useForm({
+    } = useForm<InvoiceFormType>({
         resolver: zodResolver(InvoiceSchema),
         defaultValues: {
             items: [],
@@ -63,9 +65,11 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
             customer_address: "",
             status: "pending",
             payment_mode: "cash",
+            descriptions: "",
+            added_value: 0,
+            discount: 0,
         },
     });
-
     const watchedItems = watch("items");
 
     const customerOptions = customers.map((c) => ({
@@ -81,10 +85,10 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
 
                 const [productsRes, customersRes] = await Promise.all([
                     apiFetch<PaginatedProductList>(
-                        "/user/products/?page_size=1000"
+                        "/user/products/?page_size=1000",
                     ),
                     apiFetch<PaginatedCustomerList>(
-                        "/account/customers/?page_size=1000"
+                        "/account/customers/?page_size=1000",
                     ),
                 ]);
 
@@ -93,20 +97,21 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
 
                 if (invoiceID) {
                     const invoice = await apiFetch<Invoice>(
-                        `/user/invoices/${invoiceID}/`
+                        `/user/invoices/${invoiceID}/`,
                     );
 
                     reset({
                         items: invoice.items.map((item) => ({
                             product_id: item.product.id,
                             quantity: item.quantity,
-                            price: item.price.toString(),
+                            price: item.price,
                         })),
                         customer_name: invoice.customer_name ?? "",
                         customer_phone_number:
                             invoice.customer_phone_number ?? "",
                         customer_email: invoice.customer_email ?? "",
                         customer_address: invoice.customer_address ?? "",
+                        descriptions: invoice.descriptions ?? "",
                         status: invoice.status ?? "pending",
                         payment_mode: invoice.payment_mode ?? "cash",
                     });
@@ -114,39 +119,41 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
             } catch (err) {
                 console.error(err);
             } finally {
-                setIsLoading(false); // ✅ فقط اینجا
+                setIsLoading(false);
             }
         };
 
         loadData();
     }, [invoiceID, reset]);
+    // calculate VAT
+    useEffect(() => {
+        if (!vatEnabled) {
+            setValue("added_value", 0);
+            return;
+        }
 
+        const totalPrice = watchedItems.reduce((sum, item) => {
+            const price = Number(item.price) || 0;
+            const qty = Number(item.quantity) || 0;
+            return sum + price * qty;
+        }, 0);
+
+        setValue("added_value", totalPrice * 0.1); //10%
+    }, [vatEnabled, watchedItems, setValue]);
     const onSubmit = async (data: InvoiceFormType) => {
         try {
-            const payload = {
-                ...data,
-                items: data.items.map((item) => ({
-                    ...item,
-                    product_id: Number(item.product_id),
-                    quantity: Number(item.quantity),
-                    price: Number(item.price),
-                })),
-            };
-
-            
-
             const response = await apiFetch<Invoice>(
                 isEdit ? `/user/invoices/${invoiceID}/` : "/user/invoices/",
                 {
                     method: isEdit ? "PATCH" : "POST",
-                    body: JSON.stringify(payload),
-                }
+                    body: JSON.stringify(data),
+                },
             );
 
             toast.success(
                 isEdit
                     ? "فاکتور با موفقیت ویرایش شد!"
-                    : "فاکتور با موفقیت ساخته شد!"
+                    : "فاکتور با موفقیت ساخته شد!",
             );
 
             Navigate(`/invoices/${response.id}`);
@@ -155,7 +162,7 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
             toast.error(
                 invoiceID
                     ? "خطا در ویرایش فاکتور. لطفا دوباره تلاش کنید."
-                    : "خطا در ساخت فاکتور. لطفا دوباره تلاش کنید."
+                    : "خطا در ساخت فاکتور. لطفا دوباره تلاش کنید.",
             );
         }
     };
@@ -166,66 +173,64 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Product Selection */}
             {!isEdit && (
+                <Controller
+                    control={control}
+                    name="items"
+                    render={({ field }) => (
+                        <div className="flex flex-col gap-2">
+                            <Label>انتخاب کالاها</Label>
+                            <MultiSelect
+                                values={field.value.map((item) =>
+                                    String(item.product_id),
+                                )}
+                                onValuesChange={(vals) => {
+                                    const newItems = vals.map((val) => {
+                                        const existing = field.value.find(
+                                            (i) => i.product_id === Number(val),
+                                        );
+                                        if (existing) return existing;
+                                        const product = products.find(
+                                            (p) => p.id === Number(val),
+                                        );
+                                        return {
+                                            product_id: Number(val),
+                                            quantity: 1,
+                                            price: product?.price ?? 0,
+                                        };
+                                    });
+                                    field.onChange(newItems);
+                                }}
+                            >
+                                <MultiSelectTrigger className="w-full hover:bg-primary-foreground bg-primary-foreground">
+                                    <MultiSelectValue
+                                        placeholder="کالا رو جستجو کن"
+                                        overflowBehavior="wrap"
+                                    />
+                                </MultiSelectTrigger>
 
-            
-            <Controller
-                control={control}
-                name="items"
-                render={({ field }) => (
-                    <div className="flex flex-col gap-2">
-                        <Label>انتخاب کالاها</Label>
-                        <MultiSelect
-                            values={field.value.map((item) =>
-                                String(item.product_id)
+                                <MultiSelectContent search>
+                                    <MultiSelectGroup>
+                                        {products.map((product) => (
+                                            <MultiSelectItem
+                                                key={product.id}
+                                                value={String(product.id)}
+                                            >
+                                                {product.name}
+                                            </MultiSelectItem>
+                                        ))}
+                                    </MultiSelectGroup>
+                                </MultiSelectContent>
+                            </MultiSelect>
+                            {errors.items && (
+                                <span className="text-red-500">
+                                    {errors.items.message ||
+                                        "حداقل یک آیتم الزامی است"}
+                                </span>
                             )}
-                            onValuesChange={(vals) => {
-                                const newItems = vals.map((val) => {
-                                    const existing = field.value.find(
-                                        (i) => i.product_id === Number(val)
-                                    );
-                                    if (existing) return existing;
-                                    const product = products.find(
-                                        (p) => p.id === Number(val)
-                                    );
-                                    return {
-                                        product_id: Number(val),
-                                        quantity: 1,
-                                        price: product?.price.toString() || "0",
-                                    };
-                                });
-                                field.onChange(newItems);
-                            }}
-                        >
-                            <MultiSelectTrigger className="w-full hover:bg-primary-foreground bg-primary-foreground">
-                                <MultiSelectValue
-                                    placeholder="کالا رو جستجو کن"
-                                    overflowBehavior="wrap"
-                                />
-                            </MultiSelectTrigger>
-
-                            <MultiSelectContent search>
-                                <MultiSelectGroup>
-                                    {products.map((product) => (
-                                        <MultiSelectItem
-                                            key={product.id}
-                                            value={String(product.id)}
-                                        >
-                                            {product.name}
-                                        </MultiSelectItem>
-                                    ))}
-                                </MultiSelectGroup>
-                            </MultiSelectContent>
-                        </MultiSelect>
-                        {errors.items && (
-                            <span className="text-red-500">
-                                {errors.items.message ||
-                                    "حداقل یک آیتم الزامی است"}
-                            </span>
-                        )}
-                    </div>
-                )}
-            />
-)}
+                        </div>
+                    )}
+                />
+            )}
             {/* Items Table */}
             {watchedItems.length > 0 && (
                 <div>
@@ -241,7 +246,7 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                         <TableBody>
                             {watchedItems.map((item, index) => {
                                 const product = products.find(
-                                    (p) => p.id === item.product_id
+                                    (p) => p.id === item.product_id,
                                 );
                                 return (
                                     <TableRow key={item.product_id}>
@@ -254,21 +259,18 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                                                 name={`items.${index}.quantity`}
                                                 render={({ field }) => (
                                                     <Input
-                                                    disabled={isEdit}
+                                                        {...field}
                                                         type="number"
                                                         min={1}
-                                                        value={Number(field.value ?? 1)} 
-                                                        onChange={(e) => {
-                                                            const value =
-                                                                Number(
-                                                                    e.target
-                                                                        .value
-                                                                );
-                                                            if (!isNaN(value))
-                                                                field.onChange(
-                                                                    value
-                                                                ); 
-                                                        }}
+                                                        value={
+                                                            field.value ?? ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            field.onChange(
+                                                                e.target
+                                                                    .valueAsNumber,
+                                                            )
+                                                        }
                                                     />
                                                 )}
                                             />
@@ -289,11 +291,20 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                                                 name={`items.${index}.price`}
                                                 render={({ field }) => (
                                                     <Input
-                                                    disabled={isEdit}
+                                                        {...field}
+                                                        disabled={isEdit}
                                                         type="number"
                                                         min={0}
                                                         step="1"
-                                                        {...field}
+                                                        value={
+                                                            field.value ?? ""
+                                                        }
+                                                        onChange={(e) =>
+                                                            field.onChange(
+                                                                e.target
+                                                                    .valueAsNumber,
+                                                            )
+                                                        }
                                                     />
                                                 )}
                                             />
@@ -329,13 +340,13 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                             value={
                                 field.value
                                     ? customers.find(
-                                          (c) => c.id === field.value
+                                          (c) => c.id === field.value,
                                       )?.name
                                     : undefined
                             }
                             onChange={(val) => {
                                 const selectedCustomer = customers.find(
-                                    (c) => c.name === val
+                                    (c) => c.name === val,
                                 );
 
                                 if (!selectedCustomer) return;
@@ -344,19 +355,19 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
 
                                 setValue(
                                     "customer_name",
-                                    selectedCustomer.name
+                                    selectedCustomer.name,
                                 );
                                 setValue(
                                     "customer_phone_number",
-                                    selectedCustomer.phone_number || ""
+                                    selectedCustomer.phone_number || "",
                                 );
                                 setValue(
                                     "customer_email",
-                                    selectedCustomer.email || ""
+                                    selectedCustomer.email || "",
                                 );
                                 setValue(
                                     "customer_address",
-                                    selectedCustomer.address || ""
+                                    selectedCustomer.address || "",
                                 );
                             }}
                             placeholder="مشتری را انتخاب کن"
@@ -432,11 +443,21 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                         </span>
                     )}
                 </div>
-
-                <div className="flex gap-5">
+                
+            </div>
+                <div className="space-y-3 ">
+                    <Label htmlFor="descriptions">توضیحات</Label>
+                    <Input {...register("descriptions")} id="descriptions" />
+                    {errors.descriptions && (
+                        <span className="text-red-500">
+                            {errors.descriptions.message}
+                        </span>
+                    )}
+                </div>
+            <div className="flex gap-5">
                     <div>
                         {/* Status */}
-                        <div className="space-y-3">
+                        <div className="space-y-3 ">
                             <Label htmlFor="status">وضعیت پرداخت</Label>
                             <Controller
                                 control={control}
@@ -508,10 +529,44 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                         )}
                     </div>
                 </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                {/* ارزش افزوده */}
+                <div className="flex items-center gap-2">
+                    <Switch
+                        checked={vatEnabled}
+                        onCheckedChange={setVatEnabled}
+                    />
+                    <Label> ارزش افزوده (۱۰٪)</Label>
+                </div>
+
+                {/* تخفیف */}
+                <div className="flex flex-col">
+                    <Label htmlFor="discount">تخفیف</Label>
+                    <Controller
+                        control={control}
+                        name="discount"
+                        render={({ field }) => (
+                            <Input
+                                {...field}
+                                type="number"
+                                min={0}
+                                step={0.01}
+                                onChange={(e) =>
+                                    field.onChange(e.target.valueAsNumber)
+                                }
+                            />
+                        )}
+                    />
+                </div>
             </div>
 
             <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? "در حال ساخت..." : isEdit ? "ویرایش فاکتور" : "ساخت فاکتور"}
+                {isSubmitting
+                    ? "در حال ساخت..."
+                    : isEdit
+                      ? "ویرایش فاکتور"
+                      : "ساخت فاکتور"}
             </Button>
         </form>
     );

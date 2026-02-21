@@ -12,7 +12,7 @@ type invoiceProps = {
 };
 export default function Classic({ invoice, user }: invoiceProps) {
     const { profile } = useAuth();
-
+console.log(invoice.descriptions)
     // Use passed user for public invoices, fallback to authenticated user profile
     const displayUser = user || profile;
     const colors = displayUser
@@ -40,8 +40,7 @@ export default function Classic({ invoice, user }: invoiceProps) {
                         </p>
                     )}
                 </div>
-                <p className="text-center text-2xl my-5 font-semibold">
-                </p>
+                <p className="text-center text-2xl my-5 font-semibold"></p>
             </header>
             <section className="flex justify-between">
                 <div className="text-right w-5/12">
@@ -73,8 +72,6 @@ export default function Classic({ invoice, user }: invoiceProps) {
                         <span>{invoice.createdAt}</span>
                     </p>
                 </div>
-
-                
             </section>
             <section>
                 <div className="mt-10">
@@ -123,6 +120,21 @@ export default function Classic({ invoice, user }: invoiceProps) {
                     </Table>
                 </div>
                 <div className="mt-10 space-y-2">
+                    {invoice.added_value > 0 && (
+                        <p>
+                            <span className="font-semibold pl-2">
+                                مالیات بر ارزش افزوده (۱۰٪):
+                            </span>
+                            <span>{invoice.added_value}</span>
+                        </p>
+                    )}
+                    {invoice.added_value > 0 && (
+                        <p>
+                            <span className="font-semibold pl-2">تخفیف:</span>
+                            <span>{invoice.discount}</span>
+                        </p>
+                    )}
+
                     <p>
                         <span className="font-semibold pl-2">مجموع:</span>
                         <span>{invoice.total}</span>
@@ -144,8 +156,14 @@ export default function Classic({ invoice, user }: invoiceProps) {
                         <span>{invoice.paymentText}</span>
                     </p>
                 </div>
+                {invoice.descriptions !== "" && (
+                    <div className="mt-5 border-2 border-dashed bg-slate-200">
+                        <span className="font-semibold ">توضیحات: </span>
+                        {invoice.descriptions}
+                    </div>
+                )}
             </section>
-            <footer className="mt-auto flex gap-5 justify-around">
+            <footer className="mt-auto border-t-2 border-slate-300 text-sm pt-2 flex gap-5 justify-around">
                 {displayUser?.profile.insta_link && (
                     <div className="flex gap-2">
                         <Instagram />

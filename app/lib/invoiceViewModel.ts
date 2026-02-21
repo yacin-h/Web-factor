@@ -26,7 +26,10 @@ export function buildInvoiceViewModel({ invoice }: InvoiceViewModelProps) {
                 total: Number(item.price) * item.quantity,
             };
         }),
+        added_value:invoice.added_value,
+        discount:invoice.discount,
         total: invoice.total_amount ?? 0,
+        descriptions: invoice.descriptions,
         totalText: invoice.total_amount
             ? num2persian(invoice.total_amount)
             : "صفر",
