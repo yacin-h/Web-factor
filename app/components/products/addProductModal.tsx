@@ -103,24 +103,7 @@ export default function AddProductModal({ onAdded }: { onAdded?: () => void }) {
                     <p className="text-red-500 text-sm">
                         {errors.description?.message}
                     </p>
-                    <Input
-                        type="text"
-                        placeholder="بارکد کالا"
-                        {...register("barcode", {
-                            minLength: {
-                                value: 4,
-                                message: "بارکد نامعتبر است",
-                            },
-                            maxLength: {
-                                value: 64,
-                                message: "بارکد خیلی طولانی است",
-                            },
-                        })}
-                    />
-                    
-                    <p className="text-red-500 text-sm">
-                        {errors.barcode?.message}
-                    </p>
+
                     <Input
                         type="number"
                         placeholder="قیمت"
@@ -150,6 +133,24 @@ export default function AddProductModal({ onAdded }: { onAdded?: () => void }) {
                     {buyPersian && <p>{buyPersian} تومان</p>}
                     <p className="text-red-500 text-sm">
                         {errors.buy?.message}
+                    </p>
+                    <Input
+                        type="text"
+                        placeholder="بارکد کالا"
+                        {...register("barcode", {
+                            minLength: {
+                                value: 4,
+                                message: "بارکد نامعتبر است",
+                            },
+                            maxLength: {
+                                value: 64,
+                                message: "بارکد خیلی طولانی است",
+                            },
+                        })}
+                    />
+
+                    <p className="text-red-500 text-sm">
+                        {errors.barcode?.message}
                     </p>
                     <Button
                         type="submit"

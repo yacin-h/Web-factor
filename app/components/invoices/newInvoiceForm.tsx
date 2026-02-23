@@ -173,63 +173,118 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Product Selection */}
             {!isEdit && (
-                <Controller
-                    control={control}
-                    name="items"
-                    render={({ field }) => (
-                        <div className="flex flex-col gap-2">
-                            <Label>انتخاب کالاها</Label>
-                            <MultiSelect
-                                values={field.value.map((item) =>
-                                    String(item.product_id),
-                                )}
-                                onValuesChange={(vals) => {
-                                    const newItems = vals.map((val) => {
-                                        const existing = field.value.find(
-                                            (i) => i.product_id === Number(val),
-                                        );
-                                        if (existing) return existing;
-                                        const product = products.find(
-                                            (p) => p.id === Number(val),
-                                        );
-                                        return {
-                                            product_id: Number(val),
-                                            quantity: 1,
-                                            price: product?.price ?? 0,
-                                        };
-                                    });
-                                    field.onChange(newItems);
-                                }}
-                            >
-                                <MultiSelectTrigger className="w-full hover:bg-primary-foreground bg-primary-foreground">
-                                    <MultiSelectValue
-                                        placeholder="کالا رو جستجو کن"
-                                        overflowBehavior="wrap"
-                                    />
-                                </MultiSelectTrigger>
+                <>
+                    <div className="flex flex-col gap-2 sm:w-6/12">
+                        <Label htmlFor="barcode">انتخاب با بارکد</Label>
+                        <Input
+                        autoFocus={true}
+                            type="text"
+                            id="barcode"
+                            placeholder="بارکد رو وارد کن"
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    const barcode =
+                                        e.currentTarget.value.trim();
+                                    if (!barcode) return;
 
-                                <MultiSelectContent search>
-                                    <MultiSelectGroup>
-                                        {products.map((product) => (
-                                            <MultiSelectItem
-                                                key={product.id}
-                                                value={String(product.id)}
-                                            >
-                                                {product.name}
-                                            </MultiSelectItem>
-                                        ))}
-                                    </MultiSelectGroup>
-                                </MultiSelectContent>
-                            </MultiSelect>
-                            {errors.items && (
-                                <span className="text-red-500">
-                                    {errors.items.message ||
-                                        "حداقل یک آیتم الزامی است"}
-                                </span>
-                            )}
-                        </div>
-                    )}
-                />
+                                    const product = products.find(
+                                        (p) => p.barcode === barcode,
+                                    );
+                                    if (!product) {
+                                        toast.error(
+                                            "محصولی با این بارکد پیدا نشد",
+                                        );
+                                        return;
+                                    }
+
+                                    // چک کنیم محصول قبلا اضافه نشده باشه
+                                    const existing = watchedItems.find(
+                                        (i) => i.product_id === product.id,
+                                    );
+                                    if (existing) {
+                                        toast("محصول قبلا اضافه شده", {
+                                            icon: "⚠️",
+                                        });
+                                        return;
+                                    }
+
+                                    // اضافه کردن محصول به فرم
+                                    setValue("items", [
+                                        ...watchedItems,
+                                        {
+                                            product_id: product.id,
+                                            quantity: 1,
+                                            price: product.price,
+                                        },
+                                    ]);
+
+                                    e.currentTarget.value = ""; // ریست input
+                                    toast.success(`${product.name} اضافه شد`);
+                                }
+                            }}
+                        />
+                    </div>
+                    <Controller
+                        control={control}
+                        name="items"
+                        render={({ field }) => (
+                            <div className="flex flex-col gap-2">
+                                <Label>انتخاب با نام کالا</Label>
+                                <MultiSelect
+                                    values={field.value.map((item) =>
+                                        String(item.product_id),
+                                    )}
+                                    onValuesChange={(vals) => {
+                                        const newItems = vals.map((val) => {
+                                            const existing = field.value.find(
+                                                (i) =>
+                                                    i.product_id ===
+                                                    Number(val),
+                                            );
+                                            if (existing) return existing;
+                                            const product = products.find(
+                                                (p) => p.id === Number(val),
+                                            );
+                                            return {
+                                                product_id: Number(val),
+                                                quantity: 1,
+                                                price: product?.price ?? 0,
+                                            };
+                                        });
+                                        field.onChange(newItems);
+                                    }}
+                                >
+                                    <MultiSelectTrigger className="w-full hover:bg-primary-foreground bg-primary-foreground">
+                                        <MultiSelectValue
+                                            placeholder="کالا رو جستجو کن"
+                                            overflowBehavior="wrap"
+                                        />
+                                    </MultiSelectTrigger>
+
+                                    <MultiSelectContent search>
+                                        <MultiSelectGroup>
+                                            {products.map((product) => (
+                                                <MultiSelectItem
+                                                    key={product.id}
+                                                    value={String(product.id)}
+                                                >
+                                                    {product.name}
+                                                </MultiSelectItem>
+                                            ))}
+                                        </MultiSelectGroup>
+                                    </MultiSelectContent>
+                                </MultiSelect>
+                                {errors.items && (
+                                    <span className="text-red-500">
+                                        {errors.items.message ||
+                                            "حداقل یک آیتم الزامی است"}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+                    />
+                </>
             )}
             {/* Items Table */}
             {watchedItems.length > 0 && (

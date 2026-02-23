@@ -1,14 +1,15 @@
 export type Product = {
     id: number;
     name: string;
-    description:string;
-    buy:number;
-    price:number;
-}
+    description: string;
+    buy: number;
+    barcode: string;
+    price: number;
+};
 export type ProductCreate = {
     name: string;
     description: string;
-    buy:number;
+    buy: number;
     price: number;
     barcode?: string;
 };
