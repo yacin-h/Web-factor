@@ -72,7 +72,6 @@ const userItems = [
 
 export function AppSidebar() {
     const path = useLocation().pathname;
-    console.log(path);
     const logOut = useAuth((state: AuthContextType) => state.logOut);
     return (
         <Sidebar className="print:hidden print:m-0" dir="ltr" side="right">
