@@ -71,7 +71,7 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
         },
     });
     const watchedItems = watch("items");
-
+    const addedValue = watch("added_value");
     const customerOptions = customers.map((c) => ({
         value: c.name,
         id: c.id,
@@ -443,101 +443,101 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                         </span>
                     )}
                 </div>
-                
             </div>
-                <div className="space-y-3 ">
-                    <Label htmlFor="descriptions">توضیحات</Label>
-                    <Input {...register("descriptions")} id="descriptions" />
-                    {errors.descriptions && (
-                        <span className="text-red-500">
-                            {errors.descriptions.message}
-                        </span>
-                    )}
-                </div>
+            <div className="space-y-3 ">
+                <Label htmlFor="descriptions">توضیحات</Label>
+                <Input {...register("descriptions")} id="descriptions" />
+                {errors.descriptions && (
+                    <span className="text-red-500">
+                        {errors.descriptions.message}
+                    </span>
+                )}
+            </div>
             <div className="flex gap-5">
-                    <div>
-                        {/* Status */}
-                        <div className="space-y-3 ">
-                            <Label htmlFor="status">وضعیت پرداخت</Label>
-                            <Controller
-                                control={control}
-                                name="status"
-                                render={({ field }) => (
-                                    <Select
-                                        value={field.value}
-                                        onValueChange={field.onChange}
-                                    >
-                                        <SelectTrigger className=" text-right px-3 py-2 border rounded-md">
-                                            <SelectValue placeholder="وضعیت پرداخت" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            <SelectItem value="pending">
-                                                در انتظار
-                                            </SelectItem>
-                                            <SelectItem value="paid">
-                                                پرداخت شده
-                                            </SelectItem>
-                                            <SelectItem value="cancelled">
-                                                لغو شده
-                                            </SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                )}
-                            />
-                            {errors.status && (
-                                <span className="text-red-500">
-                                    {errors.status.message}
-                                </span>
-                            )}
-                        </div>
-                    </div>
-                    {/* Payment Method */}
-                    <div className="space-y-3">
-                        <Label htmlFor="payment_mode">روش پرداخت</Label>
+                <div>
+                    {/* Status */}
+                    <div className="space-y-3 ">
+                        <Label htmlFor="status">وضعیت پرداخت</Label>
                         <Controller
                             control={control}
-                            name="payment_mode"
+                            name="status"
                             render={({ field }) => (
                                 <Select
                                     value={field.value}
                                     onValueChange={field.onChange}
                                 >
-                                    <SelectTrigger className="text-right px-3 py-2 border rounded-md">
-                                        <SelectValue placeholder="روش پرداخت" />
+                                    <SelectTrigger className=" text-right px-3 py-2 border rounded-md">
+                                        <SelectValue placeholder="وضعیت پرداخت" />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="cash">
-                                            نقد
+                                        <SelectItem value="pending">
+                                            در انتظار
                                         </SelectItem>
-                                        <SelectItem value="card">
-                                            کارت
+                                        <SelectItem value="paid">
+                                            پرداخت شده
                                         </SelectItem>
-                                        <SelectItem value="bank">
-                                            بانک
-                                        </SelectItem>
-                                        <SelectItem value="others">
-                                            سایر
+                                        <SelectItem value="cancelled">
+                                            لغو شده
                                         </SelectItem>
                                     </SelectContent>
                                 </Select>
                             )}
                         />
-                        {errors.payment_mode && (
+                        {errors.status && (
                             <span className="text-red-500">
-                                {errors.payment_mode.message}
+                                {errors.status.message}
                             </span>
                         )}
                     </div>
                 </div>
-
+                {/* Payment Method */}
+                <div className="space-y-3">
+                    <Label htmlFor="payment_mode">روش پرداخت</Label>
+                    <Controller
+                        control={control}
+                        name="payment_mode"
+                        render={({ field }) => (
+                            <Select
+                                value={field.value}
+                                onValueChange={field.onChange}
+                            >
+                                <SelectTrigger className="text-right px-3 py-2 border rounded-md">
+                                    <SelectValue placeholder="روش پرداخت" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="cash">نقد</SelectItem>
+                                    <SelectItem value="card">کارت</SelectItem>
+                                    <SelectItem value="bank">بانک</SelectItem>
+                                    <SelectItem value="others">سایر</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        )}
+                    />
+                    {errors.payment_mode && (
+                        <span className="text-red-500">
+                            {errors.payment_mode.message}
+                        </span>
+                    )}
+                </div>
+            </div>
             <div className="grid grid-cols-2 gap-4">
                 {/* ارزش افزوده */}
-                <div className="flex items-center gap-2">
-                    <Switch
-                        checked={vatEnabled}
-                        onCheckedChange={setVatEnabled}
-                    />
-                    <Label> ارزش افزوده (۱۰٪)</Label>
+                <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                        <Switch
+                            checked={vatEnabled}
+                            onCheckedChange={setVatEnabled}
+                        />
+                        <Label>ارزش افزوده (۱۰٪)</Label>
+                    </div>
+
+                    {vatEnabled && (
+                        <span className="text-sm text-muted-foreground">
+                            مبلغ ارزش افزوده:{" "}
+                            <strong>{addedValue?.toLocaleString() ?? 0}</strong>{" "}
+                            تومان
+                        </span>
+                    )}
                 </div>
 
                 {/* تخفیف */}
