@@ -1,6 +1,11 @@
 import { Instagram, MapPinHouse, PhoneCall } from "lucide-react";
 
 import { Table, TableBody, TableHeader, TableRow } from "@/components/ui/table";
+import {
+    Tooltip,
+    TooltipContent,
+    TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { generateBrandingColors } from "@/lib/brandingColors";
 import { buildLogoUrl, phoneFormatter } from "@/lib/utils";
 import useAuth from "@/store/auth";
@@ -174,9 +179,17 @@ export default function Modern({ invoice, user }: invoiceProps) {
                                 className="w-36"
                             />
                         ) : (
-                            <div className="flex justify-center items-center text-slate-200 font-semibold size-32 border-2 border-dashed">
-                                محل قرارگیری لوگو
-                            </div>
+                            <Tooltip>
+                                <TooltipTrigger asChild>
+                                    <div className="flex justify-center items-center text-slate-300 font-semibold size-32 border-2 border-dashed">
+                                        محل قرارگیری لوگو
+                                    </div>
+                                </TooltipTrigger>
+
+                                <TooltipContent>
+                                    <p>از قسمت پروفایل افزوده شود</p>
+                                </TooltipContent>
+                            </Tooltip>
                         )}
                         {displayUser && brandingLogo && (
                             <p className="ml-4 text-xl font-light">

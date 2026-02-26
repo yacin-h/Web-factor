@@ -14,6 +14,7 @@ import { DirectionProvider } from "@/components/ui/direction";
 import { Toaster } from "@/components/ui/sonner";
 
 import type { Route } from "./+types/root";
+import { TooltipProvider } from "./components/ui/tooltip";
 
 export const links: Route.LinksFunction = () => [
     { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -43,7 +44,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </head>
             <body suppressHydrationWarning>
                 <DirectionProvider dir="rtl">
-                    {children}
+                    <TooltipProvider>{children}</TooltipProvider>
                 </DirectionProvider>
                 <ScrollRestoration />
                 <Scripts />
