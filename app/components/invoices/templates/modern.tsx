@@ -130,7 +130,7 @@ export default function Modern({ invoice, user }: invoiceProps) {
                         </p>
                     </div>
                     {invoice.descriptions !== "" && (
-                        <div className="mt-5 border-2 border-dashed bg-slate-200">
+                        <div className="mt-5 border-2 border-dashed bg-slate-200  dark:bg-slate-700 p-3">
                             <span className="font-semibold ">توضیحات: </span>
                             {invoice.descriptions}
                         </div>
