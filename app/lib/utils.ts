@@ -16,12 +16,17 @@ export function buildLogoUrl(logo: string | null | undefined): string | null {
         return logo;
     }
 
-    // If it has /account in the path, it likely doesn't need the domain prefix
+    // If it's a /media path, it's already a full relative path - just add domain
+    if (logo.startsWith("/media")) {
+        return `https://yasinhossini94.pythonanywhere.com${logo}`;
+    }
+
+    // If it has /account in the path, return as-is with domain
     if (logo.startsWith("/account")) {
         return `https://yasinhossini94.pythonanywhere.com${logo}`;
     }
 
-    // Otherwise, it's a relative media path - add the account prefix
+    // Otherwise, it's a relative path without leading / - add the account prefix
     return `https://yasinhossini94.pythonanywhere.com/account${logo}`;
 }
 export function phoneFormatter(phone: string | undefined | null): string {
