@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { apiFetch } from "@/lib/api";
+import { buildLogoUrl } from "@/lib/utils";
 import useAuth from "@/store/auth";
 import type { User } from "@/types/user";
 
@@ -42,9 +43,7 @@ export default function ProfileCard() {
 
             <div className="space-y-4 gap-5 grid md:grid-cols-2 lg:grid-cols-3">
                 <div>
-                    <label className="block text-sm font-medium ">
-                        نام
-                    </label>
+                    <label className="block text-sm font-medium ">نام</label>
                     <p className="bg-muted rounded-sm p-2">
                         {profile.first_name} {profile.last_name || "-"}
                     </p>
@@ -122,7 +121,7 @@ export default function ProfileCard() {
                     <div className="bg-muted rounded-sm p-2">
                         {profile.profile.logo ? (
                             <img
-                                src={`https://yasinhossini94.pythonanywhere.com/account${profile.profile.logo}`}
+                                src={buildLogoUrl(profile.profile.logo) || ""}
                                 alt="Logo"
                                 className="w-16 h-16 object-contain"
                             />
