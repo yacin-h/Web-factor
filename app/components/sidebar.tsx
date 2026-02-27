@@ -18,6 +18,7 @@ import {
     SidebarGroup,
     SidebarGroupContent,
     SidebarGroupLabel,
+    SidebarHeader,
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
@@ -73,17 +74,26 @@ const userItems = [
 export function AppSidebar() {
     const path = useLocation().pathname;
     const logOut = useAuth((state: AuthContextType) => state.logOut);
+    const sidebarButtonGradientClass =
+        "bg-linear-to-r from-sidebar-primary/30 to-sidebar-accent/40 hover:from-sidebar-primary/45 hover:to-sidebar-accent/55 data-[active=true]:from-sidebar-primary data-[active=true]:to-sidebar-accent data-[active=true]:text-white";
     return (
-        <Sidebar className="print:hidden print:m-0" dir="ltr" side="right">
+        <Sidebar
+            className="print:hidden print:m-0 border-l"
+            dir="ltr"
+            side="right"
+        >
+            <SidebarHeader>
+                <img src="/logo.png" alt="Logo" className="w-full mx-auto" />
+            </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
                     <SidebarGroupContent>
                         <SidebarMenu>
                             {productItems.map((item) => (
                                 <SidebarMenuItem key={item.title}>
-                                    <SidebarMenuButton
+                                     <SidebarMenuButton
                                         asChild
-                                        className="flex-row-reverse sm:flex-row"
+                                        className={`flex-row-reverse sm:flex-row  ${sidebarButtonGradientClass}`}
                                         isActive={path === item.url}
                                     >
                                         <NavLink to={item.url}>
@@ -114,7 +124,7 @@ export function AppSidebar() {
                                             <SidebarMenuItem key={item.title}>
                                                 <SidebarMenuButton
                                                     asChild
-                                                    className="flex-row-reverse sm:flex-row"
+                                                     className={`flex-row-reverse sm:flex-row ${sidebarButtonGradientClass}`}
                                                     isActive={path === item.url}
                                                 >
                                                     <NavLink to={item.url}>
@@ -141,7 +151,9 @@ export function AppSidebar() {
                     <SidebarMenuItem>
                         <DropdownMenu>
                             <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton className="flex-row-reverse sm:flex-row" >
+                                <SidebarMenuButton
+                                    className={`flex-row-reverse sm:flex-row ${sidebarButtonGradientClass}`}
+                                >
                                     <User2 /> حساب کاربری
                                     <ChevronUp className="ml-auto" />
                                 </SidebarMenuButton>

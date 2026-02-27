@@ -487,7 +487,7 @@ function SidebarMenuItem({ className, ...props }: React.ComponentProps<"li">) {
         <li
             data-slot="sidebar-menu-item"
             data-sidebar="menu-item"
-            className={cn("group/menu-item relative", className)}
+            className={cn("group/menu-item   relative py-1", className)}
             {...props}
         />
     );
@@ -520,7 +520,7 @@ function SidebarMenuButton({
     asChild = false,
     isActive = false,
     variant = "default",
-    size = "default",
+    size = "lg",
     tooltip,
     className,
     ...props
