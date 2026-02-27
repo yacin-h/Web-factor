@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { invoiceStatusFa } from "@/constants/invoice";
 import { apiFetch } from "@/lib/api";
+import { useCacheStore } from "@/store/cacheStore";
 import type { Invoice, PaginatedInvoiceList } from "@/types/invoice";
 
 import { Badge } from "../ui/badge";
@@ -27,9 +28,11 @@ import {
 import InvoiceActions from "./invoiceActions";
 import InvoiceSkeleton from "./invoiceSkeleton";
 export default function InvoiceTable({
+    reload,
     searchQuery,
     status,
 }: {
+    reload: number;
     searchQuery: string;
     status: string;
 }) {
@@ -75,7 +78,7 @@ export default function InvoiceTable({
         };
 
         fetchInvoices();
-    }, [page, searchQuery, status]);
+    }, [reload, page, searchQuery, status]);
 
     const handleDelete = async (id: string, status: string | undefined) => {
         if (status === "paid") {
@@ -106,12 +109,30 @@ export default function InvoiceTable({
             return;
         }
         try {
+            // First, make the API call to mark as paid
             await apiFetch(`/user/invoices/${id}/paid/`, { method: "POST" });
-            setInvoices(
-                invoices.map((inv: Invoice) =>
-                    inv.id === id ? { ...inv, status: "paid" } : inv,
-                ),
+
+            // Invalidate all invoice-related cache variations
+            const cacheStore = useCacheStore.getState();
+            cacheStore.invalidateCacheByPrefix("/user/invoices/");
+
+            // Refetch fresh data with CURRENT filter (status filter selected)
+            const params = new URLSearchParams({
+                page: String(page),
+                page_size: String(pageSize),
+            });
+
+            if (searchQuery) {
+                params.append("customer_name", searchQuery);
+            }
+
+            const freshData = await apiFetch<PaginatedInvoiceList>(
+                `/user/invoices/?${params.toString()}`,
             );
+
+            setInvoices(freshData.results);
+            setCount(freshData.count);
+
             toast.success("فاکتور با موفقیت به پرداخت شده تغییر یافت");
         } catch (err) {
             console.log(err);

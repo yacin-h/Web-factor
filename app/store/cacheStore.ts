@@ -27,6 +27,8 @@ interface CacheState {
     isCacheValid: (key: string) => boolean;
     /** Invalidate one or multiple cache entries */
     invalidateCache: (key: string | string[]) => void;
+    /** Invalidate all cache entries that contain a prefix */
+    invalidateCacheByPrefix: (prefix: string) => void;
     /** Clear all cached data */
     clearAllCache: () => void;
 }
@@ -111,6 +113,23 @@ export const useCacheStore = create<CacheState>()(
                         delete newCache[key];
                     });
 
+                    return { cache: newCache };
+                });
+            },
+
+            /**
+             * Invalidate all cache entries that contain a specific prefix
+             * Useful for invalidating all variations of an endpoint (with/without pagination)
+             * @param prefix - The prefix to match (e.g., "/user/invoices/")
+             */
+            invalidateCacheByPrefix: (prefix: string) => {
+                set((state) => {
+                    const newCache = { ...state.cache };
+                    Object.keys(newCache).forEach((key) => {
+                        if (key.includes(prefix)) {
+                            delete newCache[key];
+                        }
+                    });
                     return { cache: newCache };
                 });
             },

@@ -39,6 +39,7 @@ export default function AddCustomerModal({
                 method: "POST",
                 body: JSON.stringify(data),
             });
+
             toast.success("مشتری با موفقیت افزوده شد");
             reset();
             onAdded?.();

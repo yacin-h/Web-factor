@@ -11,6 +11,10 @@ export const CACHE_KEYS = {
     PRODUCTS_LIST: "/user/products/",
     PRODUCTS_DETAIL: (id: string | number) => `/user/products/${id}/`,
 
+    // Customers (مشتریان)
+    CUSTOMERS_LIST: "/account/customers/",
+    CUSTOMERS_DETAIL: (id: string | number) => `/account/customers/${id}/`,
+
     // User Profile (پروفایل)
     ACCOUNT_PROFILE: "/account/profile/",
 
@@ -36,6 +40,11 @@ export const INVALIDATION_MAP = {
     POST_PRODUCT: [CACHE_KEYS.PRODUCTS_LIST, CACHE_KEYS.DASHBOARD],
     PUT_PRODUCT: [CACHE_KEYS.PRODUCTS_LIST, CACHE_KEYS.DASHBOARD],
     DELETE_PRODUCT: [CACHE_KEYS.PRODUCTS_LIST, CACHE_KEYS.DASHBOARD],
+
+    // Customer operations (هنگام اضافه/ویرایش/حذف مشتری)
+    POST_CUSTOMER: [CACHE_KEYS.CUSTOMERS_LIST],
+    PUT_CUSTOMER: [CACHE_KEYS.CUSTOMERS_LIST],
+    DELETE_CUSTOMER: [CACHE_KEYS.CUSTOMERS_LIST],
 
     // Profile update operations (هنگام ویرایش پروفایل)
     PUT_PROFILE: [CACHE_KEYS.ACCOUNT_PROFILE, CACHE_KEYS.DASHBOARD],

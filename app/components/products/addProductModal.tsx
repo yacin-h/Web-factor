@@ -38,6 +38,7 @@ export default function AddProductModal({ onAdded }: { onAdded?: () => void }) {
                 method: "POST",
                 body: JSON.stringify(data),
             });
+
             toast.success("کالا با موفقیت افزوده شد");
             reset();
             onAdded?.();

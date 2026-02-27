@@ -158,6 +158,7 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                     : "فاکتور با موفقیت ساخته شد!",
             );
 
+            // After success, navigate to invoice detail/preview page
             Navigate(`/invoices/${response.id}`);
         } catch (error) {
             console.error("error:", error);

@@ -89,10 +89,7 @@ export default function Header({
                         </InputGroupButton>
 
                         {searchInput && (
-                            <InputGroupButton
-                                onClick={handleReset}
-                                
-                            >
+                            <InputGroupButton onClick={handleReset}>
                                 <XIcon className="w-4 h-4" />
                             </InputGroupButton>
                         )}

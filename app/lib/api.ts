@@ -1,8 +1,6 @@
 import { useCacheStore } from "@/store/cacheStore";
 
 import { getStoredToken } from "./authStorage";
-import { INVALIDATION_MAP } from "./cacheKeys";
-
 const API_BASE_URL = "https://yasinhossini94.pythonanywhere.com";
 
 async function refreshToken() {
@@ -28,41 +26,53 @@ async function refreshToken() {
 }
 
 /**
- * Helper to handle cache invalidation based on request type
+ * Helper to get cache prefixes that should be invalidated based on request type
+ * Returns base prefixes so all variations (with/without pagination) are invalidated
  */
-function getInvalidationKeys(url: string, method?: string): string[] {
-    const keys: string[] = [];
+function getInvalidationPrefixes(url: string, method?: string): string[] {
+    const prefixes: string[] = [];
 
     // Invoices
     if (url.includes("/user/invoices/")) {
         if (method === "POST") {
-            keys.push(...INVALIDATION_MAP.POST_INVOICE);
+            prefixes.push("/user/invoices/", "/user/dashboard/");
         } else if (method === "PUT" || method === "PATCH") {
-            keys.push(...INVALIDATION_MAP.PUT_INVOICE);
+            prefixes.push("/user/invoices/", "/user/dashboard/");
         } else if (method === "DELETE") {
-            keys.push(...INVALIDATION_MAP.DELETE_INVOICE);
+            prefixes.push("/user/invoices/", "/user/dashboard/");
         }
     }
 
     // Products
     if (url.includes("/user/products/")) {
         if (method === "POST") {
-            keys.push(...INVALIDATION_MAP.POST_PRODUCT);
+            prefixes.push("/user/products/", "/user/dashboard/");
         } else if (method === "PUT" || method === "PATCH") {
-            keys.push(...INVALIDATION_MAP.PUT_PRODUCT);
+            prefixes.push("/user/products/", "/user/dashboard/");
         } else if (method === "DELETE") {
-            keys.push(...INVALIDATION_MAP.DELETE_PRODUCT);
+            prefixes.push("/user/products/", "/user/dashboard/");
         }
     }
 
     // Profile
     if (url.includes("/account/profile/")) {
         if (method === "PUT" || method === "PATCH") {
-            keys.push(...INVALIDATION_MAP.PUT_PROFILE);
+            prefixes.push("/account/profile/", "/user/dashboard/");
         }
     }
 
-    return [...new Set(keys)]; // Remove duplicates
+    // Customers
+    if (url.includes("/account/customers/")) {
+        if (method === "POST") {
+            prefixes.push("/account/customers/");
+        } else if (method === "PUT" || method === "PATCH") {
+            prefixes.push("/account/customers/");
+        } else if (method === "DELETE") {
+            prefixes.push("/account/customers/");
+        }
+    }
+
+    return [...new Set(prefixes)]; // Remove duplicates
 }
 
 export async function apiFetch<T>(
@@ -143,12 +153,23 @@ export async function apiFetch<T>(
         console.log(`[CACHE SET] ${url}`);
     }
 
-    // 🗑️ If POST/PUT/DELETE, invalidate related caches
+    // 🗑️ If POST/PUT/DELETE, invalidate related caches by prefix
     if (method !== "GET") {
-        const keysToInvalidate = getInvalidationKeys(url, method);
-        if (keysToInvalidate.length > 0) {
-            cacheStore.invalidateCache(keysToInvalidate);
-            console.log(`[CACHE INVALIDATED] ${keysToInvalidate.join(", ")}`);
+        const prefixesToInvalidate = getInvalidationPrefixes(url, method);
+        if (prefixesToInvalidate.length > 0) {
+            // Invalidate all cache entries that contain these prefixes
+            prefixesToInvalidate.forEach((prefix) => {
+                cacheStore.invalidateCacheByPrefix(prefix);
+            });
+            console.log(
+                `[CACHE INVALIDATED] ${prefixesToInvalidate.join(", ")}`,
+            );
+            try {
+                // Record that a write happened so other tabs/components can decide to refresh
+                localStorage.setItem("lastWriteAt", String(Date.now()));
+            } catch (e) {
+                // ignore storage errors
+            }
         }
     }
 
