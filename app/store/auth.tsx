@@ -5,6 +5,8 @@ import type { AuthContextType } from "@/types/authContext";
 import type { Token } from "@/types/token";
 import type { User } from "@/types/user";
 
+import { useCacheStore } from "./cacheStore";
+
 const BASE_URL = "https://yasinhossini94.pythonanywhere.com/account";
 const useAuth = create<AuthContextType>()(
     persist(
@@ -12,7 +14,10 @@ const useAuth = create<AuthContextType>()(
             token: null,
             profile: null,
             logIn: (token: Token) => set({ token }),
-            logOut: () => set({ token: null, profile: null }),
+            logOut: () => {
+                useCacheStore.getState().clearAllCache();
+                set({ token: null, profile: null });
+            },
             setProfile: (profile: User) => {
                 const updatedProfile = {
                     ...profile,
@@ -25,8 +30,8 @@ const useAuth = create<AuthContextType>()(
         }),
         {
             name: "auth", // Key for localStorage
-        }
-    )
+        },
+    ),
 );
 
 export default useAuth;
