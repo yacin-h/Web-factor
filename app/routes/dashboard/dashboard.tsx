@@ -4,14 +4,27 @@ import { useEffect, useState } from "react";
 import InvoiceStatCard from "@/components/dashboard/InvoiceStatCard";
 import { TopProductsChart } from "@/components/dashboard/topProductChart";
 import { TrendChart } from "@/components/dashboard/trendChart";
+import { Badge } from "@/components/ui/badge";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import { invoiceStatusFa } from "@/constants/invoice";
 import { apiFetch } from "@/lib/api";
-import useAuth from "@/store/auth";
+import { useCacheStore } from "@/store/cacheStore";
 import type { DashboardData } from "@/types/dashboardData";
+import type { Invoice, PaginatedInvoiceList } from "@/types/invoice";
+import clsx from "clsx";
 
 export default function Dashboard() {
-    const { setProfile } = useAuth();
     const [loading, setLoading] = useState(true);
+    const [recentInvoices, setRecentInvoices] = useState<Invoice[]>([]);
+    const [pendingInvoices, setPendingInvoices] = useState<Invoice[]>([]);
 
     const [dashboardData, setDashboardData] = useState<DashboardData>({
         total_invoice: 0,
@@ -35,10 +48,28 @@ export default function Dashboard() {
     useEffect(() => {
         const init = async () => {
             try {
-                const dashboardData =
-                    await apiFetch<DashboardData>("/user/dashboard/");
+                const cacheStore = useCacheStore.getState();
+
+                cacheStore.invalidateCache([
+                    "/user/dashboard/",
+                    "/user/invoices/?page=1&page_size=5",
+                    "/user/invoices/?page=1&page_size=5&status=pending",
+                ]);
+
+                const [dashboardData, recentData, pendingData] =
+                    await Promise.all([
+                        apiFetch<DashboardData>("/user/dashboard/"),
+                        apiFetch<PaginatedInvoiceList>(
+                            "/user/invoices/?page=1&page_size=5",
+                        ),
+                        apiFetch<PaginatedInvoiceList>(
+                            "/user/invoices/?page=1&page_size=5&status=pending",
+                        ),
+                    ]);
 
                 setDashboardData(dashboardData);
+                setRecentInvoices(recentData.results);
+                setPendingInvoices(pendingData.results);
             } catch (err) {
                 console.error("error fetching dashboard data", err);
             } finally {
@@ -47,8 +78,48 @@ export default function Dashboard() {
         };
 
         init();
-    }, [setProfile]);
+    }, []);
 
+    const renderInvoiceRows = (invoices: Invoice[], emptyMessage: string) => {
+        if (!invoices.length) {
+            return (
+                <TableRow>
+                    <TableCell
+                        colSpan={4}
+                        className="text-center text-muted-foreground"
+                    >
+                        {emptyMessage}
+                    </TableCell>
+                </TableRow>
+            );
+        }
+
+        return invoices.map((invoice) => (
+            <TableRow key={invoice.id}>
+                <TableCell>{invoice.customer_name || "-"}</TableCell>
+                <TableCell>{invoice.total_amount} تومان</TableCell>
+                <TableCell>
+                    {invoice.status ? (
+                        <Badge
+                            className={clsx("bg-slate-600", {
+                                "bg-green-100 text-green-900":
+                                    invoice.status === "paid",
+                                "bg-yellow-100 text-yellow-900":
+                                    invoice.status === "pending",
+                            })}
+                        >
+                            {invoiceStatusFa[invoice.status]}
+                        </Badge>
+                    ) : (
+                        "-"
+                    )}
+                </TableCell>
+                <TableCell className="whitespace-nowrap">
+                    {invoice.created}
+                </TableCell>
+            </TableRow>
+        ));
+    };
     if (loading) return <LoadingSpinner />;
 
     return (
@@ -94,7 +165,52 @@ export default function Dashboard() {
                 />
             </div>
 
-            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="mt-5 grid grid-cols-1 xl:grid-cols-2 gap-4">
+                <section className="rounded-xl border bg-card p-4 shadow-sm">
+                    <h2 className="text-lg font-semibold mb-3">
+                        چند فاکتور اخیر
+                    </h2>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>نام مشتری</TableHead>
+                                <TableHead>مبلغ</TableHead>
+                                <TableHead>وضعیت</TableHead>
+                                <TableHead>تاریخ</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {renderInvoiceRows(
+                                recentInvoices,
+                                "فاکتوری ثبت نشده است",
+                            )}
+                        </TableBody>
+                    </Table>
+                </section>
+
+                <section className="rounded-xl border bg-card p-4 shadow-sm">
+                    <h2 className="text-lg font-semibold mb-3">
+                        فاکتورهای در حال انتظار
+                    </h2>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>نام مشتری</TableHead>
+                                <TableHead>مبلغ</TableHead>
+                                <TableHead>وضعیت</TableHead>
+                                <TableHead>تاریخ</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {renderInvoiceRows(
+                                pendingInvoices,
+                                "فاکتور در انتظار پرداخت موجود نیست",
+                            )}
+                        </TableBody>
+                    </Table>
+                </section>
+            </div>
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 auto-rows-fr gap-4">
                 <TrendChart chartData={dashboardData.trends} />
                 <TopProductsChart chartData={dashboardData.top_products} />
             </div>

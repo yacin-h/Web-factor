@@ -31,15 +31,15 @@ export function TopProductsChart({
     chartData: { product__name: string; quantity: number }[];
 }) {
     return (
-        <Card>
+        <Card className="h-full">
             <CardHeader className="pb-2">
-                <CardTitle className="text-base font-semibold text-slate-800 dark:text-slate-200">
+                <CardTitle className="text-base font-semibold text-slate-800 f">
                     کالاهای پرفروش{" "}
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 {chartData && chartData.length > 0 ? (
-                    <ChartContainer config={chartConfig}>
+                    <ChartContainer className="h-fit" config={chartConfig}>
                         <BarChart
                             accessibilityLayer
                             data={chartData}
