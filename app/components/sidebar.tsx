@@ -83,7 +83,7 @@ export function AppSidebar() {
             side="right"
         >
             <SidebarHeader>
-                <img src="/logo.png" alt="Logo" className="w-full mx-auto" />
+                <img src="/logo.svg" alt="Logo" className="w-full mx-auto" />
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
