@@ -37,7 +37,7 @@ export const InvoiceSchema = z.object({
     title: z
         .string()
         .max(500, "عنوان نباید بیشتر از ۵۰۰ کاراکتر باشد")
-        .optional(),
+        .min(2,"عنوان نباید کمتر از 2 کاراکتر باشد"),
     status: z.enum(["pending", "paid", "cancelled"]),
     payment_mode: z.enum(["cash", "card", "bank", "others"]),
 
