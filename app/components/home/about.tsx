@@ -13,7 +13,7 @@ export default function About() {
             transition={{ duration: 0.6 }}
         >
             {/* context */}
-            <div className=" shadow-lg  rounded mx-auto p-3 sm:p-8 md:p-14">
+            <div className=" shadow-lg container rounded mx-auto pt-3 sm:pt-8 md:pt-14">
                 <div className="flex flex-col"></div>
                 <h2 className="mb-10  font-bold text-xl">
                     با چند کلیک فاکتور بساز، و لینک فاکتور رو با لینک پرداخت به

@@ -28,7 +28,7 @@ export default function Hero() {
                                 <img
                                     src={theme =="dark" ? "/hero/dark.png" :"/hero/light.png" }
                                     alt="Dashboard image"
-                                    className="rounded-xl object-cover w-full lg:hover:scale-120 transition-all duration-150"
+                                    className="rounded-xl object-cover w-full lg:hover:scale-120 transition-all duration-300"
                                 />
                             </div>
                         </div>
