@@ -140,7 +140,7 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
             return sum + price * qty;
         }, 0);
 
-        setValue("added_value", totalPrice * 0.1); //10%
+        setValue("added_value", Math.floor(totalPrice * 0.1)); //10%
     }, [vatEnabled, watchedItems, setValue]);
     const onSubmit = async (data: InvoiceFormType) => {
         try {
@@ -179,7 +179,10 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                 <>
                     <div className="space-y-3 ">
                         <Label htmlFor="title">عنوان فاکتور</Label>
-                        <Input {...register("title")} id="title" />
+                        <Input 
+                            {...register("title")}
+                            id="title"
+                        />
                         {errors.title && (
                             <span className="text-red-500">
                                 {errors.title.message}
@@ -187,7 +190,7 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                         )}
                     </div>
                     <div className="flex flex-col gap-2 sm:w-6/12">
-                        <Label htmlFor="barcode">انتخاب با بارکد</Label>
+                        <Label htmlFor="barcode">انتخاب کالا با بارکد</Label>
                         <Input
                             autoFocus={true}
                             type="text"
@@ -454,18 +457,7 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                 <div className="space-y-3">
                     <Label htmlFor="customer_name">نام مشتری</Label>
                     <Input
-                        {...register("customer_name", {
-                            required: "نام مشتری الزامی است",
-                            minLength: {
-                                value: 2,
-                                message: "نام مشتری باید حداقل 2 کاراکتر باشد",
-                            },
-                            maxLength: {
-                                value: 255,
-                                message:
-                                    "نام مشتری نمی‌تواند بیشتر از 255 کاراکتر باشد",
-                            },
-                        })}
+                        {...register("customer_name")}
                         id="customer_name"
                     />
                     {errors.customer_name && (
