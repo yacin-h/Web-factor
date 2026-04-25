@@ -13,7 +13,7 @@ export default function About() {
             transition={{ duration: 0.6 }}
         >
             {/* context */}
-            <div className="w-11/12 shadow-lg bg-muted rounded mx-auto p-3 sm:p-8 md:p-14">
+            <div className=" shadow-lg  rounded mx-auto p-3 sm:p-8 md:p-14">
                 <div className="flex flex-col"></div>
                 <h2 className="mb-10  font-bold text-xl">
                     با چند کلیک فاکتور بساز، و لینک فاکتور رو با لینک پرداخت به
@@ -22,23 +22,23 @@ export default function About() {
 
                 <div className="grid gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-stretch">
                     <AboutCard
-                        title="تولید فاکتور با QR  لینک فاکتور"
-                        description="جهت سهولت دسترسی به لینک فاکتور ها در آینده"
+                        title="قابلیت استفاده از بارکد خوان"
+                        description="جهت سهولت افزودن کالا ها در فاکتور "
                         url="/about-icons/qr.svg"
                     />
                     <AboutCard
-                        title="ارسال لینک پرداخت"
-                        description="ارسال لینک پراخت پس از تولید فاکتور به شماره مشتری"
+                        title="قابلیت ایجاد لینک پرداخت"
+                        description="قابلیت ایجاد لینک عمومی فاکتور برای مشتری"
                         url="/about-icons/pay.svg"
                     />
                     <AboutCard
                         title="ذخیره و مدیریت کالاها"
-                        description="موجودی انبار یا تعداد محصول در دسترس، دسته‌بندی محصولات و دادن پیشنهاد هنگام پر کردن فاکتورها"
+                        description="ذخیره کالا ها در پایگاه داده "
                         url="/about-icons/cart.svg"
                     />
                     <AboutCard
                         title="شخصی سازی فاکتور و برندینگ"
-                        description="امکان افزودن لوگو و رنگ برند و مهر و امضای فروشنده"
+                        description="امکان افزودن رنگ تم فاکتور و لوگو و اطلاعات تماس فروشنده"
                         url="/about-icons/theme.svg"
                     />
                     <AboutCard
@@ -47,13 +47,13 @@ export default function About() {
                         url="/about-icons/report.svg"
                     />
                     <AboutCard
-                        title="خروجی با فرمت های مختلف"
-                        description="ارائه خروجی فاکتور به فرمت های مختلف و قابلیت ذخیره در فایل های محلی"
+                        title="خروجی با فرمت PDF"
+                        description="ارائه خروجی فاکتور به فرمت PDF برای ذخیره در فضای محلی"
                         url="/about-icons/print.svg"
                     />
                     <AboutCard
                         title="مدیریت مشتری"
-                        description="لیست مشتری ها با جزئیات تماس، تاریخچه فاکتور ها برای هر مشتری و هشدار برای مشتریان بدهکار یا دیر پرداخت"
+                        description="ذخیره اطلاعات مشتری برای سهولت افزودن اطلاعات مشتری در فاکتور در مراجعات بعدی "
                         url="/about-icons/customer.svg"
                     />
                     <AboutCard

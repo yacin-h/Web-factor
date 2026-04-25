@@ -6,7 +6,7 @@ import ThemeToggler from "./themeToggler";
 
 export default function Header() {
     return (
-        <header className=" container mx-auto flex justify-between items-center  pt-4 h-16">
+        <header className=" container mx-auto flex justify-between items-center px-4 sm:px-6 lg:px-8  pt-4 h-16">
             <Link to={"/"}>
                 <img className="size-32" src="logo.svg" alt="invoice logo" />
             </Link>

@@ -18,7 +18,7 @@ export default function AboutCard({ title, url, description }: AboutCardProps) {
                 scale: 1.05,
             }}
         >
-            <Card className="h-full">
+            <Card className="h-full dark:bg-gray-700">
                 <CardHeader>
                     <img
                         src={url}
