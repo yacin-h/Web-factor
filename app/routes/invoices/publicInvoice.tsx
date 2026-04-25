@@ -42,12 +42,10 @@ export default function PublicInvoice() {
                     `/api/public/invoices/${invoiceToken}/`,
                 );
 
-                console.log("API Response:", response);
 
                 // Extract invoice from nested structure
                 const invoiceData = response.invoice;
 
-                console.log("Invoice Data:", invoiceData);
 
                 if (!invoiceData || !invoiceData.id) {
                     console.error("Invoice data is invalid:", invoiceData);
@@ -75,7 +73,6 @@ export default function PublicInvoice() {
                     },
                 };
 
-                console.log("Seller Info:", sellerInfo);
                 setUser(sellerInfo);
             } catch (err: any) {
                 console.error("Error fetching invoice:", err);

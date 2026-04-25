@@ -2,7 +2,6 @@ import { useCacheStore } from "@/store/cacheStore";
 
 import { getStoredToken } from "./authStorage";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-console.log(API_BASE_URL)
 
 async function refreshToken() {
     const token = getStoredToken();
@@ -87,7 +86,6 @@ export async function apiFetch<T>(
     if (method === "GET") {
         const cachedData = cacheStore.getCache<T>(url);
         if (cachedData !== null) {
-            console.log(`[CACHE HIT] ${url}`);
             return cachedData;
         }
     }
@@ -155,7 +153,6 @@ export async function apiFetch<T>(
     // ✅ Success! If GET, cache it
     if (method === "GET") {
         cacheStore.setCache<T>(url, data);
-        console.log(`[CACHE SET] ${url}`);
     }
 
     // 🗑️ If POST/PUT/DELETE, invalidate related caches by prefix
@@ -166,9 +163,7 @@ export async function apiFetch<T>(
             prefixesToInvalidate.forEach((prefix) => {
                 cacheStore.invalidateCacheByPrefix(prefix);
             });
-            console.log(
-                `[CACHE INVALIDATED] ${prefixesToInvalidate.join(", ")}`,
-            );
+       
             try {
                 // Record that a write happened so other tabs/components can decide to refresh
                 localStorage.setItem("lastWriteAt", String(Date.now()));

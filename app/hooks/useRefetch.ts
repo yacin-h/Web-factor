@@ -39,7 +39,6 @@ export function useRefetch() {
 
             // Cache the result again
             setCache<T>(url, data);
-            console.log(`[REFETCH + CACHE] ${url}`);
 
             return data;
         } catch (error) {
