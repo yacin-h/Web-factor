@@ -54,6 +54,7 @@ export default function InvoiceActions({
                                 onClick={() =>
                                     handleEdit(invoiceId, invoiceStatus)
                                 }
+                                className="flex justify-between"
                             >
                                 <SquarePen />
                                 ویرایش فاکتور
@@ -82,7 +83,7 @@ export default function InvoiceActions({
                                         handleDelete(invoiceId, invoiceStatus)
                                     }
                                     trigger={
-                                        <div className="flex items-center justify-between w-full">
+                                        <div className="flex  items-center justify-between w-full">
                                             <Trash className="w-4 h-4" />
                                             حذف فاکتور
                                         </div>
