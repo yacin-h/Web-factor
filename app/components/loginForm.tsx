@@ -1,3 +1,4 @@
+import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router";
@@ -21,9 +22,15 @@ import {
 } from "@/components/ui/input-otp";
 import { apiFetch } from "@/lib/api";
 import { cn } from "@/lib/utils";
+import {
+    otpFormSchema,
+    type OtpFormType,
+    phoneFormSchema,
+    type PhoneFormType,
+} from "@/schemas/auth.schema";
 import useAuth from "@/store/auth";
 import type { Token } from "@/types/token";
-type PhoneForm = { phone_number: string };
+
 type RequestOtpResponse = {
     Code: string;
 };
@@ -37,7 +44,18 @@ export function LoginForm({
         handleSubmit,
         setError,
         formState: { errors },
-    } = useForm<PhoneForm>();
+    } = useForm<PhoneFormType>({
+        resolver: zodResolver(phoneFormSchema),
+    });
+    // using alias for using two useForm
+    const {
+        register: registerOtp,
+        handleSubmit: handleSubmitOtp,
+        setError: setOtpError,
+        formState: { errors: otpErrors },
+    } = useForm<OtpFormType>({
+        resolver: zodResolver(otpFormSchema),
+    });
 
     const logIn = useAuth((state) => state.logIn);
     const navigate = useNavigate();
@@ -51,10 +69,10 @@ export function LoginForm({
     const [loadingOtpRequest, setLoadingOtpRequest] = React.useState(false);
     const [loadingVerify, setLoadingVerify] = React.useState(false);
 
-    async function onSubmitPhone(data: PhoneForm) {
+    async function onSubmitPhone(data: PhoneFormType) {
         try {
             setLoadingOtpRequest(true);
-            
+
             // request backend to send OTP to phone
             const res = await apiFetch<RequestOtpResponse>(
                 "/account/request_otp/",
@@ -94,16 +112,16 @@ export function LoginForm({
         }
     }
 
-    const handleOtpChange=(value:string)=>{
-        console.log("change value",value)
+    const handleOtpChange = (value: string) => {
         setOtp(value);
-        console.log("change otp",otp)
-        if(value.length === 6 && !loadingVerify){
-            onSubmitOtp(value);
+        const validationResult = otpFormSchema.safeParse({ otp_code: value });
+        if (validationResult.success && value.length === 6 && !loadingVerify) {
+            onSubmitOtp({ otp_code: value });
         }
-    }
-    async function onSubmitOtp(otpValue:string,e?: React.FormEvent) {
-        e?.preventDefault();
+    };
+
+    async function onSubmitOtp(data: OtpFormType) {
+        
         if (!phone) {
             setError("phone_number", { message: "شماره تلفن یافت نشد" });
             setStep("phone");
@@ -112,10 +130,13 @@ export function LoginForm({
 
         try {
             setLoadingVerify(true);
-            
+
             const result = await apiFetch<Token>("/account/register/", {
                 method: "POST",
-                body: JSON.stringify({ phone_number: phone, otp_code: otpValue }),
+                body: JSON.stringify({
+                    phone_number: phone,
+                    otp_code: data.otp_code,
+                }),
             });
             // assume backend returns user/session data similar to previous flow
             logIn(result);
@@ -123,6 +144,18 @@ export function LoginForm({
             navigate("/dashboard");
         } catch (error) {
             setLoadingVerify(false);
+            // catch expiration error
+            if (error && typeof error === "object" && "otp_code" in error) {
+                const err = error as any;
+                if (err.otp_code === "OTP has expired.") {
+                    toast.error(
+                        "کد تأیید منقضی شده است. لطفاً دوباره درخواست کنید.",
+                    );
+                    setStep("phone");
+                    setOtp("");
+                    return;
+                }
+            }
             const errorMessage =
                 error instanceof Object && "detail" in error
                     ? (error as Record<string, string>).detail
@@ -157,23 +190,13 @@ export function LoginForm({
                                     </label>
                                     <Input
                                         placeholder="09345677891"
-                                        {...register("phone_number", {
-                                            required: "شماره تلفن الزامی است",
-                                            pattern: {
-                                                value: /^09[0-9]{9}$/,
-                                                message:
-                                                    "شماره موبایل باید با 09 شروع شده و 11 رقم باشد",
-                                            },
-                                        })}
+                                        {...register("phone_number")}
                                         id="phone_number"
                                         type="text"
                                     />
                                     {errors?.phone_number && (
                                         <span className="text-red-500">
-                                            {
-                                                (errors as any).phone_number
-                                                    .message
-                                            }
+                                            {errors.phone_number.message}
                                         </span>
                                     )}
                                 </Field>
@@ -189,7 +212,7 @@ export function LoginForm({
                                             "دریافت کد"
                                         )}
                                     </Button>
-                                    {(errors as any)?.root && (
+                                    {errors?.root && (
                                         <span className="text-red-500">
                                             {(errors as any).root.message}
                                         </span>
@@ -203,7 +226,10 @@ export function LoginForm({
                             </FieldGroup>
                         </form>
                     ) : (
-                        <form className="p-6 md:p-8" onSubmit={()=>onSubmitOtp(otp)}>
+                        <form
+                            className="p-6 md:p-8"
+                            onSubmit={handleSubmitOtp(onSubmitOtp)}
+                        >
                             <FieldGroup>
                                 <div className="flex flex-col items-center gap-2 text-center">
                                     <h1 className="text-2xl font-bold">
@@ -222,6 +248,7 @@ export function LoginForm({
                                     </h2>
                                     <div className="flex justify-center">
                                         <InputOTP
+                                            {...registerOtp("otp_code")}
                                             maxLength={6}
                                             value={otp}
                                             onChange={handleOtpChange}
@@ -239,6 +266,11 @@ export function LoginForm({
                                             </InputOTPGroup>
                                         </InputOTP>
                                     </div>
+                                    {otpErrors?.otp_code && (
+                                        <span className="text-red-500 text-sm block text-center mt-2">
+                                            {otpErrors.otp_code.message}
+                                        </span>
+                                    )}
                                 </Field>
 
                                 <Field className="flex items-center gap-2">
@@ -260,7 +292,11 @@ export function LoginForm({
                                         اصلاح شماره
                                     </Button>
                                 </Field>
-
+                                {otpErrors?.root && (
+                                    <span className="text-red-500 text-sm block text-center">
+                                        {otpErrors.root.message}
+                                    </span>
+                                )}
                                 <FieldDescription className="text-center">
                                     اگر کد را دریافت نکردید، دوباره تلاش کنید یا
                                     شماره را بررسی کنید.

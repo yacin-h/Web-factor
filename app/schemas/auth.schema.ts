@@ -1,54 +1,22 @@
-// src/schemas/auth.schema.ts
 import { z } from "zod";
 
-export const SignupSchema = z
-    .object({
-        name: z
-            .string()
-            .min(2, "نام باید حداقل ۲ کاراکتر باشد")
-            .max(50, "نام نمی‌تواند بیشتر از ۵۰ کاراکتر باشد"),
 
-        email: z.string().email("ایمیل وارد شده معتبر نیست"),
-
-        password: z
-            .string()
-            .min(8, "رمز عبور باید حداقل 8 کاراکتر باشد")
-            .max(50, "رمز عبور خیلی طولانی است"),
-
-        phone_number: z
-            .string()
-            .regex(
-                /^09[0-9]{9}$/,
-                "شماره موبایل باید با 09 شروع شده و 11 رقم باشد",
-            ),
-
-        insta_link: z.string().min(3, "کوتاه است لینک").or(z.literal("")),
-
-        store_name: z
-            .string()
-            .min(2, "نام فروشگاه باید حداقل ۲ کاراکتر باشد")
-            .max(100, "نام فروشگاه خیلی طولانی است"),
-
-        store_address: z
-            .string()
-            .min(5, "آدرس خیلی کوتاه است")
-            .max(300, "آدرس خیلی طولانی است"),
-
-        store_description: z
-            .string()
-            .min(5, "توضیحات فروشگاه خیلی کم است")
-            .max(500, "توضیحات نمی‌تواند بیش از ۵۰۰ کاراکتر باشد"),
-        confirmPassword: z.string(),
-    })
-    .refine((data) => data.password === data.confirmPassword, {
-        path: ["confirmPassword"],
-        message: "رمز عبور و تأیید یکسان نیستند",
-    });
-
-export type SignupFormType = z.infer<typeof SignupSchema>;
-
-export const LoginSchema = SignupSchema.pick({
-    email: true,
-    password: true,
+export const phoneFormSchema = z.object({
+  phone_number: z
+    .string()
+    .min(1, "شماره تلفن الزامی است")
+    .regex(/^09[0-9]{9}$/, "شماره موبایل باید با 09 شروع شده و 11 رقم باشد"),
 });
-export type LoginFormType = z.infer<typeof LoginSchema>;
+
+
+export const otpFormSchema = z.object({
+  otp_code: z
+    .string()
+    .min(1, "کد تأیید الزامی است")
+    .length(6, "کد تأیید باید 6 رقم باشد")
+    .regex(/^[0-9]{6}$/, "کد تأیید فقط می‌تواند شامل اعداد باشد"),
+});
+
+
+export type PhoneFormType = z.infer<typeof phoneFormSchema>;
+export type OtpFormType = z.infer<typeof otpFormSchema>;
