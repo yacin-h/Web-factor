@@ -207,25 +207,27 @@ export function LoginForm({
                                     <h2 className="text-center text-lg font-semibold">
                                         {displayOTP}
                                     </h2>
-                                    <InputOTP
-                                        maxLength={6}
-                                        value={otp}
-                                        onChange={(v: any) =>
-                                            setOtp(String(v || ""))
-                                        }
-                                    >
-                                        <InputOTPGroup>
-                                            <InputOTPSlot index={5} />
-                                            <InputOTPSlot index={4} />
-                                            <InputOTPSlot index={3} />
-                                        </InputOTPGroup>
-                                        <InputOTPSeparator />
-                                        <InputOTPGroup>
-                                            <InputOTPSlot index={2} />
-                                            <InputOTPSlot index={1} />
-                                            <InputOTPSlot index={0} />
-                                        </InputOTPGroup>
-                                    </InputOTP>
+                                    <div className="flex justify-center">
+                                        <InputOTP
+                                            maxLength={6}
+                                            value={otp}
+                                            onChange={(v: any) =>
+                                                setOtp(String(v || ""))
+                                            }
+                                        >
+                                            <InputOTPGroup>
+                                                <InputOTPSlot index={5} />
+                                                <InputOTPSlot index={4} />
+                                                <InputOTPSlot index={3} />
+                                            </InputOTPGroup>
+                                            <InputOTPSeparator />
+                                            <InputOTPGroup>
+                                                <InputOTPSlot index={2} />
+                                                <InputOTPSlot index={1} />
+                                                <InputOTPSlot index={0} />
+                                            </InputOTPGroup>
+                                        </InputOTP>
+                                    </div>
                                 </Field>
 
                                 <Field className="flex items-center gap-2">
