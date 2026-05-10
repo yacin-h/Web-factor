@@ -1,0 +1,41 @@
+import type { Dispatch, SetStateAction } from "react";
+
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import type { TemplateType } from "@/routes/invoices/invoice";
+
+
+type TemplateSelectorProps = {
+    template: "classic" | "modern" | "minimal";
+    setTemplate: Dispatch<SetStateAction<TemplateType>>;
+};
+export const TemplateSelector = ({ template,setTemplate }: TemplateSelectorProps) => {
+    return (
+        <Select
+            value={template}
+            onValueChange={(value: string) => {
+                if (
+                    value === "classic" ||
+                    value === "modern" ||
+                    value === "minimal"
+                ) {
+                    setTemplate(value);
+                }
+            }}
+        >
+            <SelectTrigger className="w-fit bg-white">
+                <SelectValue placeholder="Template" />
+            </SelectTrigger>
+            <SelectContent position="popper">
+                <SelectItem value="classic">کلاسیک</SelectItem>
+                <SelectItem value="minimal">مینیمال</SelectItem>
+                <SelectItem value="modern">مدرن</SelectItem>
+            </SelectContent>
+        </Select>
+    );
+};

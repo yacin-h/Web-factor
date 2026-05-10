@@ -3,18 +3,12 @@ import { useParams } from "react-router";
 
 import { Button } from "@/components/ui/button";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 import InvoicePreview from "@/features/invoices/components/invoicePreview";
+import { TemplateSelector } from "@/features/invoices/components/templateSelector";
 import type { Invoice } from "@/features/invoices/types/invoicePreview.type";
 import { apiFetch } from "@/lib/api";
 import type { User } from "@/types/user";
-type TemplateType = "classic" | "modern" | "minimal";
+export type TemplateType = "classic" | "modern" | "minimal";
 export default function Invoice() {
     const { id } = useParams<{ id: string }>();
     const [invoice, setInvoice] = useState<Invoice | null>(null);
@@ -60,30 +54,13 @@ export default function Invoice() {
     return (
         <>
             <div className="mb-4 flex gap-4 print:hidden">
-                <Select
-                    value={template}
-                    onValueChange={(value: string) => {
-                        if (
-                            value === "classic" ||
-                            value === "modern" ||
-                            value === "minimal"
-                        ) {
-                            setTemplate(value);
-                        }
-                    }}
-                >
-                    <SelectTrigger className="w-fit bg-white">
-                        <SelectValue placeholder="Template" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                        <SelectItem value="classic">کلاسیک</SelectItem>
-                        <SelectItem value="minimal">مینیمال</SelectItem>
-                        <SelectItem value="modern">مدرن</SelectItem>
-                    </SelectContent>
-                </Select>
+                <TemplateSelector
+                    setTemplate={setTemplate}
+                    template={template}
+                />
                 <Button onClick={() => window.print()}>چاپ</Button>
             </div>
-            
+
             <InvoicePreview user={user} invoice={invoice} template={template} />
         </>
     );
