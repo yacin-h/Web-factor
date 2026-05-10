@@ -14,31 +14,19 @@ export function buildLogoUrl(
 ): string | null {
     if (!logo) return null;
 
-    const appendCache = (url: string) => {
-        if (cacheBust === undefined || cacheBust === null) return url;
-        const sep = url.includes("?") ? "&" : "?";
-        return `${url}${sep}cb=${encodeURIComponent(String(cacheBust))}`;
-    };
-
-    // If already a full URL, return as-is (with optional cache-bust)
-    if (logo.startsWith("http")) {
-        return appendCache(logo);
+    try {
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || '';
+        const url = new URL(logo, baseUrl);
+        
+        if (cacheBust) {
+            url.searchParams.set('cb', String(cacheBust));
+        }
+        
+        return url.toString();
+    } catch (error) {
+        console.error('Invalid logo URL:', logo, error);
+        return null;
     }
-
-    // If it's a /media path, it's already a full relative path - just add domain
-    if (logo.startsWith("/media")) {
-        return appendCache(`https://yasinhossini94.pythonanywhere.com${logo}`);
-    }
-
-    // If it has /account in the path, return as-is with domain
-    if (logo.startsWith("/account")) {
-        return appendCache(`https://yasinhossini94.pythonanywhere.com${logo}`);
-    }
-
-    // Otherwise, it's a relative path without leading / - add the account prefix
-    return appendCache(
-        `https://yasinhossini94.pythonanywhere.com/account${logo}`,
-    );
 }
 export function phoneFormatter(phone: string | undefined | null): string {
     if (!phone) return "";
