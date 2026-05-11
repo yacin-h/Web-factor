@@ -1,5 +1,7 @@
 import "./app.css";
 
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import {
     isRouteErrorResponse,
     Links,
@@ -25,11 +27,15 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
-                
+
                 {/* ⚡ بهینه‌سازی فونت‌ها */}
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
-                <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-                
+                <link
+                    rel="preconnect"
+                    href="https://fonts.gstatic.com"
+                    crossOrigin="anonymous"
+                />
+
                 {/* ⚡⚡ حیاتی: preload با fetchpriority بالا */}
                 <link
                     rel="preload"
@@ -39,7 +45,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     crossOrigin="anonymous"
                     fetchPriority="high"
                 />
-                
+
                 {/* پیش‌بارگذاری فونت ارقام با اولویت پایین‌تر */}
                 <link
                     rel="preload"
@@ -48,23 +54,21 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     type="font/woff2"
                     crossOrigin="anonymous"
                 />
-                
+
                 {/* ⚡ کاهش CSS رندر بلاک کننده */}
-                <link 
-                    rel="preload" 
-                    href="/assets/root-3sitnf4R.css" 
-                    as="style" 
+                <link
+                    rel="preload"
+                    href="/assets/root-3sitnf4R.css"
+                    as="style"
                     fetchPriority="high"
                 />
-                
+
                 <Meta />
                 <Links />
             </head>
             <body suppressHydrationWarning>
                 <DirectionProvider dir="rtl">
-                    <TooltipProvider>
-                        {children}
-                    </TooltipProvider>
+                    <TooltipProvider>{children}</TooltipProvider>
                 </DirectionProvider>
                 <ScrollRestoration />
                 <Scripts />
@@ -75,11 +79,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+    const queryClient = new QueryClient({
+        defaultOptions:{
+            queries:{
+                staleTime:5*60*1000, //5 min
+                retry:2, // 2 times after getting error
+                refetchOnWindowFocus:false
+            }
+        }
+    });
     return (
         <ThemeProvider>
-            <div className="font-vazir">
-                <Outlet />
-            </div>
+            <QueryClientProvider client={queryClient}>
+                <div className="font-vazir">
+                    <Outlet />
+                </div>
+                <ReactQueryDevtools initialIsOpen={false} />
+            </QueryClientProvider>
         </ThemeProvider>
     );
 }
