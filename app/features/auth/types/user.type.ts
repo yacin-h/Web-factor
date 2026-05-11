@@ -22,7 +22,6 @@ export type UserCreate = {
     store_address: string;
     insta_link: string;
 };
-
 export type UserUpdate = {
     first_name?: string;
     last_name?: string;
