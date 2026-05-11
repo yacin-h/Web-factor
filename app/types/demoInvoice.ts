@@ -1,4 +1,7 @@
-import type { InvoiceStatus, PaymentMode } from "@/constants/invoice";
+import type {
+    InvoiceStatus,
+    PaymentMode,
+} from "@/features/invoices/constants/invoice";
 
 /**
  * Product associated with an invoice item

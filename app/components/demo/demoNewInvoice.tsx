@@ -22,7 +22,10 @@ import {
     MESSAGES,
     PLACEHOLDERS,
 } from "@/constants/i18n";
-import { invoiceStatusOptions, paymentModeOptions } from "@/constants/invoice";
+import {
+    invoiceStatusOptions,
+    paymentModeOptions,
+} from "@/features/invoices/constants/invoice";
 import {
     calculateInvoiceTotal,
     generateInvoiceId,

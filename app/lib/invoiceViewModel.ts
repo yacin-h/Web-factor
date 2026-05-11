@@ -1,7 +1,10 @@
 // lib/invoiceViewModel.ts
 import num2persian from "num2persian";
 
-import { invoiceStatusFa, paymentModeFa } from "@/constants/invoice";
+import {
+    invoiceStatusFa,
+    paymentModeFa,
+} from "@/features/invoices/constants/invoice";
 import type { Invoice } from "@/features/invoices/types/invoicePreview.type";
 import { formatPersianDateTime } from "@/lib/dateFormatter";
 
@@ -11,7 +14,6 @@ type InvoiceViewModelProps = {
     invoice: Invoice;
 };
 export function buildInvoiceViewModel({ invoice }: InvoiceViewModelProps) {
- 
     return {
         invoiceNumber: invoice.invoice_number,
         createdAt: formatPersianDateTime(invoice.created),
@@ -33,7 +35,7 @@ export function buildInvoiceViewModel({ invoice }: InvoiceViewModelProps) {
         discount: invoice.discount,
         total: invoice.total_amount ?? 0,
         descriptions: invoice.descriptions,
-        title:invoice.title,
+        title: invoice.title,
         totalText: invoice.total_amount
             ? num2persian(invoice.total_amount)
             : "صفر",

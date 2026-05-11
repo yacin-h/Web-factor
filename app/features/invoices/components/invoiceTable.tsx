@@ -12,7 +12,7 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { invoiceStatusFa } from "@/constants/invoice";
+import { invoiceStatusFa } from "@/features/invoices/constants/invoice";
 import { useDeleteInvoice } from "@/features/invoices/hooks/useDeleteInvoice";
 import { useInvoices } from "@/features/invoices/hooks/useInvoices";
 import { useMarkInvoiceAsPaid } from "@/features/invoices/hooks/useMarkInvoiceAsPaid";

@@ -15,8 +15,11 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
-import { invoiceStatusFa } from "@/constants/invoice";
-import type { Invoice, PaginatedInvoiceList } from "@/features/invoices/types/invoicePreview.type";
+import { invoiceStatusFa } from "@/features/invoices/constants/invoice";
+import type {
+    Invoice,
+    PaginatedInvoiceList,
+} from "@/features/invoices/types/invoicePreview.type";
 import { apiFetch } from "@/lib/api";
 import { useCacheStore } from "@/store/cacheStore";
 import type { DashboardData } from "@/types/dashboardData";
