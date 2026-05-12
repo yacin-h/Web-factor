@@ -69,7 +69,7 @@ export default function Dashboard() {
             </TableRow>
         ));
     };
-    if (isLoading || recentLoading) return <LoadingSpinner />;
+    if (isLoading ) return <LoadingSpinner />;
     return (
         <main className="text-right">
             <h1 className="text-2xl font-bold mb-4">داشبورد</h1>
