@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
 import type { Invoice } from "@/features/invoices/types/invoicePreview.type";
+import type {
+    PaginatedProductList,
+    Product,
+} from "@/features/products/types/product";
 import { apiFetch } from "@/lib/api";
 import type { InvoiceFormType } from "@/schemas/invoice.schema";
 import type { Customer, PaginatedCustomerList } from "@/types/customer";
-import type { PaginatedProductList, Product } from "@/types/product";
 
 interface UseInvoiceDataProps {
     invoiceID?: string;

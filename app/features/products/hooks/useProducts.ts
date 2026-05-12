@@ -1,7 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 
+import type {
+    PaginatedProductList,
+    Product,
+} from "@/features/products/types/product";
 import { apiFetch } from "@/lib/api";
-import type { PaginatedProductList, Product } from "@/types/product";
 
 type UseProductParams = {
     search?: string;
@@ -20,9 +23,8 @@ interface UseProductsReturn {
 export function useProducts({
     page = 1,
     pageSize = 10,
-    search = ""
-}: UseProductParams):UseProductsReturn {
-    
+    search = "",
+}: UseProductParams): UseProductsReturn {
     // make params
     const params = new URLSearchParams();
     params.append("page", page.toString());
@@ -32,10 +34,8 @@ export function useProducts({
         params.append("search", search.trim());
     }
 
-
-
-    const { data, isLoading, error, refetch,isFetching,isError } = useQuery({
-        queryKey: ["products", { search, page,pageSize }],
+    const { data, isLoading, error, refetch, isFetching, isError } = useQuery({
+        queryKey: ["products", { search, page, pageSize }],
         queryFn: async () => {
             const url = `/user/products/?${params.toString()}`;
             return await apiFetch<PaginatedProductList>(url);
@@ -50,6 +50,6 @@ export function useProducts({
         error,
         refetch,
         isFetching,
-        isError
+        isError,
     };
 }
