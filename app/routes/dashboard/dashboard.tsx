@@ -2,9 +2,6 @@ import clsx from "clsx";
 import { CircleDollarSign, Clock, Scroll } from "lucide-react";
 import { useEffect, useState } from "react";
 
-import InvoiceStatCard from "@/features/dashboard/components/InvoiceStatCard";
-import { TopProductsChart } from "@/features/dashboard/components/topProductChart";
-import { TrendChart } from "@/features/dashboard/components/trendChart";
 import { Badge } from "@/components/ui/badge";
 import LoadingSpinner from "@/components/ui/loadingSpinner";
 import {
@@ -15,59 +12,40 @@ import {
     TableHeader,
     TableRow,
 } from "@/components/ui/table";
+import InvoiceStatCard from "@/features/dashboard/components/InvoiceStatCard";
+import { TopProductsChart } from "@/features/dashboard/components/topProductChart";
+import { TrendChart } from "@/features/dashboard/components/trendChart";
+import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardStats";
 import { invoiceStatusFa } from "@/features/invoices/constants/invoice";
 import type {
     Invoice,
     PaginatedInvoiceList,
 } from "@/features/invoices/types/invoicePreview.type";
 import { apiFetch } from "@/lib/api";
-import type { DashboardData } from "@/features/dashboard/types/dashboard.type";
 
 export default function Dashboard() {
-    const [loading, setLoading] = useState(true);
     const [recentInvoices, setRecentInvoices] = useState<Invoice[]>([]);
     const [pendingInvoices, setPendingInvoices] = useState<Invoice[]>([]);
+    const { data: dashboardData, isLoading: statsLoading } =
+        useDashboardStats();
 
-    const [dashboardData, setDashboardData] = useState<DashboardData>({
-        total_invoice: 0,
-        total_revenue: 0,
-        outstanding_amount: 0,
-        pending_count: 0,
-        trends: [
-            {
-                date: "2025-12-31T06:50:15.300Z",
-                total: 0,
-            },
-        ],
-        top_products: [
-            {
-                product__name: "string",
-                quantity: 0,
-            },
-        ],
-    });
-
+    const isLoading = statsLoading;
     useEffect(() => {
         const init = async () => {
             try {
-                const [dashboardData, recentData, pendingData] =
-                    await Promise.all([
-                        apiFetch<DashboardData>("/user/dashboard/"),
-                        apiFetch<PaginatedInvoiceList>(
-                            "/user/invoices/?page=1&page_size=5",
-                        ),
-                        apiFetch<PaginatedInvoiceList>(
-                            "/user/invoices/?page=1&page_size=5&status=pending",
-                        ),
-                    ]);
+                const [recentData, pendingData] = await Promise.all([
+                    apiFetch<PaginatedInvoiceList>(
+                        "/user/invoices/?page=1&page_size=5",
+                    ),
+                    apiFetch<PaginatedInvoiceList>(
+                        "/user/invoices/?page=1&page_size=5&status=pending",
+                    ),
+                ]);
 
-                setDashboardData(dashboardData);
                 setRecentInvoices(recentData.results);
                 setPendingInvoices(pendingData.results);
             } catch (err) {
                 console.error("error fetching dashboard data", err);
-            } finally {
-                setLoading(false);
             }
         };
 
@@ -114,7 +92,7 @@ export default function Dashboard() {
             </TableRow>
         ));
     };
-    if (loading) return <LoadingSpinner />;
+    if (isLoading) return <LoadingSpinner />;
     return (
         <main className="text-right">
             <h1 className="text-2xl font-bold mb-4">داشبورد</h1>
@@ -122,7 +100,7 @@ export default function Dashboard() {
                 {/* 💰 فروش کل */}
                 <InvoiceStatCard
                     title="فروش کل"
-                    value={dashboardData.total_revenue}
+                    value={dashboardData?.total_revenue || 0}
                     unit="تومان"
                     icon={CircleDollarSign}
                     showPersianText
@@ -132,7 +110,7 @@ export default function Dashboard() {
                 {/* 📄 تعداد کل فاکتورها */}
                 <InvoiceStatCard
                     title="تعداد کل فاکتورها"
-                    value={dashboardData.total_invoice}
+                    value={dashboardData?.total_invoice || 0}
                     unit="عدد"
                     icon={Scroll}
                     className="border-l-4 border-slate-400 text-slate-600"
@@ -141,7 +119,7 @@ export default function Dashboard() {
                 {/* ⏳ فاکتورهای در انتظار */}
                 <InvoiceStatCard
                     title="تعداد فاکتورهای در انتظار"
-                    value={dashboardData.pending_count}
+                    value={dashboardData?.pending_count || 0}
                     unit="عدد"
                     icon={Clock}
                     className="border-l-4 border-amber-400 text-amber-600"
@@ -150,7 +128,7 @@ export default function Dashboard() {
                 {/* 💸 در انتظار پرداخت */}
                 <InvoiceStatCard
                     title="در انتظار پرداخت"
-                    value={dashboardData.outstanding_amount}
+                    value={dashboardData?.outstanding_amount || 0}
                     unit="تومان"
                     icon={CircleDollarSign}
                     showPersianText
@@ -204,8 +182,14 @@ export default function Dashboard() {
                 </section>
             </div>
             <div className="mt-5 grid grid-cols-1 md:grid-cols-2 auto-rows-fr gap-4">
-                <TrendChart chartData={dashboardData.trends} />
-                <TopProductsChart chartData={dashboardData.top_products} />
+                {dashboardData?.trends && (
+                    <TrendChart chartData={dashboardData?.trends} />
+                )}
+                {
+                    dashboardData?.top_products &&
+                    <TopProductsChart chartData={dashboardData?.top_products} />
+                    
+                }
             </div>
         </main>
     );
