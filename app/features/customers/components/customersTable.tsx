@@ -1,10 +1,6 @@
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState } from "react";
 
-import type {
-    Customer,
-    PaginatedCustomerList,
-} from "@/features/clients/types/customer";
+import type { Customer } from "@/features/customers/types/customer";
 import DeleteConfirm from "@/features/shared/components/ui/deleteConfirm";
 import {
     Pagination,
@@ -22,48 +18,30 @@ import {
     TableHeader,
     TableRow,
 } from "@/features/shared/components/ui/table";
-import { apiFetch } from "@/lib/api";
 
+import { useCustomers } from "../hooks/useCustomers";
+import { useDeleteCustomer } from "../hooks/useDeleteCustomer";
 import CustomersSkeleton from "./customersSkeleton";
-export default function CustomersTable({ reload }: { reload: number }) {
-    const [loading, setLoading] = useState(true);
-    const [customers, setCustomers] = useState<Customer[]>([]);
+export default function CustomersTable() {
     const [page, setPage] = useState(1);
     const pageSize = 10;
-    const [count, setCount] = useState(0);
+
+    const { data, isLoading } = useCustomers({
+        page,
+        pageSize,
+    });
+    const { mutateAsync: deleteCustomer } =
+        useDeleteCustomer();
+    const customers = data?.results || [];
+    const count = data?.count || 0;
     const totalPages = Math.ceil(count / pageSize);
 
-    useEffect(() => {
-        const fetchCustomers = async () => {
-            setLoading(true);
-
-            try {
-                const data = await apiFetch<PaginatedCustomerList>(
-                    `/account/customers/?page=${page}&page_size=${pageSize}`,
-                );
-                setCustomers(data.results);
-                setCount(data.count);
-            } catch (err) {
-                console.log(err);
-            }
-
-            setLoading(false);
-        };
-
-        fetchCustomers();
-    }, [reload, page]);
     const handleDelete = async (id: number) => {
-        try {
-            await apiFetch(`/account/customers/${id}/`, { method: "DELETE" });
-            setCustomers(customers.filter((c: Customer) => c.id !== id));
-            toast.success("مشتری حذف شد");
-        } catch (err: unknown) {
-            if (err instanceof Error) toast.error(err.message);
-        }
+        await deleteCustomer(id);
     };
     return (
         <>
-            {loading ? (
+            {isLoading ? (
                 <CustomersSkeleton />
             ) : (
                 <>
