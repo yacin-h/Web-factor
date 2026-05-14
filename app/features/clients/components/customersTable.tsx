@@ -1,6 +1,19 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
+import type {
+    Customer,
+    PaginatedCustomerList,
+} from "@/features/clients/types/customer";
+import DeleteConfirm from "@/features/shared/components/ui/deleteConfirm";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/features/shared/components/ui/pagination";
 import {
     Table,
     TableBody,
@@ -10,17 +23,7 @@ import {
     TableRow,
 } from "@/features/shared/components/ui/table";
 import { apiFetch } from "@/lib/api";
-import type { Customer, PaginatedCustomerList } from "@/types/customer";
 
-import DeleteConfirm from "../../features/shared/components/ui/deleteConfirm";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "../../features/shared/components/ui/pagination";
 import CustomersSkeleton from "./customersSkeleton";
 export default function CustomersTable({ reload }: { reload: number }) {
     const [loading, setLoading] = useState(true);

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 
+import type { CustomerCreate } from "@/features/clients/types/customer";
 import {
     Dialog,
     DialogContent,
@@ -11,11 +12,10 @@ import {
     DialogTrigger,
 } from "@/features/shared/components/ui/dialog";
 import { apiFetch } from "@/lib/api";
-import type { CustomerCreate } from "@/types/customer";
 
-import { Button } from "../../features/shared/components/ui/button";
-import { Input } from "../../features/shared/components/ui/input";
-import LoadingSpinner from "../../features/shared/components/ui/loadingSpinner";
+import { Button } from "../../shared/components/ui/button";
+import { Input } from "../../shared/components/ui/input";
+import LoadingSpinner from "../../shared/components/ui/loadingSpinner";
 
 export default function AddCustomerModal({
     onAdded,

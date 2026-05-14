@@ -5,7 +5,7 @@ import {
     InputGroupAddon,
     InputGroupButton,
     InputGroupInput,
-} from "../../features/shared/components/ui/input-group";
+} from "../../shared/components/ui/input-group";
 import AddCustomerModal from "./addCustomerModal";
 
 export default function Header({ onAdded }: { onAdded: () => void }) {
