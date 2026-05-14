@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import CustomersTable from "@/features/clients/components/customersTable";
-import Header from "@/features/clients/components/header";
+import CustomersTable from "@/features/customers/components/customersTable";
+import Header from "@/features/customers/components/header";
 
 export default function Customers() {
     const [reload, setReload] = useState(0);
