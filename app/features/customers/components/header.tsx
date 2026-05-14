@@ -8,14 +8,14 @@ import {
 } from "../../shared/components/ui/input-group";
 import AddCustomerModal from "./addCustomerModal";
 
-export default function Header({ onAdded }: { onAdded: () => void }) {
+export default function Header() {
     return (
         <header className="mx-5">
             <h1 className="title">مشتریان</h1>
             <div className="flex justify-between gap-3">
-                <AddCustomerModal onAdded={onAdded} />
+                <AddCustomerModal  />
                 {/* search btn */}
-                <InputGroup>
+                <InputGroup >
                     <InputGroupInput placeholder="جستجو..." />
                     <InputGroupAddon>
                         <SearchIcon />
