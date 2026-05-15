@@ -9,4 +9,4 @@ export default function Customers() {
             <CustomersTable  />
         </>
     );
-}
+} 
