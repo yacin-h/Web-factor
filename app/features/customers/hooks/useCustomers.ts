@@ -9,7 +9,7 @@ type useCustomersParams = {
 };
 export function useCustomers({ page = 1, pageSize = 10 }: useCustomersParams) {
     return useQuery({
-        queryKey: ["customers", page, pageSize],
+        queryKey: ["customers", {page, pageSize}],
         queryFn: async () => {
             return await apiFetch<PaginatedCustomerList>(
                 `/account/customers/?page=${page}&page_size=${pageSize}`,
