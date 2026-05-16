@@ -1,8 +1,8 @@
 import { Link } from "react-router";
 import { useParams } from "react-router";
 
-import { Button } from "@/features/shared/components/ui/button";
 import NewInvoiceForm from "@/features/invoices/components/newInvoiceForm";
+import { Button } from "@/features/shared/components/ui/button";
 export default function NewInvoice() {
     const { id } = useParams<{ id: string }>();
     const isEdit = Boolean(id);
@@ -17,7 +17,7 @@ export default function NewInvoice() {
                     <Link to="/invoices">بازگشت به فاکتورها</Link>
                 </Button>
             </div>
-            <NewInvoiceForm invoiceID={id} />
+            <NewInvoiceForm  />
         </>
     );
 }

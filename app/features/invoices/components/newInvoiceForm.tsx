@@ -4,6 +4,7 @@ import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import { useCustomers } from "@/features/customers/hooks/useCustomers";
 import {
     type InvoiceFormType,
     InvoiceSchema,
@@ -36,22 +37,19 @@ import {
     TableHeader,
     TableRow,
 } from "@/features/shared/components/ui/table";
-import { useInvoiceData } from "@/hooks/useInvoiceData";
 import { apiFetch } from "@/lib/api";
 
 import { Combobox } from "../../shared/components/ui/comboBox";
 import LoadingSpinner from "../../shared/components/ui/loadingSpinner";
 import { Switch } from "../../shared/components/ui/switch";
 
-export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
+export default function NewInvoiceForm() {
     const [vatEnabled, setVatEnabled] = useState(false);
-    const isEdit = Boolean(invoiceID);
     const Navigate = useNavigate();
     const {
         control,
         register,
         handleSubmit,
-        reset,
         formState: { errors, isSubmitting },
         watch,
         setValue,
@@ -72,13 +70,11 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
         },
     });
     const { products } = useProducts({});
-    const { customers, isLoading } = useInvoiceData({
-        invoiceID,
-        reset,
-    });
+    const { data, isLoading } = useCustomers({});
+    const customers = data?.results;
     const watchedItems = watch("items");
     const addedValue = watch("added_value");
-    const customerOptions = customers.map((c) => ({
+    const customerOptions = customers?.map((c) => ({
         value: c.name,
         id: c.id,
     }));
@@ -102,29 +98,18 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
     }, [vatEnabled, watchedItems, setValue]);
     const onSubmit = async (data: InvoiceFormType) => {
         try {
-            const response = await apiFetch<Invoice>(
-                isEdit ? `/user/invoices/${invoiceID}/` : "/user/invoices/",
-                {
-                    method: isEdit ? "PATCH" : "POST",
-                    body: JSON.stringify(data),
-                },
-            );
+            const response = await apiFetch<Invoice>("/user/invoices/", {
+                method: "POST",
+                body: JSON.stringify(data),
+            });
 
-            toast.success(
-                isEdit
-                    ? "فاکتور با موفقیت ویرایش شد!"
-                    : "فاکتور با موفقیت ساخته شد!",
-            );
+            toast.success("فاکتور با موفقیت ساخته شد!");
 
             // After success, navigate to invoice detail/preview page
             Navigate(`/invoices/${response.id}`);
         } catch (error) {
             console.error("error:", error);
-            toast.error(
-                invoiceID
-                    ? "خطا در ویرایش فاکتور. لطفا دوباره تلاش کنید."
-                    : "خطا در ساخت فاکتور. لطفا دوباره تلاش کنید.",
-            );
+            toast.error("خطا در ساخت فاکتور. لطفا دوباره تلاش کنید.");
         }
     };
     if (isLoading) {
@@ -133,130 +118,120 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
     return (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Product Selection */}
-            {!isEdit && (
-                <>
-                    <div className="space-y-3 ">
-                        <Label htmlFor="title">عنوان فاکتور</Label>
-                        <Input {...register("title")} id="title" />
-                        {errors.title && (
+
+            <div className="space-y-3 ">
+                <Label htmlFor="title">عنوان فاکتور</Label>
+                <Input {...register("title")} id="title" />
+                {errors.title && (
+                    <span className="text-red-500">{errors.title.message}</span>
+                )}
+            </div>
+            <div className="flex flex-col gap-2 sm:w-6/12">
+                <Label htmlFor="barcode">انتخاب کالا با بارکد</Label>
+                <Input
+                    autoFocus={true}
+                    type="text"
+                    id="barcode"
+                    placeholder="بارکد رو وارد کن"
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault();
+                            const barcode = e.currentTarget.value.trim();
+                            if (!barcode) return;
+
+                            const product = products.find(
+                                (p) => p.barcode === barcode,
+                            );
+                            if (!product) {
+                                toast.error("محصولی با این بارکد پیدا نشد");
+                                return;
+                            }
+
+                            // چک کنیم محصول قبلا اضافه نشده باشه
+                            const existing = watchedItems.find(
+                                (i) => i.product_id === product.id,
+                            );
+                            if (existing) {
+                                toast("محصول قبلا اضافه شده", {
+                                    icon: "⚠️",
+                                });
+                                return;
+                            }
+
+                            // اضافه کردن محصول به فرم
+                            setValue("items", [
+                                ...watchedItems,
+                                {
+                                    product_id: product.id,
+                                    quantity: 1,
+                                    price: product.price,
+                                },
+                            ]);
+
+                            e.currentTarget.value = ""; // ریست input
+                            toast.success(`${product.name} اضافه شد`);
+                        }
+                    }}
+                />
+            </div>
+
+            <Controller
+                control={control}
+                name="items"
+                render={({ field }) => (
+                    <div className="flex flex-col gap-2">
+                        <Label>انتخاب با نام کالا</Label>
+                        <MultiSelect
+                            values={field.value.map((item) =>
+                                String(item.product_id),
+                            )}
+                            onValuesChange={(vals) => {
+                                const newItems = vals.map((val) => {
+                                    const existing = field.value.find(
+                                        (i) => i.product_id === Number(val),
+                                    );
+                                    if (existing) return existing;
+                                    const product = products.find(
+                                        (p) => p.id === Number(val),
+                                    );
+                                    return {
+                                        product_id: Number(val),
+                                        quantity: 1,
+                                        price: product?.price ?? 0,
+                                    };
+                                });
+                                field.onChange(newItems);
+                            }}
+                        >
+                            <MultiSelectTrigger className="w-full hover:bg-primary-foreground bg-primary-foreground">
+                                <MultiSelectValue
+                                    placeholder="کالا رو جستجو کن"
+                                    overflowBehavior="wrap"
+                                />
+                            </MultiSelectTrigger>
+
+                            <MultiSelectContent search>
+                                <MultiSelectGroup>
+                                    {products.map((product) => (
+                                        <MultiSelectItem
+                                            key={product.id}
+                                            value={String(product.id)}
+                                        >
+                                            {product.name}
+                                        </MultiSelectItem>
+                                    ))}
+                                </MultiSelectGroup>
+                            </MultiSelectContent>
+                        </MultiSelect>
+                        {errors.items && (
                             <span className="text-red-500">
-                                {errors.title.message}
+                                {errors.items.message ||
+                                    "حداقل یک آیتم الزامی است"}
                             </span>
                         )}
                     </div>
-                    <div className="flex flex-col gap-2 sm:w-6/12">
-                        <Label htmlFor="barcode">انتخاب کالا با بارکد</Label>
-                        <Input
-                            autoFocus={true}
-                            type="text"
-                            id="barcode"
-                            placeholder="بارکد رو وارد کن"
-                            onKeyDown={(e) => {
-                                if (e.key === "Enter") {
-                                    e.preventDefault();
-                                    const barcode =
-                                        e.currentTarget.value.trim();
-                                    if (!barcode) return;
-
-                                    const product = products.find(
-                                        (p) => p.barcode === barcode,
-                                    );
-                                    if (!product) {
-                                        toast.error(
-                                            "محصولی با این بارکد پیدا نشد",
-                                        );
-                                        return;
-                                    }
-
-                                    // چک کنیم محصول قبلا اضافه نشده باشه
-                                    const existing = watchedItems.find(
-                                        (i) => i.product_id === product.id,
-                                    );
-                                    if (existing) {
-                                        toast("محصول قبلا اضافه شده", {
-                                            icon: "⚠️",
-                                        });
-                                        return;
-                                    }
-
-                                    // اضافه کردن محصول به فرم
-                                    setValue("items", [
-                                        ...watchedItems,
-                                        {
-                                            product_id: product.id,
-                                            quantity: 1,
-                                            price: product.price,
-                                        },
-                                    ]);
-
-                                    e.currentTarget.value = ""; // ریست input
-                                    toast.success(`${product.name} اضافه شد`);
-                                }
-                            }}
-                        />
-                    </div>
-
-                    <Controller
-                        control={control}
-                        name="items"
-                        render={({ field }) => (
-                            <div className="flex flex-col gap-2">
-                                <Label>انتخاب با نام کالا</Label>
-                                <MultiSelect
-                                    values={field.value.map((item) =>
-                                        String(item.product_id),
-                                    )}
-                                    onValuesChange={(vals) => {
-                                        const newItems = vals.map((val) => {
-                                            const existing = field.value.find(
-                                                (i) =>
-                                                    i.product_id ===
-                                                    Number(val),
-                                            );
-                                            if (existing) return existing;
-                                            const product = products.find(
-                                                (p) => p.id === Number(val),
-                                            );
-                                            return {
-                                                product_id: Number(val),
-                                                quantity: 1,
-                                                price: product?.price ?? 0,
-                                            };
-                                        });
-                                        field.onChange(newItems);
-                                    }}
-                                >
-                                    <MultiSelectTrigger className="w-full hover:bg-primary-foreground bg-primary-foreground">
-                                        <MultiSelectValue
-                                            placeholder="کالا رو جستجو کن"
-                                            overflowBehavior="wrap"
-                                        />
-                                    </MultiSelectTrigger>
-
-                                    <MultiSelectContent search>
-                                        <MultiSelectGroup>
-                                            {products.map((product) => (
-                                                <MultiSelectItem
-                                                    key={product.id}
-                                                    value={String(product.id)}
-                                                >
-                                                    {product.name}
-                                                </MultiSelectItem>
-                                            ))}
-                                        </MultiSelectGroup>
-                                    </MultiSelectContent>
-                                </MultiSelect>
-                                {errors.items && (
-                                    <span className="text-red-500">
-                                        {errors.items.message ||
-                                            "حداقل یک آیتم الزامی است"}
-                                    </span>
-                                )}
-                            </div>
-                        )}
-                    />
-                </>
-            )}
+                )}
+            />
             {/* Items Table */}
             {watchedItems.length > 0 && (
                 <div>
@@ -318,7 +293,6 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                                                 render={({ field }) => (
                                                     <Input
                                                         {...field}
-                                                        disabled={isEdit}
                                                         type="number"
                                                         min={0}
                                                         step="1"
@@ -358,47 +332,49 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
                 render={({ field }) => (
                     <div className="space-y-2 sm:w-6/12">
                         <Label>انتخاب و جستجوی مشتری</Label>
-                        <Combobox
-                            items={customerOptions.map((c) => ({
-                                value: c.value,
-                                label: c.value,
-                            }))}
-                            value={
-                                field.value
-                                    ? customers.find(
-                                          (c) => c.id === field.value,
-                                      )?.name
-                                    : undefined
-                            }
-                            onChange={(val) => {
-                                const selectedCustomer = customers.find(
-                                    (c) => c.name === val,
-                                );
+                        {customerOptions && (
+                            <Combobox
+                                items={customerOptions?.map((c) => ({
+                                    value: c.value,
+                                    label: c.value,
+                                }))}
+                                value={
+                                    field.value
+                                        ? customers?.find(
+                                              (c) => c.id === field.value,
+                                          )?.name
+                                        : undefined
+                                }
+                                onChange={(val) => {
+                                    const selectedCustomer = customers?.find(
+                                        (c) => c.name === val,
+                                    );
 
-                                if (!selectedCustomer) return;
+                                    if (!selectedCustomer) return;
 
-                                field.onChange(selectedCustomer.id);
+                                    field.onChange(selectedCustomer.id);
 
-                                setValue(
-                                    "customer_name",
-                                    selectedCustomer.name,
-                                );
-                                setValue(
-                                    "customer_phone_number",
-                                    selectedCustomer.phone_number || "",
-                                );
-                                setValue(
-                                    "customer_email",
-                                    selectedCustomer.email || "",
-                                );
-                                setValue(
-                                    "customer_address",
-                                    selectedCustomer.address || "",
-                                );
-                            }}
-                            placeholder="مشتری را انتخاب کن"
-                            searchPlaceholder="جستجوی مشتری..."
-                        />
+                                    setValue(
+                                        "customer_name",
+                                        selectedCustomer.name,
+                                    );
+                                    setValue(
+                                        "customer_phone_number",
+                                        selectedCustomer.phone_number || "",
+                                    );
+                                    setValue(
+                                        "customer_email",
+                                        selectedCustomer.email || "",
+                                    );
+                                    setValue(
+                                        "customer_address",
+                                        selectedCustomer.address || "",
+                                    );
+                                }}
+                                placeholder="مشتری را انتخاب کن"
+                                searchPlaceholder="جستجوی مشتری..."
+                            />
+                        )}
                         {errors.id && (
                             <span className="text-red-500">
                                 {errors.id.message}
@@ -575,11 +551,7 @@ export default function NewInvoiceForm({ invoiceID }: { invoiceID?: string }) {
             </div>
 
             <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting
-                    ? "در حال ساخت..."
-                    : isEdit
-                      ? "ویرایش فاکتور"
-                      : "ساخت فاکتور"}
+                {isSubmitting ? "در حال ساخت..." : "ساخت فاکتور"}
             </Button>
         </form>
     );
