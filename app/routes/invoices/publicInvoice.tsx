@@ -18,7 +18,7 @@ import Minimal from "@/features/invoices/components/templates/minimal";
 import Modern from "@/features/invoices/components/templates/modern";
 import type { Invoice } from "@/features/invoices/types/invoicePreview.type";
 import { apiFetch } from "@/lib/api";
-import { buildInvoiceViewModel } from "@/lib/invoiceViewModel";
+import { buildInvoiceViewModel } from "@/features/invoices/libs/invoiceViewModel";
 import type { PublicInvoice } from "@/types/invoice";
 
 export default function PublicInvoice() {

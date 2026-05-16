@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router";
 
+import { buildInvoiceViewModel } from "@/features/invoices/libs/invoiceViewModel";
 import { BUTTON_LABELS, MESSAGES } from "@/features/shared/constants/i18n";
-import { buildInvoiceViewModel } from "@/lib/invoiceViewModel";
 import { useInvoiceStore } from "@/store/demoInvoice";
 
 import Minimal from "../../features/invoices/components/templates/minimal";

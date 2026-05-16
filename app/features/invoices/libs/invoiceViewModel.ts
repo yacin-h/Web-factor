@@ -8,7 +8,7 @@ import {
 import type { Invoice } from "@/features/invoices/types/invoicePreview.type";
 import { formatPersianDateTime } from "@/lib/dateFormatter";
 
-import { phoneFormatter } from "./utils";
+import { phoneFormatter } from "../../../lib/utils";
 
 type InvoiceViewModelProps = {
     invoice: Invoice;

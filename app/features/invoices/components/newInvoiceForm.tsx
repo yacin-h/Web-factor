@@ -4,6 +4,12 @@ import { Controller, useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import {
+    type InvoiceFormType,
+    InvoiceSchema,
+} from "@/features/invoices/schema/invoice.schema";
+import type { Invoice } from "@/features/invoices/types/invoicePreview.type";
+import { useProducts } from "@/features/products/hooks/useProducts";
 import { Button } from "@/features/shared/components/ui/button";
 import { Input } from "@/features/shared/components/ui/input";
 import { Label } from "@/features/shared/components/ui/label";
@@ -30,11 +36,8 @@ import {
     TableHeader,
     TableRow,
 } from "@/features/shared/components/ui/table";
-import type { Invoice } from "@/features/invoices/types/invoicePreview.type";
-import { useProducts } from "@/features/products/hooks/useProducts";
 import { useInvoiceData } from "@/hooks/useInvoiceData";
 import { apiFetch } from "@/lib/api";
-import { type InvoiceFormType, InvoiceSchema } from "@/schemas/invoice.schema";
 
 import { Combobox } from "../../shared/components/ui/comboBox";
 import LoadingSpinner from "../../shared/components/ui/loadingSpinner";
