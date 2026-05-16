@@ -3,16 +3,10 @@ export type Product = {
     name: string;
     description: string;
     buy: number;
+    price: number;
     barcode: string;
-    price: number;
 };
-export type ProductCreate = {
-    name: string;
-    description: string;
-    buy: number;
-    price: number;
-    barcode?: string;
-};
+export type ProductCreate = Omit <Product,'id'>
 export type PaginatedProductList = {
     count: number;
     next?: string | null;
