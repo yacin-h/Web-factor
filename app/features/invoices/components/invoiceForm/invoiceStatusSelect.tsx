@@ -10,11 +10,11 @@ import {
 } from "@/features/shared/components/ui/select";
 
 import type { InvoiceFormType } from "../../schema/invoice.schema";
-const {
-    control,
-    formState: { errors },
-} = useFormContext<InvoiceFormType>();
 export default function InvoiceStatusSelect() {
+    const {
+        control,
+        formState: { errors },
+    } = useFormContext<InvoiceFormType>();
     return (
         <div className="space-y-3 ">
             <Label htmlFor="status">وضعیت پرداخت</Label>
