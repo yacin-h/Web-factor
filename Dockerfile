@@ -1,40 +1,26 @@
-# Stage 1: Install development dependencies
-FROM node:20-alpine AS development-dependencies-env
+# Stage 1: Build
+FROM node:22-alpine AS builder
 WORKDIR /app
+
+# Copy package files
 COPY package*.json ./
 RUN npm ci
 
-# Stage 2: Install production dependencies
-FROM node:20-alpine AS production-dependencies-env
-WORKDIR /app
-COPY package*.json ./
-RUN npm ci --omit=dev
-
-# Stage 3: Build the React app
-FROM node:20-alpine AS build-env
-WORKDIR /app
-# Copy node_modules from development stage
-COPY --from=development-dependencies-env /app/node_modules ./node_modules
-# Copy all source code
+# Copy source
 COPY . .
-# Run the build command (outputs to ./build directory)
-RUN npm run build
 
-# Stage 4: Create the final production image
-FROM node:20-alpine AS production-app
-WORKDIR /app
+# Build
+RUN npm run build || (ls -la && exit 1)
 
-# Copy production node_modules
-COPY --from=production-dependencies-env /app/node_modules ./node_modules
+# Stage 2: Production
+FROM nginx:alpine
 
-# ✅ Copy the built application from the build stage (react-router outputs to 'build')
-COPY --from=build-env /app/build ./build
+# Copy built files to nginx
+COPY --from=builder /app/build /usr/share/nginx/html
 
-# Copy public assets if any
-COPY --from=build-env /app/public ./public
+# Copy custom nginx config if needed
+COPY nginx.conf /etc/nginx/conf.d/default.conf 2>/dev/null || true
 
-# Expose the port
-EXPOSE 3000
+EXPOSE 80
 
-# Start the application
-CMD ["npm", "run", "start"]
+CMD ["nginx", "-g", "daemon off;"]
