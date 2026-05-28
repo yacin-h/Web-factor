@@ -7,7 +7,7 @@ import Hero from "@/components/home/hero";
 
 export function meta() {
     return [
-        { title: "Invoice web app" },
+        { title: "WebFactor" },
         { name: "description", content: "Welcome to Invoice maker!" },
     ];
 }
