@@ -25,7 +25,7 @@ export default function AboutCard({ title, url, description }: AboutCardProps) {
                         alt="about section picture"
                         className="size-10 md:size-16 lg:size-20"
                     />
-                    <CardTitle>{title}</CardTitle>
+                    <CardTitle className="text-primary">{title}</CardTitle>
                 </CardHeader>
                 <CardContent>{description}</CardContent>
             </Card>
