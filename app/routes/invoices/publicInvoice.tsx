@@ -2,6 +2,12 @@ import { Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
 
+import type { User } from "@/features/auth/types/user.type";
+import Classic from "@/features/invoices/components/templates/classic";
+import Minimal from "@/features/invoices/components/templates/minimal";
+import Modern from "@/features/invoices/components/templates/modern";
+import { buildInvoiceViewModel } from "@/features/invoices/libs/invoiceViewModel";
+import type { Invoice } from "@/features/invoices/types/invoicePreview.type";
 import { useTheme } from "@/features/shared/components/themeProvider";
 import { Button } from "@/features/shared/components/ui/button";
 import {
@@ -12,13 +18,7 @@ import {
     SelectValue,
 } from "@/features/shared/components/ui/select";
 import Zoomable from "@/features/shared/components/zoomable";
-import type { User } from "@/features/auth/types/user.type";
-import Classic from "@/features/invoices/components/templates/classic";
-import Minimal from "@/features/invoices/components/templates/minimal";
-import Modern from "@/features/invoices/components/templates/modern";
-import type { Invoice } from "@/features/invoices/types/invoicePreview.type";
 import { apiFetch } from "@/lib/api";
-import { buildInvoiceViewModel } from "@/features/invoices/libs/invoiceViewModel";
 import type { PublicInvoice } from "@/types/invoice";
 
 export default function PublicInvoice() {
@@ -119,29 +119,46 @@ export default function PublicInvoice() {
 
     return (
         <>
-            <div className="mb-4 flex gap-4 print:hidden">
-                <Select value={template} onValueChange={setTemplate}>
-                    <SelectTrigger className="w-fit bg-white">
-                        <SelectValue placeholder="قالب" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                        <SelectItem value="classic">کلاسیک</SelectItem>
-                        <SelectItem value="minimal">مینیمال</SelectItem>
-                        <SelectItem value="modern">مدرن</SelectItem>
-                    </SelectContent>
-                </Select>
-                <Button onClick={() => window.print()}>چاپ</Button>
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() =>
-                        setTheme(theme === "dark" ? "light" : "dark")
-                    }
-                    title={theme === "dark" ? "حالت روشن" : "حالت تاریک"}
-                >
-                    <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                    <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-                </Button>
+            <div className="my-4 mx-2 md:mx-5 flex gap-4 print:hidden items-center justify-between">
+                <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <span>صدور فاکتور با</span>
+                    <a
+                        href="https://webfactor.ir"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 hover:opacity-80 transition"
+                    >
+                        <img
+                            src="/logo.svg"
+                            alt="وب‌ فاکتور"
+                            className="h-5 w-auto"
+                        />
+                    </a>
+                </div>
+                <div className="flex gap-4">
+                    <Select value={template} onValueChange={setTemplate}>
+                        <SelectTrigger className="w-fit bg-white">
+                            <SelectValue placeholder="قالب" />
+                        </SelectTrigger>
+                        <SelectContent position="popper">
+                            <SelectItem value="classic">کلاسیک</SelectItem>
+                            <SelectItem value="minimal">مینیمال</SelectItem>
+                            <SelectItem value="modern">مدرن</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <Button onClick={() => window.print()}>چاپ</Button>
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() =>
+                            setTheme(theme === "dark" ? "light" : "dark")
+                        }
+                        title={theme === "dark" ? "حالت روشن" : "حالت تاریک"}
+                    >
+                        <Sun className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
+                        <Moon className="absolute h-[1.2rem] w-[1.2rem] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
+                    </Button>
+                </div>
             </div>
             <div
                 className="
