@@ -27,6 +27,7 @@ export function useUpdateProduct() {
                 queryKey: ["products"],
             });
             toast.success("کالا با موفقیت ویرایش شد");
+            
         },
         onError: (error: any) => {
             toast.error(error?.message || "خطا در ویرایش کالا");

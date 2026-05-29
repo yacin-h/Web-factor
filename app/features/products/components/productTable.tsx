@@ -95,7 +95,19 @@ export default function ProductTable({ searchQuery }: ProductTableProps) {
                                 {product.name}
                             </TableCell>
                             <TableCell className="text-right">
-                                {product.stock_quantity}
+                                <div className="flex items-center gap-2">
+                                    <div
+                                        className={`w-3 h-3 rounded-full ${
+                                            product.stock_quantity <= 0
+                                                ? "bg-red-500"
+                                                : "bg-green-500"
+                                        }`}
+                                    />
+                                    <span>
+                                        {product.stock_quantity.toLocaleString()}{" "}
+                                        عدد
+                                    </span>
+                                </div>
                             </TableCell>
                             <TableCell>{product.description || "-"}</TableCell>
                             <TableCell className="text-right whitespace-nowrap">
