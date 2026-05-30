@@ -26,7 +26,6 @@ export default function Header({
     setStatus: React.Dispatch<React.SetStateAction<string>>;
 }) {
     const [searchInput, setSearchInput] = useState("");
-
     const handleSearch = () => setSearchQuery(searchInput);
     const handleReset = () => {
         setSearchInput("");

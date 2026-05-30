@@ -1,9 +1,8 @@
-import { SearchIcon } from "lucide-react";
+import { SearchIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 
 import {
     InputGroup,
-    InputGroupAddon,
     InputGroupButton,
     InputGroupInput,
 } from "../../shared/components/ui/input-group";
@@ -15,26 +14,37 @@ export default function Header({
     setSearchQuery: React.Dispatch<React.SetStateAction<string>>;
 }) {
     const [searchInput, setSearchInput] = useState("");
+    const handleSearch = () => setSearchQuery(searchInput);
+    const handleReset = () => {
+        setSearchInput("");
+        setSearchQuery("");
+    };
     return (
         <header className="mx-5">
             <h1 className="title">کالا ها</h1>
             <div className="flex justify-between gap-3">
                 <AddProductModal />
                 {/* search btn */}
-                <InputGroup>
+                <InputGroup className="w-64 px-1">
                     <InputGroupInput
-                        placeholder="جستجو..."
+                        placeholder="جستجو بر اساس نام کالا"
                         value={searchInput}
                         onChange={(e) => setSearchInput(e.target.value)}
+                        className="text-right"
                     />
-                    <InputGroupAddon align="inline-end">
-                        <InputGroupButton
-                            className="ml-2"
-                            onClick={() => setSearchQuery(searchInput)}
-                        >
-                            <SearchIcon />
+
+                    <InputGroupButton
+                        onClick={handleSearch}
+                        className="bg-primary text-primary-foreground"
+                    >
+                        <SearchIcon className="w-4 h-4" />
+                    </InputGroupButton>
+
+                    {searchInput && (
+                        <InputGroupButton onClick={handleReset}>
+                            <XIcon className="w-4 h-4" />
                         </InputGroupButton>
-                    </InputGroupAddon>
+                    )}
                 </InputGroup>
             </div>
         </header>
