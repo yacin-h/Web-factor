@@ -94,7 +94,7 @@ export default function App() {
                 <div className="font-vazir">
                     <Outlet />
                 </div>
-                <ReactQueryDevtools initialIsOpen={false} />
+                
             </QueryClientProvider>
         </ThemeProvider>
     );
