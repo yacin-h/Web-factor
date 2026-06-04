@@ -11,6 +11,7 @@ import {
     CardDescription,
     CardTitle,
 } from "@/features/shared/components/ui/card";
+import { PlansList } from "@/features/subscription/components/PlansList";
 
 // How It Works
 function HowItWorks() {
@@ -98,6 +99,22 @@ export default function Home() {
             <Header />
             <Hero />
             <Features />
+             <section className="py-16 bg-muted/30">
+                <div className="container mx-auto px-4">
+                    <div className="text-center mb-12">
+                        <h2 className="text-3xl font-bold mb-4">تعرفه‌های وب‌فاکتور</h2>
+                        <p className="text-muted-foreground max-w-2xl mx-auto">
+                            پلن مناسب کسب‌وکار خود را انتخاب کنید و از امکانات حرفه‌ای لذت ببرید
+                        </p>
+                    </div>
+                    <PlansList />
+                    <div className="text-center mt-8">
+                        <p className="text-sm text-muted-foreground">
+                            برای اطلاعات بیشتر با ما تماس بگیرید
+                        </p>
+                    </div>
+                </div>
+            </section>
             <HowItWorks />
             <CTA />
             <Footer />
