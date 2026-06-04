@@ -1,3 +1,4 @@
+// routes/dashboard/dashboard.tsx
 import PendingInvoicesTable from "@/features/dashboard/components/pendingInvoicesTable";
 import RecentInvoicesTable from "@/features/dashboard/components/recentInvoicesTable";
 import StatsCards from "@/features/dashboard/components/statsCards";
@@ -7,20 +8,24 @@ import { useDashboardStats } from "@/features/dashboard/hooks/useDashboardStats"
 import { usePendingInvoices } from "@/features/dashboard/hooks/usePendingInvoices";
 import { useRecentInvoices } from "@/features/dashboard/hooks/useRecentInvoices";
 import LoadingSpinner from "@/features/shared/components/ui/loadingSpinner";
+import { SubscriptionStatusMini } from "@/features/subscription/components/SubscriptionStatusMini";
 
 export default function Dashboard() {
-    const { data: dashboardData, isLoading: statsLoading } =
-        useDashboardStats();
+    const { data: dashboardData, isLoading: statsLoading } = useDashboardStats();
     const { data: recentData, isLoading: recentLoading } = useRecentInvoices(5);
-    const { data: pendingData, isLoading: pendingLoading } =
-        usePendingInvoices(5);
+    const { data: pendingData, isLoading: pendingLoading } = usePendingInvoices(5);
 
     const isLoading = statsLoading || recentLoading || pendingLoading;
 
     if (isLoading) return <LoadingSpinner />;
+    
     return (
         <main className="text-right">
-            <h1 className="text-2xl font-bold mb-4">داشبورد</h1>
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="text-2xl font-bold">داشبورد</h1>
+                <SubscriptionStatusMini />
+            </div>
+            
             <StatsCards dashboardData={dashboardData} />
 
             <div className="mt-5 grid grid-cols-1 xl:grid-cols-2 gap-4">
