@@ -1,3 +1,4 @@
+import { useQueryClient } from "@tanstack/react-query";
 import {
     ChevronDown,
     ChevronUp,
@@ -75,6 +76,11 @@ const userItems = [
 export function AppSidebar() {
     const path = useLocation().pathname;
     const logOut = useAuth((state: AuthContextType) => state.logOut);
+    const queryClient = useQueryClient();
+    const handleLogOut = () => {
+        queryClient.clear(); 
+        logOut();
+    };
     const sidebarButtonGradientClass =
         "bg-linear-to-r from-sidebar-primary/30 to-sidebar-accent/40 hover:from-sidebar-primary/45 hover:to-sidebar-accent/55 data-[active=true]:from-sidebar-primary data-[active=true]:to-sidebar-accent data-[active=true]:text-white";
     return (
@@ -167,7 +173,7 @@ export function AppSidebar() {
                                 className="w-[--radix-popper-anchor-width]"
                             >
                                 <DropdownMenuItem
-                                    onClick={logOut}
+                                    onClick={handleLogOut}
                                     className="flex justify-end"
                                 >
                                     <span>خروج</span>

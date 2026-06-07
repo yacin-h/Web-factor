@@ -1,8 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
 import { useForm } from "react-hook-form";
-import { Link } from "react-router";
-import { useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { Button } from "@/features/shared/components/ui/button";
@@ -31,104 +30,70 @@ import {
 import useAuth from "@/store/auth";
 import type { Token } from "@/types/token";
 
-type RequestOtpResponse = {
-    Code: string;
-};
+const RESEND_COOLDOWN = 120;
 
 export function LoginForm({
     className,
     ...props
 }: React.ComponentProps<"div">) {
-    const {
-        register,
-        handleSubmit,
-        setError,
-        formState: { errors },
-    } = useForm<PhoneFormType>({
-        resolver: zodResolver(phoneFormSchema),
-    });
-    // using alias for using two useForm
-    const {
-        register: registerOtp,
-        handleSubmit: handleSubmitOtp,
-        formState: { errors: otpErrors },
-    } = useForm<OtpFormType>({
-        resolver: zodResolver(otpFormSchema),
-    });
-
-    const logIn = useAuth((state) => state.logIn);
     const navigate = useNavigate();
+    const logIn = useAuth((state) => state.logIn);
 
     const [step, setStep] = React.useState<"phone" | "otp">("phone");
+    const [phone, setPhone] = React.useState("");
+    const [resendTimer, setResendTimer] = React.useState(0);
 
-    // for test. remove after implementing sms verification
-    const [displayOTP, setDisplayOTP] = React.useState<string>("");
-    const [phone, setPhone] = React.useState<string>("");
-    const [otp, setOtp] = React.useState<string>("");
-    const [loadingOtpRequest, setLoadingOtpRequest] = React.useState(false);
-    const [loadingVerify, setLoadingVerify] = React.useState(false);
+    // تایمر resend
+    React.useEffect(() => {
+        if (resendTimer <= 0) return;
+        const interval = setInterval(() => {
+            setResendTimer((t) => t - 1);
+        }, 1000);
+        return () => clearInterval(interval);
+    }, [resendTimer]);
+
+    const phoneForm = useForm<PhoneFormType>({
+        resolver: zodResolver(phoneFormSchema),
+    });
+
+    const otpForm = useForm<OtpFormType>({
+        resolver: zodResolver(otpFormSchema),
+        defaultValues: { otp_code: "" },
+    });
+
+    // ارسال کد OTP
+    async function requestOtp(phoneNumber: string) {
+        await apiFetch("/account/request_otp/", {
+            method: "POST",
+            body: JSON.stringify({ phone_number: phoneNumber }),
+        });
+    }
 
     async function onSubmitPhone(data: PhoneFormType) {
         try {
-            setLoadingOtpRequest(true);
-
-            // request backend to send OTP to phone
-            const res = await apiFetch<RequestOtpResponse>(
-                "/account/request_otp/",
-                {
-                    method: "POST",
-                    body: JSON.stringify({ phone_number: data.phone_number }),
-                },
-            );
-
-            // test !! remove after adding sms verification
-            setDisplayOTP(res?.Code);
-
+            await requestOtp(data.phone_number);
             setPhone(data.phone_number);
             setStep("otp");
-            setLoadingOtpRequest(false);
-        } catch (error) {
-            setLoadingOtpRequest(false);
+            setResendTimer(RESEND_COOLDOWN);
+            otpForm.reset();
+        } catch (error: any) {
             if (
-                typeof error === "object" &&
-                error !== null &&
-                "phone_number" in error &&
-                Array.isArray((error as any).phone_number) &&
-                (error as any).phone_number[0] ===
-                    "OTP for this phone number is still valid."
+                error?.phone_number?.[0] ===
+                "OTP for this phone number is still valid."
             ) {
-                toast.info("کد OTP هنوز معتبر است برای این شماره تلفن");
+                toast.info("کد OTP هنوز معتبر است");
                 setPhone(data.phone_number);
                 setStep("otp");
+                setResendTimer(RESEND_COOLDOWN);
                 return;
             }
-            const errorMessage =
-                error instanceof Object && "detail" in error
-                    ? (error as Record<string, string>).detail
-                    : "مشکلی پیش امده است.";
-            setError("phone_number", { message: errorMessage });
-            console.log("error message:", error);
+            const message = error?.detail ?? "مشکلی پیش آمده است.";
+            phoneForm.setError("phone_number", { message });
         }
     }
 
-    const handleOtpChange = (value: string) => {
-        setOtp(value);
-        const validationResult = otpFormSchema.safeParse({ otp_code: value });
-        if (validationResult.success && value.length === 6 && !loadingVerify) {
-            onSubmitOtp({ otp_code: value });
-        }
-    };
-
     async function onSubmitOtp(data: OtpFormType) {
-        if (!phone) {
-            setError("phone_number", { message: "شماره تلفن یافت نشد" });
-            setStep("phone");
-            return;
-        }
-
         try {
-            setLoadingVerify(true);
-
             const result = await apiFetch<Token>("/account/register/", {
                 method: "POST",
                 body: JSON.stringify({
@@ -136,30 +101,39 @@ export function LoginForm({
                     otp_code: data.otp_code,
                 }),
             });
-            // assume backend returns user/session data similar to previous flow
             logIn(result);
-            setLoadingVerify(false);
             navigate("/dashboard");
-        } catch (error) {
-            setLoadingVerify(false);
-            // catch expiration error
-            if (error && typeof error === "object" && "otp_code" in error) {
-                const err = error as any;
-                if (err.otp_code === "OTP has expired.") {
-                    toast.error(
-                        "کد تأیید منقضی شده است. لطفاً دوباره درخواست کنید.",
-                    );
-                    setStep("phone");
-                    setOtp("");
-                    return;
-                }
+        } catch (error: any) {
+            if (error?.otp_code === "OTP has expired.") {
+                toast.error(
+                    "کد تأیید منقضی شده است. لطفاً دوباره درخواست کنید.",
+                );
+                setStep("phone");
+                otpForm.reset();
+                return;
             }
-            const errorMessage =
-                error instanceof Object && "detail" in error
-                    ? (error as Record<string, string>).detail
-                    : "کد اشتباه است یا مشکلی پیش آمده";
-            setError("root", { message: errorMessage });
-            console.log(error);
+            const message = error?.detail ?? "کد اشتباه است یا مشکلی پیش آمده";
+            otpForm.setError("otp_code", { message });
+        }
+    }
+
+    // auto-submit وقتی ۶ رقم کامل شد
+    function handleOtpChange(value: string) {
+        otpForm.setValue("otp_code", value, { shouldValidate: true });
+        if (value.length === 6 && !otpForm.formState.isSubmitting) {
+            otpForm.handleSubmit(onSubmitOtp)();
+        }
+    }
+
+    async function handleResend() {
+        if (resendTimer > 0) return;
+        try {
+            await requestOtp(phone);
+            setResendTimer(RESEND_COOLDOWN);
+            otpForm.reset();
+            toast.success("کد جدید ارسال شد");
+        } catch {
+            toast.error("خطا در ارسال مجدد کد");
         }
     }
 
@@ -170,7 +144,7 @@ export function LoginForm({
                     {step === "phone" ? (
                         <form
                             className="p-6 md:p-8"
-                            onSubmit={handleSubmit(onSubmitPhone)}
+                            onSubmit={phoneForm.handleSubmit(onSubmitPhone)}
                         >
                             <FieldGroup>
                                 <div className="flex flex-col items-center gap-2 text-center">
@@ -188,68 +162,66 @@ export function LoginForm({
                                     </label>
                                     <Input
                                         placeholder="09345677891"
-                                        {...register("phone_number")}
+                                        {...phoneForm.register("phone_number")}
                                         id="phone_number"
                                         type="text"
                                     />
-                                    {errors?.phone_number && (
-                                        <span className="text-red-500">
-                                            {errors.phone_number.message}
+                                    {phoneForm.formState.errors
+                                        .phone_number && (
+                                        <span className="text-red-500 text-sm">
+                                            {
+                                                phoneForm.formState.errors
+                                                    .phone_number.message
+                                            }
                                         </span>
                                     )}
                                 </Field>
 
                                 <Field>
                                     <Button
-                                        disabled={loadingOtpRequest}
+                                        disabled={
+                                            phoneForm.formState.isSubmitting
+                                        }
                                         type="submit"
+                                        className="w-full"
                                     >
-                                        {loadingOtpRequest ? (
-                                            <span>در حال ارسال...</span>
-                                        ) : (
-                                            "دریافت کد"
-                                        )}
+                                        {phoneForm.formState.isSubmitting
+                                            ? "در حال ارسال..."
+                                            : "دریافت کد"}
                                     </Button>
-                                    {errors?.root && (
-                                        <span className="text-red-500">
-                                            {(errors as any).root.message}
-                                        </span>
-                                    )}
                                 </Field>
 
                                 <FieldDescription className="text-center">
                                     حساب کاربری ندارید؟{" "}
-                                    <Link to={"/signup"}>ساخت حساب</Link>
+                                    <Link to="/signup">ساخت حساب</Link>
                                 </FieldDescription>
                             </FieldGroup>
                         </form>
                     ) : (
                         <form
                             className="p-6 md:p-8"
-                            onSubmit={handleSubmitOtp(onSubmitOtp)}
+                            onSubmit={otpForm.handleSubmit(onSubmitOtp)}
                         >
                             <FieldGroup>
                                 <div className="flex flex-col items-center gap-2 text-center">
                                     <h1 className="text-2xl font-bold">
                                         تأیید شماره
                                     </h1>
-                                    <p className="text-sm">
+                                    <p className="text-sm text-muted-foreground">
                                         کدی به {phone} ارسال شد
                                     </p>
                                 </div>
 
                                 <Field>
                                     <FieldLabel>کد تأیید</FieldLabel>
-                                    <p>کد تأیید تست:</p>
-                                    <h2 className="text-center text-lg font-semibold">
-                                        {displayOTP}
-                                    </h2>
                                     <div className="flex justify-center">
                                         <InputOTP
-                                            {...registerOtp("otp_code")}
                                             maxLength={6}
-                                            value={otp}
+                                            value={otpForm.watch("otp_code")}
                                             onChange={handleOtpChange}
+                                            disabled={
+                                                otpForm.formState.isSubmitting
+                                            }
                                         >
                                             <InputOTPGroup>
                                                 <InputOTPSlot index={5} />
@@ -264,41 +236,51 @@ export function LoginForm({
                                             </InputOTPGroup>
                                         </InputOTP>
                                     </div>
-                                    {otpErrors?.otp_code && (
+                                    {otpForm.formState.errors.otp_code && (
                                         <span className="text-red-500 text-sm block text-center mt-2">
-                                            {otpErrors.otp_code.message}
+                                            {
+                                                otpForm.formState.errors
+                                                    .otp_code.message
+                                            }
                                         </span>
                                     )}
                                 </Field>
 
-                                <Field className="flex items-center gap-2">
+                                <Field className="flex flex-col gap-2">
                                     <Button
-                                        disabled={loadingVerify}
+                                        disabled={
+                                            otpForm.formState.isSubmitting
+                                        }
                                         type="submit"
+                                        className="w-full"
                                     >
-                                        {loadingVerify ? (
-                                            <span>در حال بررسی...</span>
-                                        ) : (
-                                            "تأیید و ورود"
-                                        )}
+                                        {otpForm.formState.isSubmitting
+                                            ? "در حال بررسی..."
+                                            : "تأیید و ورود"}
                                     </Button>
-                                    <Button
-                                        variant="ghost"
-                                        type="button"
-                                        onClick={() => setStep("phone")}
-                                    >
-                                        اصلاح شماره
-                                    </Button>
+                                    <div className="flex items-center justify-between">
+                                        <Button
+                                            variant="ghost"
+                                            type="button"
+                                            onClick={() => {
+                                                setStep("phone");
+                                                otpForm.reset();
+                                            }}
+                                        >
+                                            اصلاح شماره
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            type="button"
+                                            disabled={resendTimer > 0}
+                                            onClick={handleResend}
+                                        >
+                                            {resendTimer > 0
+                                                ? `ارسال مجدد (${resendTimer})`
+                                                : "ارسال مجدد کد"}
+                                        </Button>
+                                    </div>
                                 </Field>
-                                {otpErrors?.root && (
-                                    <span className="text-red-500 text-sm block text-center">
-                                        {otpErrors.root.message}
-                                    </span>
-                                )}
-                                <FieldDescription className="text-center">
-                                    اگر کد را دریافت نکردید، دوباره تلاش کنید یا
-                                    شماره را بررسی کنید.
-                                </FieldDescription>
                             </FieldGroup>
                         </form>
                     )}
@@ -307,7 +289,7 @@ export function LoginForm({
                         <img
                             src="/signup.svg"
                             alt="Image"
-                            className="absolute inset-0 h-full w-full  p-5"
+                            className="absolute inset-0 h-full w-full p-5"
                         />
                     </div>
                 </CardContent>
