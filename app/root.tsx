@@ -54,13 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     crossOrigin="anonymous"
                 />
 
-                {/* ⚡ کاهش CSS رندر بلاک کننده */}
-                <link
-                    rel="preload"
-                    href="/assets/root-3sitnf4R.css"
-                    as="style"
-                    fetchPriority="high"
-                />
+               
 
                 <Meta />
                 <Links />
