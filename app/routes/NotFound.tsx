@@ -1,6 +1,7 @@
+import { ArrowRight, Home } from "lucide-react";
 import { useNavigate } from "react-router";
+
 import { Button } from "@/features/shared/components/ui/button";
-import { Home, ArrowRight } from "lucide-react";
 
 export default function NotFound() {
     const navigate = useNavigate();
@@ -48,11 +49,18 @@ export default function NotFound() {
 
                 {/* دکمه‌ها */}
                 <div className="flex items-center gap-3">
-                    <Button onClick={() => navigate(-1)} variant="outline" className="gap-2">
+                    <Button
+                        onClick={() => navigate(-1)}
+                        variant="outline"
+                        className="gap-2"
+                    >
                         <ArrowRight className="w-4 h-4" />
                         بازگشت
                     </Button>
-                    <Button onClick={() => navigate("/dashboard")} className="gap-2">
+                    <Button
+                        onClick={() => navigate("/dashboard")}
+                        className="gap-2"
+                    >
                         <Home className="w-4 h-4" />
                         صفحه اصلی
                     </Button>
