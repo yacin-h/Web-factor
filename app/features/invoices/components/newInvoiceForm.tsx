@@ -39,7 +39,7 @@ export default function NewInvoiceForm() {
             status: "pending",
             payment_mode: "cash",
             descriptions: "",
-            title: "",
+            title: "فاکتور فروش",
             added_value: 0,
             discount: 0,
         },
