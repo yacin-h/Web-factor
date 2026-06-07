@@ -1,7 +1,6 @@
 import num2persian from "num2persian";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 import { useCreateProduct } from "@/features/products/hooks/useCreateProduct";
 import type { ProductCreate } from "@/features/products/types/product";
