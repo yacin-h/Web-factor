@@ -18,7 +18,7 @@ export function Footer() {
                             </span>
                         </div>
                         <p className="text-sm">
-                            سامانه  صدور فاکتور، مدیریت فروش و مشتریان
+                            سامانه صدور فاکتور، مدیریت فروش و مشتریان
                         </p>
                         <div className="mt-4 text-xs">
                             © ۱۴۰۵ وب فاکتور. تمام حقوق محفوظ است.
@@ -55,7 +55,7 @@ export function Footer() {
                             </li>
                         </ul>
                     </div>
-                    
+
                     <div>
                         <h4 className="text-white font-semibold mb-4">
                             تماس با ما
@@ -64,6 +64,18 @@ export function Footer() {
                             <li>09387051245</li>
                         </ul>
                     </div>
+                <a
+                    referrerPolicy="origin"
+                    target="_blank"
+                    href="https://trustseal.enamad.ir/?id=738212&Code=f59JgfLw0MEjq7k3k5J2g7GFncU5fg28"
+                >
+                    <img
+                        referrerPolicy="origin"
+                        src="https://trustseal.enamad.ir/logo.aspx?id=738212&Code=f59JgfLw0MEjq7k3k5J2g7GFncU5fg28"
+                        alt="نماد اعتماد الکترونیکی"
+                        style={{ cursor: "pointer" }}
+                    />
+                </a>
                 </div>
             </div>
         </footer>
