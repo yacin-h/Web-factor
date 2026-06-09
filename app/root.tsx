@@ -1,13 +1,7 @@
 import "./app.css";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-    Links,
-    Meta,
-    Outlet,
-    Scripts,
-    ScrollRestoration,
-} from "react-router";
+import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 
 import { ThemeProvider } from "@/features/shared/components/themeProvider";
 import { DirectionProvider } from "@/features/shared/components/ui/direction";
@@ -24,6 +18,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
                     name="viewport"
                     content="width=device-width, initial-scale=1"
                 />
+
+                {/* Open Graph Meta Tags */}
+                <meta property="og:type" content="website" />
+                <meta property="og:title" content="وب فاکتور" />
+                <meta
+                    property="og:description"
+                    content="سامانه حرفه ای صدور فاکتور آنلاین"
+                />
+                <meta property="og:image" content="/image-og.webp" />
+                <meta property="og:url" content="https://yourdomain.com" />
+                <meta name="twitter:card" content="summary_large_image" />
+                <meta name="twitter:title" content="وب فاکتور" />
+                <meta
+                    name="twitter:description"
+                    content="سامانه حرفه ای صدور فاکتور آنلاین"
+                />
+                <meta name="twitter:image" content="/image-og.webp" />
 
                 {/* ⚡ بهینه‌سازی فونت‌ها */}
                 <link rel="preconnect" href="https://fonts.googleapis.com" />
