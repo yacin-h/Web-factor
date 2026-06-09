@@ -20,6 +20,7 @@ export default function CustomerDetailsFields() {
             <div className="space-y-3">
                 <Label htmlFor="customer_phone_number">شماره تلفن</Label>
                 <Input
+                    type="number"
                     {...register("customer_phone_number")}
                     id="customer_phone_number"
                 />
