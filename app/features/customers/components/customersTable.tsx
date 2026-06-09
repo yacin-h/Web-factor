@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate } from "react-router";
 
 import type { Customer } from "@/features/customers/types/customer";
 import DeleteConfirm from "@/features/shared/components/ui/deleteConfirm";
@@ -19,25 +20,30 @@ import {
     TableRow,
 } from "@/features/shared/components/ui/table";
 
+import { Button } from "../../shared/components/ui/button";
 import { useCustomers } from "../hooks/useCustomers";
 import { useDeleteCustomer } from "../hooks/useDeleteCustomer";
 import CustomersSkeleton from "./customersSkeleton";
 export default function CustomersTable() {
     const [page, setPage] = useState(1);
     const pageSize = 20;
+    const navigate = useNavigate();
 
     const { data, isLoading } = useCustomers({
         page,
         pageSize,
     });
-    const { mutateAsync: deleteCustomer } =
-        useDeleteCustomer();
+    const { mutateAsync: deleteCustomer } = useDeleteCustomer();
     const customers = data?.results || [];
     const count = data?.count || 0;
     const totalPages = Math.ceil(count / pageSize);
 
     const handleDelete = async (id: number) => {
         await deleteCustomer(id);
+    };
+
+    const handleViewReports = (customerId: number) => {
+        navigate(`/customers/${customerId}/reports`);
     };
     return (
         <>
@@ -66,10 +72,23 @@ export default function CustomersTable() {
                                         {c.phone_number}
                                     </TableCell>
                                     <TableCell>
-                                        <DeleteConfirm
-                                            onConfirm={() => handleDelete(c.id)}
-                                            title="مشتری"
-                                        />
+                                        <div className="flex gap-2">
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() =>
+                                                    handleViewReports(c.id)
+                                                }
+                                            >
+                                                گزارشات
+                                            </Button>
+                                            <DeleteConfirm
+                                                onConfirm={() =>
+                                                    handleDelete(c.id)
+                                                }
+                                                title="مشتری"
+                                            />
+                                        </div>
                                     </TableCell>
                                 </TableRow>
                             ))}

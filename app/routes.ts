@@ -31,7 +31,11 @@ export default [
             route("profile", "routes/profile.tsx"),
 
             route("customers", "routes/customers.tsx"),
-            
+
+            route(
+                "customers/:id/reports",
+                "routes/customers/customerReports.tsx",
+            ),
         ]),
     ]),
 ] satisfies RouteConfig;
