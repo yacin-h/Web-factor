@@ -11,7 +11,6 @@ export default [
     route("*", "routes/NotFound.tsx"), // ✅ 404
     layout("routes/guestOnly.tsx", [
         route("login", "routes/logIn.tsx"),
-        route("signup", "routes/signUp.tsx"),
         route("demo", "routes/demoInvoice.tsx"),
         route("demo-invoice/preview", "routes/demoInvoicePreview.tsx"),
     ]),

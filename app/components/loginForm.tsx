@@ -1,14 +1,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as React from "react";
 import { useForm } from "react-hook-form";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
 import { Button } from "@/features/shared/components/ui/button";
 import { Card, CardContent } from "@/features/shared/components/ui/card";
 import {
     Field,
-    FieldDescription,
     FieldGroup,
     FieldLabel,
 } from "@/features/shared/components/ui/field";
@@ -140,7 +139,7 @@ export function LoginForm({
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card className="overflow-hidden p-0">
-                <CardContent className="grid p-0 md:grid-cols-2">
+                <CardContent className="grid p-0 lg:grid-cols-2">
                     {step === "phone" ? (
                         <form
                             className="p-6 md:p-8"
@@ -164,7 +163,7 @@ export function LoginForm({
                                         placeholder="09345677891"
                                         {...phoneForm.register("phone_number")}
                                         id="phone_number"
-                                        type="text"
+                                        type="number"
                                     />
                                     {phoneForm.formState.errors
                                         .phone_number && (
@@ -190,11 +189,6 @@ export function LoginForm({
                                             : "دریافت کد"}
                                     </Button>
                                 </Field>
-
-                                <FieldDescription className="text-center">
-                                    حساب کاربری ندارید؟{" "}
-                                    <Link to="/signup">ساخت حساب</Link>
-                                </FieldDescription>
                             </FieldGroup>
                         </form>
                     ) : (
@@ -285,11 +279,11 @@ export function LoginForm({
                         </form>
                     )}
 
-                    <div className="bg-secondary relative hidden md:block">
+                    <div className="relative hidden bg-muted  lg:flex justify-center items-center">
                         <img
-                            src="/signup.svg"
+                            src="/logo.svg"
                             alt="Image"
-                            className="absolute inset-0 h-full w-full p-5"
+                            className=" inset-0 w-1/3  object-cover dark:brightness-[0.2] dark:grayscale"
                         />
                     </div>
                 </CardContent>
