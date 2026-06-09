@@ -1,6 +1,7 @@
-import { useNavigate, useRouteError, isRouteErrorResponse } from "react-router";
+import { AlertTriangle, ArrowRight, Home, RefreshCw } from "lucide-react";
+import { isRouteErrorResponse, useNavigate, useRouteError } from "react-router";
+
 import { Button } from "@/features/shared/components/ui/button";
-import { Home, RefreshCw, ArrowRight, AlertTriangle } from "lucide-react";
 
 export default function ErrorPage() {
     const error = useRouteError();
