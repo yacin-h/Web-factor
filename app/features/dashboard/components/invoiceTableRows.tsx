@@ -49,7 +49,7 @@ export function InvoiceTableRows({
                 )}
             </TableCell>
             <TableCell className="whitespace-nowrap">
-                {invoice.created}
+                {`${invoice.created.split(" ")[1]} ${invoice.created.split(" ")[0]} `}
             </TableCell>
         </TableRow>
     ));
