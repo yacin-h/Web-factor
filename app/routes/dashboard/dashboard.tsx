@@ -54,8 +54,13 @@ export default function Dashboard() {
                 <div>
                     <h1 className="text-2xl font-bold">داشبورد</h1>
                     <p className="text-muted-foreground text-sm mt-1">
-                        {profile?.first_name
-                            ? `خوش آمدید، ${profile.first_name} 👋`
+                        {profile?.first_name 
+                            ? `خوش آمدید، ${profile.first_name} ${profile.last_name}   👋`
+                            : "خوش آمدید 👋"}
+                    </p>
+                    <p className="text-muted-foreground/60 text-sm mt-1">
+                        {profile?.profile?.store_name
+                            ? `فروشگاه  ${profile?.profile?.store_name} `
                             : "خوش آمدید 👋"}
                     </p>
                 </div>
