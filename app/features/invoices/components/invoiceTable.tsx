@@ -43,7 +43,7 @@ export default function InvoiceTable({
     const [page, setPage] = useState(1);
     const pageSize = 20;
 
-    // 📦 Fetch data - حالا با همه پارامترها
+    // 📦 Fetch data
     const { invoices, count, isLoading, error, refetch } = useInvoices({
         page,
         pageSize,
@@ -131,9 +131,9 @@ export default function InvoiceTable({
             <Table className="my-5">
                 <TableHeader className="bg-muted rounded-sm">
                     <TableRow>
+                        <TableHead>شماره فاکتور</TableHead>
                         <TableHead>نام مشتری</TableHead>
                         <TableHead>شماره تلفن</TableHead>
-                        <TableHead>آدرس</TableHead>
                         <TableHead>وضعیت</TableHead>
                         <TableHead>مبلغ کل</TableHead>
                         <TableHead>تاریخ ایجاد</TableHead>
@@ -145,15 +145,13 @@ export default function InvoiceTable({
                     {invoices?.map((invoice: Invoice) => (
                         <TableRow key={invoice.id}>
                             <TableCell>
+                                {invoice.invoice_number || "-"}
+                            </TableCell>
+                            <TableCell>
                                 {invoice.customer_name || "-"}
                             </TableCell>
                             <TableCell>
                                 {invoice.customer_phone_number || "-"}
-                            </TableCell>
-                            <TableCell className="w-40 truncate">
-                                <div className="w-45 truncate">
-                                    {invoice.customer_address || "-"}
-                                </div>
                             </TableCell>
                             <TableCell className="text-right">
                                 {invoice.status ? (
@@ -172,9 +170,11 @@ export default function InvoiceTable({
                                 )}
                             </TableCell>
                             <TableCell className="text-right whitespace-nowrap">
-                                {invoice.total_amount} تومان
+                                {invoice.total_amount.toLocaleString()} تومان
                             </TableCell>
-                            <TableCell>{invoice.created}</TableCell>
+                            <TableCell>
+                                {invoice.created.split(" ")[0]}
+                            </TableCell>
                             <TableCell>
                                 <InvoiceActions
                                     invoiceId={invoice.id}
