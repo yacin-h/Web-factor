@@ -2,6 +2,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
     ChevronDown,
     ChevronUp,
+    CircleDollarSign,
     CircleUserRound,
     Home,
     LogOut,
@@ -63,6 +64,11 @@ const productItems = [
         url: "/customers",
         icon: Users,
     },
+    {
+        title: "اشتراک",
+        url: "/subscription",
+        icon: CircleDollarSign,
+    },
 ];
 
 const userItems = [
@@ -78,7 +84,7 @@ export function AppSidebar() {
     const logOut = useAuth((state: AuthContextType) => state.logOut);
     const queryClient = useQueryClient();
     const handleLogOut = () => {
-        queryClient.clear(); 
+        queryClient.clear();
         logOut();
     };
     const sidebarButtonGradientClass =
