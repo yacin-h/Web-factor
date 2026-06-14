@@ -46,7 +46,7 @@ export const BUTTON_LABELS = {
     SAVE_AND_CONTINUE: "ذخیره و ادامه",
     SAVING: "در حال ذخیره...",
     ADD_PRODUCT: "اضافه کردن محصول",
-    BACK_TO_HOME: "بازگشت به خانه",
+    BACK_TO_HOME: "بازگشت به داشبورد",
     NEW_INVOICE: "فاکتور جدید",
     PRINT: "چاپ",
     DELETE: "حذف",
