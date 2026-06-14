@@ -1,3 +1,4 @@
+// features/dashboard/components/recentInvoicesTable.tsx
 import type { PaginatedInvoiceList } from "@/features/invoices/types/invoicePreview.type";
 import {
     Table,
@@ -20,16 +21,22 @@ export default function RecentInvoicesTable({
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>شماره فاکتور</TableHead>
                         <TableHead>نام مشتری</TableHead>
-                        <TableHead>مبلغ</TableHead>
+                        <TableHead>شماره تلفن</TableHead>
                         <TableHead>وضعیت</TableHead>
+                        <TableHead>مبلغ کل</TableHead>
                         <TableHead>تاریخ</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     <InvoiceTableRows
-                        emptyMessage="فاکتوری ثبت نشده است"
-                        invoices={recentData?.results ?? []}
+                        invoices={recentData?.results || []}
+                        emptyMessage="هنوز فاکتوری ثبت نکرده‌اید."
+                        emptyAction={{
+                            text: "ایجاد اولین فاکتور",
+                            link: "/invoices/new",
+                        }}
                     />
                 </TableBody>
             </Table>

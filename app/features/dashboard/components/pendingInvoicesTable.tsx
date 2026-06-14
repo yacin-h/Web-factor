@@ -1,5 +1,4 @@
-import React from "react";
-
+// features/dashboard/components/pendingInvoicesTable.tsx
 import type { PaginatedInvoiceList } from "@/features/invoices/types/invoicePreview.type";
 import {
     Table,
@@ -19,21 +18,27 @@ export default function PendingInvoicesTable({
     return (
         <section className="rounded-xl border bg-card p-4 shadow-sm">
             <h2 className="text-lg font-semibold mb-3">
-                فاکتورهای در حال انتظار
+                فاکتورهای در انتظار پرداخت
             </h2>
             <Table>
                 <TableHeader>
                     <TableRow>
+                        <TableHead>شماره فاکتور</TableHead>
                         <TableHead>نام مشتری</TableHead>
-                        <TableHead>مبلغ</TableHead>
+                        <TableHead>شماره تلفن</TableHead>
                         <TableHead>وضعیت</TableHead>
+                        <TableHead>مبلغ کل</TableHead>
                         <TableHead>تاریخ</TableHead>
                     </TableRow>
                 </TableHeader>
                 <TableBody>
                     <InvoiceTableRows
-                        emptyMessage="فاکتور در انتظار پرداخت موجود نیست"
-                        invoices={pendingData?.results ?? []}
+                        invoices={pendingData?.results || []}
+                        emptyMessage="هیچ فاکتور در انتظار پرداختی وجود ندارد."
+                        emptyAction={{
+                            text: "ایجاد فاکتور جدید",
+                            link: "/invoices/new",
+                        }}
                     />
                 </TableBody>
             </Table>
