@@ -1,14 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
 import {
     ChevronDown,
-    ChevronUp,
     CircleDollarSign,
     CircleUserRound,
     Home,
     LogOut,
     Package,
     ScrollText,
-    User2,
     Users,
 } from "lucide-react";
 import { NavLink, useLocation } from "react-router";
@@ -36,16 +34,11 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from "./ui/collapsible";
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
+
 // Menu items.
 const productItems = [
     {
-        title: "خانه",
+        title: "داشبورد",
         url: "/dashboard",
         icon: Home,
     },
@@ -69,15 +62,14 @@ const productItems = [
         url: "/subscription",
         icon: CircleDollarSign,
     },
-];
-
-const userItems = [
     {
         title: "پروفایل",
         url: "/profile",
         icon: CircleUserRound,
     },
 ];
+
+
 
 export function AppSidebar() {
     const path = useLocation().pathname;
@@ -96,7 +88,7 @@ export function AppSidebar() {
             side="right"
         >
             <SidebarHeader>
-                <img src="/logo.svg" alt="Logo" className="w-4/6 mx-auto " />
+                <img src="/logo.svg" alt="Logo" className="w-6/12 mx-auto " />
             </SidebarHeader>
             <SidebarContent>
                 <SidebarGroup>
@@ -120,41 +112,18 @@ export function AppSidebar() {
                         </SidebarMenu>
                     </SidebarGroupContent>
                 </SidebarGroup>
-                <Collapsible className="group/collapsible">
+                <Collapsible defaultOpen className="group/collapsible">
                     <SidebarGroup>
                         <SidebarGroupLabel asChild>
-                            <CollapsibleTrigger className=" flex-row-reverse sm:flex-row">
-                                <span className="text-base">تنظیمات</span>
-                                <ChevronDown className="ml-auto transition-transform group-data-[state=open]/collapsible:rotate-180" />
+                            <CollapsibleTrigger className="flex w-full items-center justify-between px-2 py-1.5 text-sm font-medium hover:bg-sidebar-accent hover:text-sidebar-accent-foreground rounded-md transition-colors">
+                                <span>تنظیمات</span>
+                                <ChevronDown className="h-4 w-4 shrink-0 transition-transform duration-200 group-data-[state=open]/collapsible:rotate-180" />
                             </CollapsibleTrigger>
                         </SidebarGroupLabel>
-                        <CollapsibleContent>
-                            <SidebarGroupContent />
-                            <SidebarGroup>
-                                <SidebarGroupContent>
-                                    <SidebarMenu>
-                                        {userItems.map((item) => (
-                                            <SidebarMenuItem key={item.title}>
-                                                <SidebarMenuButton
-                                                    asChild
-                                                    className={`flex-row-reverse sm:flex-row ${sidebarButtonGradientClass}`}
-                                                    isActive={path === item.url}
-                                                >
-                                                    <NavLink to={item.url}>
-                                                        <item.icon />
-                                                        <span>
-                                                            {item.title}
-                                                        </span>
-                                                    </NavLink>
-                                                </SidebarMenuButton>
-                                            </SidebarMenuItem>
-                                        ))}
-                                        <SidebarMenuItem>
-                                            <ModeToggle />
-                                        </SidebarMenuItem>
-                                    </SidebarMenu>
-                                </SidebarGroupContent>
-                            </SidebarGroup>
+
+                        <CollapsibleContent className="mt-1 space-y-1">
+                                    <ModeToggle />
+
                         </CollapsibleContent>
                     </SidebarGroup>
                 </Collapsible>
@@ -165,28 +134,13 @@ export function AppSidebar() {
                         <SubscriptionStatusMini />
                     </SidebarMenuItem>
                     <SidebarMenuItem>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                                <SidebarMenuButton
-                                    className={`flex-row-reverse sm:flex-row ${sidebarButtonGradientClass}`}
-                                >
-                                    <User2 /> حساب کاربری
-                                    <ChevronUp className="ml-auto" />
-                                </SidebarMenuButton>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent
-                                side="top"
-                                className="w-[--radix-popper-anchor-width]"
-                            >
-                                <DropdownMenuItem
-                                    onClick={handleLogOut}
-                                    className="flex justify-end"
-                                >
-                                    <span>خروج</span>
-                                    <LogOut />
-                                </DropdownMenuItem>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
+                        <SidebarMenuButton
+                            onClick={handleLogOut}
+                            className={`flex-row-reverse sm:flex-row ${sidebarButtonGradientClass}`}
+                        >
+                            <LogOut />
+                            <span>خروج از حساب کاربری</span>
+                        </SidebarMenuButton>
                     </SidebarMenuItem>
                 </SidebarMenu>
             </SidebarFooter>
