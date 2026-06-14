@@ -1,3 +1,4 @@
+// features/profile/components/EditProfileModal.tsx
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -5,10 +6,8 @@ import type { User } from "@/features/auth/types/user.type";
 import {
     Dialog,
     DialogContent,
-    DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
 } from "@/features/shared/components/ui/dialog";
 
 import { Button } from "../../shared/components/ui/button";
@@ -17,19 +16,29 @@ import { Label } from "../../shared/components/ui/label";
 import { Textarea } from "../../shared/components/ui/textarea";
 import { useEditProfile } from "../hooks/useEditProfile";
 
+interface EditProfileModalProps {
+    profile: User;
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+
 export default function EditProfileModal({
     profile,
-}: {
-    profile: User;
-}) {
-    const [open, setOpen] = useState(false);
+    open,
+    onOpenChange,
+}: EditProfileModalProps) {
     const [logoFile, setLogoFile] = useState<File | null>(null);
 
     const { form, mutateAsync, isPending } = useEditProfile(profile, () => {
-        setOpen(false);
+        onOpenChange(false); // بستن دیالوگ بعد از موفقیت
     });
 
-    const { register, handleSubmit, reset, formState: { errors } } = form;
+    const {
+        register,
+        handleSubmit,
+        reset,
+        formState: { errors },
+    } = form;
 
     useEffect(() => {
         reset({
@@ -45,19 +54,16 @@ export default function EditProfileModal({
     }, [profile, reset]);
 
     return (
-        <Dialog onOpenChange={setOpen} open={open}>
-            <DialogTrigger asChild onClick={() => setOpen(true)}>
-                <Button>ویرایش پروفایل</Button>
-            </DialogTrigger>
-            <DialogContent>
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent className="max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>ویرایش پروفایل</DialogTitle>
-                    <DialogDescription>
-                        <span>ویرایش اطلاعات پروفایل</span>
-                    </DialogDescription>
                 </DialogHeader>
+
                 <form
-                    onSubmit={handleSubmit((data) => mutateAsync({ data, logoFile }))}
+                    onSubmit={handleSubmit((data) =>
+                        mutateAsync({ data, logoFile }),
+                    )}
                     className="space-y-5 grid grid-cols-2 gap-x-4"
                 >
                     <div className="space-y-2">
@@ -67,11 +73,19 @@ export default function EditProfileModal({
                             id="first_name"
                             placeholder="نام"
                             {...register("first_name", {
-                                minLength: { value: 2, message: "حداقل ۲ کاراکتر" },
-                                maxLength: { value: 30, message: "حداکثر ۳۰ کاراکتر" },
+                                minLength: {
+                                    value: 2,
+                                    message: "حداقل ۲ کاراکتر",
+                                },
+                                maxLength: {
+                                    value: 30,
+                                    message: "حداکثر ۳۰ کاراکتر",
+                                },
                             })}
                         />
-                        <p className="text-red-500 text-sm">{errors.first_name?.message}</p>
+                        <p className="text-red-500 text-sm">
+                            {errors.first_name?.message}
+                        </p>
                     </div>
 
                     <div className="space-y-2">
@@ -81,11 +95,19 @@ export default function EditProfileModal({
                             id="last_name"
                             placeholder="نام خانوادگی"
                             {...register("last_name", {
-                                minLength: { value: 2, message: "حداقل ۲ کاراکتر" },
-                                maxLength: { value: 30, message: "حداکثر ۳۰ کاراکتر" },
+                                minLength: {
+                                    value: 2,
+                                    message: "حداقل ۲ کاراکتر",
+                                },
+                                maxLength: {
+                                    value: 30,
+                                    message: "حداکثر ۳۰ کاراکتر",
+                                },
                             })}
                         />
-                        <p className="text-red-500 text-sm">{errors.last_name?.message}</p>
+                        <p className="text-red-500 text-sm">
+                            {errors.last_name?.message}
+                        </p>
                     </div>
 
                     <div className="space-y-2">
@@ -95,20 +117,29 @@ export default function EditProfileModal({
                             id="store_name"
                             placeholder="نام فروشگاه"
                             {...register("store_name", {
-                                maxLength: { value: 50, message: "حداکثر ۵۰ کاراکتر" },
+                                maxLength: {
+                                    value: 50,
+                                    message: "حداکثر ۵۰ کاراکتر",
+                                },
                             })}
                         />
-                        <p className="text-red-500 text-sm">{errors?.store_name?.message}</p>
+                        <p className="text-red-500 text-sm">
+                            {errors.store_name?.message}
+                        </p>
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="store_description">توضیحات فروشگاه</Label>
+                        <Label htmlFor="store_description">
+                            توضیحات فروشگاه
+                        </Label>
                         <Textarea
                             id="store_description"
                             placeholder="توضیحات فروشگاه"
                             {...register("store_description")}
                         />
-                        <p className="text-red-500 text-sm">{errors?.store_description?.message}</p>
+                        <p className="text-red-500 text-sm">
+                            {errors.store_description?.message}
+                        </p>
                     </div>
 
                     <div className="space-y-2">
@@ -118,10 +149,15 @@ export default function EditProfileModal({
                             id="store_address"
                             placeholder="آدرس فروشگاه"
                             {...register("store_address", {
-                                maxLength: { value: 255, message: "حداکثر ۲۵۵ کاراکتر" },
+                                maxLength: {
+                                    value: 255,
+                                    message: "حداکثر ۲۵۵ کاراکتر",
+                                },
                             })}
                         />
-                        <p className="text-red-500 text-sm">{errors?.store_address?.message}</p>
+                        <p className="text-red-500 text-sm">
+                            {errors.store_address?.message}
+                        </p>
                     </div>
 
                     <div className="space-y-2">
@@ -131,30 +167,52 @@ export default function EditProfileModal({
                             id="insta_link"
                             placeholder="لینک اینستاگرام"
                             {...register("insta_link", {
-                                maxLength: { value: 100, message: "حداکثر ۱۰۰ کاراکتر" },
+                                maxLength: {
+                                    value: 100,
+                                    message: "حداکثر ۱۰۰ کاراکتر",
+                                },
                             })}
                         />
-                        <p className="text-red-500 text-sm">{errors?.insta_link?.message}</p>
+                        <p className="text-red-500 text-sm">
+                            {errors.insta_link?.message}
+                        </p>
                     </div>
 
                     <div className="space-y-2">
                         <Label htmlFor="hexcolor">رنگ برند</Label>
-                        <Input type="color" id="hexcolor" {...register("hexcolor")} />
-                        <p className="text-red-500 text-sm">{errors?.hexcolor?.message}</p>
+                        <div className="flex items-center gap-2">
+                            <Input
+                                type="color"
+                                id="hexcolor"
+                                {...register("hexcolor")}
+                                className="w-16 h-10 p-1"
+                            />
+                            <Input
+                                type="text"
+                                placeholder="#RRGGBB"
+                                {...register("hexcolor")}
+                                className="flex-1"
+                            />
+                        </div>
+                        <p className="text-red-500 text-sm">
+                            {errors.hexcolor?.message}
+                        </p>
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="logo">  لوگو (حداکثر 250 کیلوبایت)</Label>
+                        <Label htmlFor="logo">لوگو (حداکثر 250 کیلوبایت)</Label>
                         <Input
                             type="file"
                             id="logo"
-                            accept="image/png"
+                            accept="image/png,image/jpeg,image/webp"
                             onChange={(e) => {
                                 const file = e.target.files?.[0];
                                 if (!file) return;
 
-                                if (file.type !== "image/png") {
-                                    toast.error("فقط فایل‌های PNG قابل قبول هستند");
+                                if (file.size > 250 * 1024) {
+                                    toast.error(
+                                        "حجم فایل نباید بیشتر از 250 کیلوبایت باشد",
+                                    );
                                     e.target.value = "";
                                     setLogoFile(null);
                                     return;
@@ -164,7 +222,9 @@ export default function EditProfileModal({
                                 toast.success("لوگو با موفقیت انتخاب شد");
                             }}
                         />
-                        <p className="text-red-500 text-sm">{errors?.logo?.message}</p>
+                        <p className="text-xs text-muted-foreground">
+                            فرمت‌های مجاز: PNG, JPEG, WEBP
+                        </p>
                     </div>
 
                     {errors.root && (
@@ -173,7 +233,11 @@ export default function EditProfileModal({
                         </p>
                     )}
 
-                    <Button type="submit" disabled={isPending} className="w-full col-span-2">
+                    <Button
+                        type="submit"
+                        disabled={isPending}
+                        className="w-full col-span-2"
+                    >
                         {isPending ? "در حال ارسال..." : "ویرایش پروفایل"}
                     </Button>
                 </form>
