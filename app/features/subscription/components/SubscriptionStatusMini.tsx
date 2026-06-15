@@ -13,16 +13,16 @@ export function SubscriptionStatusMini() {
 
     if (!subscription) {
         return (
-            <Card className="p-3">
-                <div className="flex items-center justify-between gap-3">
-                    <Badge variant="destructive">بدون اشتراک</Badge>
-                    <NavLink to="/subscription">
-                        <span className="text-sm text-primary hover:underline cursor-pointer">
+            <NavLink to="/subscription">
+                <Card className="p-3 cursor-pointer hover:bg-muted/50 transition-colors">
+                    <div className="flex items-center justify-between gap-3">
+                        <Badge variant="destructive">بدون اشتراک</Badge>
+                        <span className="text-sm text-primary hover:underline">
                             خرید اشتراک
                         </span>
-                    </NavLink>
-                </div>
-            </Card>
+                    </div>
+                </Card>
+            </NavLink>
         );
     }
 
@@ -35,8 +35,6 @@ export function SubscriptionStatusMini() {
     const getStatusText = () => {
         if (!subscription.is_active) return "غیرفعال";
         if (subscription.plan.is_trial) return "آزمایشی";
-        
-        // نام پلن از بک‌اند فارسی می‌آید، مستقیماً از آن استفاده می‌کنیم
         return subscription.plan.name;
     };
 
@@ -48,17 +46,17 @@ export function SubscriptionStatusMini() {
     };
 
     return (
-        <Card className="p-3">
-            <div className="flex items-center justify-between gap-3">
-                <Badge  variant={getStatusVariant()}>
-                    {getStatusText()}
-                </Badge>
-                <span
-                    className={`text-sm font-bold tabular-nums ${getDaysColor()}`}
-                >
-                    {subscription.days_remaining} روز
-                </span>
-            </div>
-        </Card>
+        <NavLink to="/subscription">
+            <Card className="p-3 cursor-pointer hover:bg-muted/50 transition-colors">
+                <div className="flex items-center justify-between gap-3">
+                    <Badge variant={getStatusVariant()}>
+                        {getStatusText()}
+                    </Badge>
+                    <span className={`text-sm font-bold tabular-nums ${getDaysColor()}`}>
+                        {subscription.days_remaining} روز
+                    </span>
+                </div>
+            </Card>
+        </NavLink>
     );
 }
