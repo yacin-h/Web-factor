@@ -16,6 +16,7 @@ import { useProducts } from "@/features/products/hooks/useProducts";
 import { Button } from "@/features/shared/components/ui/button";
 import { Input } from "@/features/shared/components/ui/input";
 import { Label } from "@/features/shared/components/ui/label";
+import { Textarea } from "@/features/shared/components/ui/textarea";
 
 import LoadingSpinner from "../../shared/components/ui/loadingSpinner";
 import { useCreateInvoice } from "../hooks/useCreateInvoice";
@@ -146,11 +147,11 @@ export default function NewInvoiceForm() {
 
                 {/* انتخاب محصولات */}
                 <div className="space-y-6 grid sm:grid-cols-2 gap-4">
+                    <ProductMultiSelect products={products} />
                     <ProductBarcodeInput
                         products={products}
                         onProductAdd={handleProductAdd}
                     />
-                    <ProductMultiSelect products={products} />
                 </div>
 
                 {/* جدول محصولات */}
@@ -163,7 +164,7 @@ export default function NewInvoiceForm() {
                 {/* توضیحات */}
                 <div className="space-y-3">
                     <Label htmlFor="descriptions">توضیحات</Label>
-                    <Input {...register("descriptions")} id="descriptions" />
+                    <Textarea {...register("descriptions")} id="descriptions" />
                     {errors.descriptions && (
                         <span className="text-red-500">
                             {errors.descriptions.message}
