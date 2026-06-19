@@ -6,7 +6,7 @@ import { Controller, useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 import { toast } from "sonner";
 
-import type { Product, ProductCreate } from "@/features/products/types/product";
+import { useCategories } from "@/features/categories/hooks/useCategories";
 import {
     Dialog,
     DialogContent,
@@ -15,12 +15,20 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/features/shared/components/ui/dialog";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/features/shared/components/ui/select";
 
 import { Button } from "../../shared/components/ui/button";
 import { Input } from "../../shared/components/ui/input";
 import { Label } from "../../shared/components/ui/label";
 import { Textarea } from "../../shared/components/ui/textarea";
 import { useUpdateProduct } from "../hooks/useUpdateProduct";
+import type { Product, ProductCreate } from "../types/product";
 
 interface EditProductModalProps {
     product: Product;
@@ -41,30 +49,39 @@ export default function EditProductModal({ product }: EditProductModalProps) {
     } = useForm<ProductCreate>({
         defaultValues: {
             name: product.name,
-            description: product.description,
+            description: product.description || "",
             price: product.price,
             last_buy_price: product.last_buy_price,
             stock_quantity: product.stock_quantity,
-            barcode: product.barcode,
+            barcode: product.barcode || "",
+            category_id: product.category?.id || null,
         },
     });
 
     const { mutateAsync: updateProduct, isPending } = useUpdateProduct();
+    const { data: categoriesData } = useCategories({ pageSize: 100 });
+
+    useEffect(() => {
+        setPricePersian(num2persian(String(product.price)));
+        setBuyPersian(num2persian(String(product.last_buy_price)));
+    }, [product]);
 
     useEffect(() => {
         reset({
             name: product.name,
-            description: product.description,
+            description: product.description || "",
             price: product.price,
             last_buy_price: product.last_buy_price,
             stock_quantity: product.stock_quantity,
-            barcode: product.barcode,
+            barcode: product.barcode || "",
+            category_id: product.category?.id || null,
         });
         setPricePersian(num2persian(String(product.price)));
         setBuyPersian(num2persian(String(product.last_buy_price)));
     }, [product, reset]);
 
     const onSubmit = async (data: ProductCreate) => {
+        // ✅ ProductCreate
         try {
             await updateProduct({ id: product.id, data });
             toast.success("کالا با موفقیت ویرایش شد");
@@ -131,6 +148,54 @@ export default function EditProductModal({ product }: EditProductModalProps) {
                         )}
                     </div>
 
+                    {/* دسته‌بندی */}
+                    <div className="space-y-1.5">
+                        <Label
+                            htmlFor="category_id"
+                            className="text-sm font-medium"
+                        >
+                            دسته‌بندی (اختیاری)
+                        </Label>
+                        <Controller
+                            name="category_id"
+                            control={control}
+                            render={({ field }) => (
+                                <Select
+                                    value={field.value?.toString() || ""}
+                                    onValueChange={(value) =>
+                                        field.onChange(
+                                            value ? Number(value) : null,
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger className="w-full">
+                                        <SelectValue placeholder="انتخاب دسته‌بندی..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="">
+                                            بدون دسته‌بندی
+                                        </SelectItem>
+                                        {categoriesData?.results?.map(
+                                            (category) => (
+                                                <SelectItem
+                                                    key={category.id}
+                                                    value={category.id.toString()}
+                                                >
+                                                    {category.name}
+                                                </SelectItem>
+                                            ),
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                        {errors.category_id && (
+                            <p className="text-red-500 text-xs font-medium">
+                                ⚠️ {errors.category_id.message}
+                            </p>
+                        )}
+                    </div>
+
                     {/* موجودی */}
                     <div className="space-y-1.5">
                         <Label
@@ -141,7 +206,6 @@ export default function EditProductModal({ product }: EditProductModalProps) {
                         </Label>
                         <Input
                             id="stock_quantity"
-                            step="any"
                             type="number"
                             defaultValue={product.stock_quantity}
                             placeholder="مثال: ۱۰۰"
@@ -151,8 +215,8 @@ export default function EditProductModal({ product }: EditProductModalProps) {
                             {...register("stock_quantity", {
                                 required: "موجودی الزامی است",
                                 min: {
-                                    value: 1,
-                                    message: "حداقل موجودی یک عدد میباشد",
+                                    value: 0,
+                                    message: "حداقل موجودی صفر میباشد",
                                 },
                             })}
                         />
@@ -212,7 +276,7 @@ export default function EditProductModal({ product }: EditProductModalProps) {
                                 control={control}
                                 rules={{
                                     required: "قیمت الزامی است",
-                                    min: { value: 1, message: "حداقل ۱" },
+                                    min: { value: 0.01, message: "حداقل ۰.۰۱" },
                                 }}
                                 render={({ field, fieldState: { error } }) => (
                                     <>
@@ -221,7 +285,9 @@ export default function EditProductModal({ product }: EditProductModalProps) {
                                             value={field.value}
                                             thousandSeparator=","
                                             decimalSeparator="."
-                                            placeholder="مثال: 15,500,000"
+                                            decimalScale={2}
+                                            allowNegative={false}
+                                            placeholder="مثال: ۱۵,۵۰۰,۰۰۰"
                                             className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${
                                                 error
                                                     ? "border-red-500"
@@ -256,7 +322,7 @@ export default function EditProductModal({ product }: EditProductModalProps) {
                         {/* قیمت خرید */}
                         <div className="space-y-1.5">
                             <Label
-                                htmlFor="buy"
+                                htmlFor="last_buy_price"
                                 className="text-sm font-medium"
                             >
                                 قیمت خرید{" "}
@@ -267,16 +333,18 @@ export default function EditProductModal({ product }: EditProductModalProps) {
                                 control={control}
                                 rules={{
                                     required: "قیمت خرید الزامی است",
-                                    min: { value: 1, message: "حداقل ۱" },
+                                    min: { value: 0.01, message: "حداقل ۰.۰۱" },
                                 }}
                                 render={({ field, fieldState: { error } }) => (
                                     <>
                                         <NumericFormat
-                                            id="buy"
+                                            id="last_buy_price"
                                             value={field.value}
                                             thousandSeparator=","
                                             decimalSeparator="."
-                                            placeholder="مثال: 12,000,000"
+                                            decimalScale={2}
+                                            allowNegative={false}
+                                            placeholder="مثال: ۱۲,۵۰۰,۰۰۰"
                                             className={`w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary ${
                                                 error
                                                     ? "border-red-500"
@@ -351,20 +419,32 @@ export default function EditProductModal({ product }: EditProductModalProps) {
                     )}
 
                     {/* دکمه ارسال */}
-                    <Button
-                        type="submit"
-                        disabled={isPending || isSubmitting}
-                        className="w-full mt-2"
-                    >
-                        {isPending || isSubmitting ? (
-                            <>
-                                <span className="animate-spin mr-2">⏳</span>
-                                در حال ارسال...
-                            </>
-                        ) : (
-                            "ثبت"
-                        )}
-                    </Button>
+                    <div className="flex gap-3 pt-2">
+                        <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setOpen(false)}
+                            className="flex-1"
+                        >
+                            انصراف
+                        </Button>
+                        <Button
+                            type="submit"
+                            disabled={isPending || isSubmitting}
+                            className="flex-1"
+                        >
+                            {isPending || isSubmitting ? (
+                                <>
+                                    <span className="animate-spin mr-2">
+                                        ⏳
+                                    </span>
+                                    در حال ارسال...
+                                </>
+                            ) : (
+                                "ویرایش کالا"
+                            )}
+                        </Button>
+                    </div>
                 </form>
             </DialogContent>
         </Dialog>

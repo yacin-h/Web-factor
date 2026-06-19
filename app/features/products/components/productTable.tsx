@@ -1,6 +1,7 @@
 // src/components/products/productTable.tsx
 import { useState } from "react";
 
+import { CategoryBadge } from "@/features/categories/components/CategoryBadge";
 import ProductsSkeleton from "@/features/products/components/productsSkeleton";
 import { useDeleteProduct } from "@/features/products/hooks/useDeleteProduct";
 import { useProducts } from "@/features/products/hooks/useProducts";
@@ -104,7 +105,8 @@ export default function ProductTable({
                     <TableRow>
                         <TableHead>نام</TableHead>
                         <TableHead>موجودی</TableHead>
-                        <TableHead>توضیحات</TableHead>
+                        <TableHead>دسته‌بندی</TableHead>{" "}
+                        {/* ✅ جایگزین توضیحات */}
                         <TableHead>قیمت فروش</TableHead>
                         <TableHead>قیمت خرید</TableHead>
                         <TableHead>عملیات</TableHead>
@@ -123,7 +125,9 @@ export default function ProductTable({
                                         className={`w-3 h-3 rounded-full ${
                                             product.stock_quantity <= 0
                                                 ? "bg-red-500"
-                                                : "bg-green-500"
+                                                : product.stock_quantity <= 5
+                                                  ? "bg-yellow-500"
+                                                  : "bg-green-500"
                                         }`}
                                     />
                                     <span>
@@ -133,12 +137,7 @@ export default function ProductTable({
                                 </div>
                             </TableCell>
                             <TableCell>
-                                {product.description
-                                    ? product.description.length > 20
-                                        ? product.description.slice(0, 20) +
-                                          "..."
-                                        : product.description
-                                    : "-"}
+                                <CategoryBadge category={product.category} />
                             </TableCell>
                             <TableCell className="text-right whitespace-nowrap">
                                 {product.price.toLocaleString()} تومان

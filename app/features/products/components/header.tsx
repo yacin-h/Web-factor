@@ -1,6 +1,9 @@
-import { SearchIcon, XIcon } from "lucide-react";
+// features/products/components/header.tsx
+import { FolderTree, SearchIcon, XIcon } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router";
 
+import { Button } from "@/features/shared/components/ui/button";
 import { useHasActiveSubscription } from "@/features/subscription/hooks/useSubscription";
 
 import {
@@ -14,6 +17,7 @@ import {
     TooltipTrigger,
 } from "../../shared/components/ui/tooltip";
 import AddProductModal from "./addProductModal";
+
 export default function Header({
     setSearchQuery,
 }: {
@@ -27,23 +31,40 @@ export default function Header({
         setSearchInput("");
         setSearchQuery("");
     };
+
     return (
         <header className="mx-5 mb-5">
-            <h1 className="title">کالا ها</h1>
+            <div className="flex justify-between items-center mb-4">
+                <h1 className="title">کالا ها</h1>
+                <div className="flex items-center gap-2">
+                    {/* دکمه مدیریت دسته‌بندی - لینک به صفحه جداگانه */}
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <span>
+                                <Link to="/categories">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        disabled={!hasAccess}
+                                    >
+                                        <FolderTree className="h-4 w-4 ml-1" />
+                                        مدیریت دسته‌بندی
+                                    </Button>
+                                </Link>
+                            </span>
+                        </TooltipTrigger>
+                        {!hasAccess && (
+                            <TooltipContent>
+                                برای مدیریت دسته‌بندی ابتدا اشتراک تهیه کنید
+                            </TooltipContent>
+                        )}
+                    </Tooltip>
+
+                    <AddProductModal disabled={!hasAccess} />
+                </div>
+            </div>
+
             <div className="flex justify-between gap-3">
-                <Tooltip>
-                    <TooltipTrigger asChild>
-                        <span>
-                            <AddProductModal disabled={!hasAccess} />
-                        </span>
-                    </TooltipTrigger>
-                    {!hasAccess && (
-                        <TooltipContent>
-                            برای افزودن کالا ابتدا اشتراک تهیه کنید
-                        </TooltipContent>
-                    )}
-                </Tooltip>
-                {/* search btn */}
                 <InputGroup className="w-64 px-1">
                     <InputGroupInput
                         placeholder="جستجو بر اساس نام کالا"

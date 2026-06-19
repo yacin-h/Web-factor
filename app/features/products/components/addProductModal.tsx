@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { NumericFormat } from "react-number-format";
 
+import { useCategories } from "@/features/categories/hooks/useCategories";
 import { useCreateProduct } from "@/features/products/hooks/useCreateProduct";
 import type { ProductCreate } from "@/features/products/types/product";
 import {
@@ -14,12 +15,18 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/features/shared/components/ui/dialog";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/features/shared/components/ui/select";
 
 import { Button } from "../../shared/components/ui/button";
 import { Input } from "../../shared/components/ui/input";
 import { Label } from "../../shared/components/ui/label";
 import { Textarea } from "../../shared/components/ui/textarea";
-
 interface AddProductModalProps {
     disabled?: boolean;
 }
@@ -27,6 +34,7 @@ interface AddProductModalProps {
 export default function AddProductModal({
     disabled = false,
 }: AddProductModalProps) {
+    const { data: categoriesData } = useCategories({ pageSize: 100 });
     const [pricePersian, setPricePersian] = useState("");
     const [buyPersian, setBuyPersian] = useState("");
 
@@ -111,7 +119,40 @@ export default function AddProductModal({
                             </p>
                         )}
                     </div>
-
+                    <div className="space-y-1.5">
+                        <Label htmlFor="category_id">دسته‌بندی (اختیاری)</Label>
+                        <Controller
+                            name="category_id"
+                            control={control}
+                            render={({ field }) => (
+                                <Select
+                                    value={field.value?.toString()}
+                                    onValueChange={(value) =>
+                                        field.onChange(Number(value))
+                                    }
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="انتخاب دسته‌بندی..." />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="">
+                                            بدون دسته‌بندی
+                                        </SelectItem>
+                                        {categoriesData?.results?.map(
+                                            (category) => (
+                                                <SelectItem
+                                                    key={category.id}
+                                                    value={category.id.toString()}
+                                                >
+                                                    {category.name}
+                                                </SelectItem>
+                                            ),
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                            )}
+                        />
+                    </div>
                     {/* موجودی */}
                     <div className="space-y-1.5">
                         <Label

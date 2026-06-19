@@ -1,9 +1,4 @@
-import {
-    Home,
-    Package,
-    ScrollText,
-    Users,
-} from "lucide-react";
+import { FolderTree, Home, Package, ScrollText, Users } from "lucide-react";
 import { NavLink, useLocation } from "react-router";
 
 import {
@@ -19,7 +14,6 @@ import {
     SidebarSeparator,
 } from "@/features/shared/components/ui/sidebar";
 import { SubscriptionStatusMini } from "@/features/subscription/components/SubscriptionStatusMini";
-
 
 // Menu items.
 const productItems = [
@@ -42,6 +36,11 @@ const productItems = [
         title: "مشتریان",
         url: "/customers",
         icon: Users,
+    },
+    {
+        title: "دسته‌بندی کالاها",
+        url: "/categories",
+        icon: FolderTree,
     },
 ];
 
