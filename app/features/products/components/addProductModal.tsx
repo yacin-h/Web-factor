@@ -91,7 +91,7 @@ export default function AddProductModal({
                 </DialogHeader>
 
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-                    {/* نام کالا */}
+                    {/* product name */}
                     <div className="space-y-1.5">
                         <Label htmlFor="name" className="text-sm font-medium">
                             نام کالا <span className="text-red-500">*</span>
@@ -119,25 +119,37 @@ export default function AddProductModal({
                             </p>
                         )}
                     </div>
+                    {/* category */}
+
                     <div className="space-y-1.5">
-                        <Label htmlFor="category_id">دسته‌بندی (اختیاری)</Label>
+                        <Label
+                            htmlFor="category_id"
+                            className="text-sm font-medium"
+                        >
+                            دسته‌بندی (اختیاری)
+                        </Label>
                         <Controller
                             name="category_id"
                             control={control}
                             render={({ field }) => (
                                 <Select
-                                    value={field.value?.toString()}
+                                    value={field.value?.toString() || "none"} 
                                     onValueChange={(value) =>
-                                        field.onChange(Number(value))
+                                        field.onChange(
+                                            value === "none"
+                                                ? null
+                                                : Number(value),
+                                        )
                                     }
                                 >
-                                    <SelectTrigger>
+                                    <SelectTrigger className="w-full">
                                         <SelectValue placeholder="انتخاب دسته‌بندی..." />
                                     </SelectTrigger>
                                     <SelectContent>
-                                        <SelectItem value="">
+                                        <SelectItem value="none">
                                             بدون دسته‌بندی
-                                        </SelectItem>
+                                        </SelectItem>{" "}
+                                        {/* ✅ به جای "" از "none" */}
                                         {categoriesData?.results?.map(
                                             (category) => (
                                                 <SelectItem
@@ -153,7 +165,7 @@ export default function AddProductModal({
                             )}
                         />
                     </div>
-                    {/* موجودی */}
+                    {/* stock quantity */}
                     <div className="space-y-1.5">
                         <Label
                             htmlFor="stock_quantity"
@@ -184,7 +196,7 @@ export default function AddProductModal({
                         )}
                     </div>
 
-                    {/* توضیحات */}
+                    {/* description */}
                     <div className="space-y-1.5">
                         <Label
                             htmlFor="description"
@@ -216,7 +228,7 @@ export default function AddProductModal({
                         )}
                     </div>
 
-                    {/* قیمت فروش و قیمت خرید */}
+                    {/* price */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* قیمت فروش */}
                         <div className="space-y-1.5">
@@ -273,7 +285,7 @@ export default function AddProductModal({
                             />
                         </div>
 
-                        {/* قیمت خرید */}
+                        {/* buy*/}
                         <div className="space-y-1.5">
                             <Label
                                 htmlFor="buy"
@@ -329,7 +341,7 @@ export default function AddProductModal({
                         </div>
                     </div>
 
-                    {/* بارکد */}
+                    {/* barcode */}
                     <div className="space-y-1.5">
                         <Label
                             htmlFor="barcode"
@@ -360,7 +372,6 @@ export default function AddProductModal({
                         )}
                     </div>
 
-                    {/* خطای عمومی */}
                     {errors.root && (
                         <div className="bg-red-50 border border-red-200 rounded-md p-3">
                             <p className="text-red-700 text-sm font-medium">
@@ -369,7 +380,6 @@ export default function AddProductModal({
                         </div>
                     )}
 
-                    {/* دکمه ارسال */}
                     <Button
                         type="submit"
                         disabled={isCreating || isSubmitting}
