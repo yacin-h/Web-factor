@@ -83,7 +83,7 @@ export default function Dashboard() {
             {hasAccess && (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8 mt-6">
                     <Link to="/invoices/new">
-                        <Button className="w-full gap-2" size="lg">
+                        <Button variant="outline" className="w-full gap-2" size="lg">
                             <FileText className="w-4 h-4" />
                             فاکتور جدید
                         </Button>
