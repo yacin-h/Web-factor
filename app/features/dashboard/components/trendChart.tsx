@@ -24,7 +24,8 @@ type TrendData = {
 };
 
 export function TrendChart({ chartData }: { chartData: TrendData[] }) {
-    const hasData = chartData?.some((d) => d.total > 0);
+    const hasData = chartData?.length > 0;
+    const hasRealData = chartData?.some((d) => d.total > 0);
 
     if (!hasData) {
         return (
@@ -36,6 +37,35 @@ export function TrendChart({ chartData }: { chartData: TrendData[] }) {
         );
     }
 
+    if (!hasRealData) {
+        return (
+            <EmptyChartState
+                title="ترند فروش"
+                message="هیچ فروشی ثبت نشده است"
+                hint="پس از اولین فروش، نمودار اینجا نمایش داده می‌شود"
+            />
+        );
+    }
+
+    let processedData = [...chartData];
+    if (chartData.length === 1) {
+        const firstDate = new Date(chartData[0].date);
+        const startDate = new Date(firstDate);
+        startDate.setDate(startDate.getDate() - 1);
+
+        processedData = [
+            {
+                date: startDate.toISOString().split("T")[0],
+                total: 0,
+            },
+            ...chartData,
+        ];
+    }
+
+    // پیدا کردن حداقل و حداکثر برای YAxis
+    const maxValue = Math.max(...processedData.map((d) => d.total)) * 1.2;
+    const minValue = 0;
+
     return (
         <Card className="h-full">
             <CardHeader className="pb-2">
@@ -46,7 +76,7 @@ export function TrendChart({ chartData }: { chartData: TrendData[] }) {
 
             <CardContent>
                 <ResponsiveContainer width="100%" height={260}>
-                    <LineChart data={chartData}>
+                    <LineChart data={processedData}>
                         <defs>
                             <linearGradient
                                 id="trendGradient"
@@ -86,12 +116,20 @@ export function TrendChart({ chartData }: { chartData: TrendData[] }) {
                         />
 
                         <YAxis
+                            domain={[minValue, maxValue]}
                             tick={{
                                 fontSize: 12,
                                 fill: "rgb(148 163 184)",
                             }}
                             axisLine={false}
                             tickLine={false}
+                            tickFormatter={(value) =>
+                                value >= 1000000
+                                    ? `${(value / 1000000).toFixed(1)}M`
+                                    : value >= 1000
+                                      ? `${(value / 1000).toFixed(0)}K`
+                                      : value.toString()
+                            }
                         />
 
                         <Tooltip
@@ -115,9 +153,13 @@ export function TrendChart({ chartData }: { chartData: TrendData[] }) {
                             type="monotone"
                             dataKey="total"
                             stroke="#14b8a6"
-                            strokeWidth={3}
-                            dot={{ r: 4, fill: "#14b8a6" }}
-                            activeDot={{ r: 6 }}
+                            strokeWidth={2}
+                            dot={
+                                processedData.length > 2
+                                    ? { r: 3, fill: "#14b8a6" }
+                                    : false
+                            }
+                            activeDot={{ r: 5 }}
                             fill="url(#trendGradient)"
                         />
                     </LineChart>
