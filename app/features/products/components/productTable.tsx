@@ -144,7 +144,9 @@ export default function ProductTable({
                                 {product.price.toLocaleString()} تومان
                             </TableCell>
                             <TableCell className="text-right whitespace-nowrap">
-                                {product.last_buy_price.toLocaleString()} تومان
+                                {product.last_buy_price?.toLocaleString() ||
+                                    "-"}{" "}
+                                تومان
                             </TableCell>
                             <TableCell className="space-x-2">
                                 <DeleteConfirm
