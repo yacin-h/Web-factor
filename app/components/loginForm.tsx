@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
 
+import type { Token } from "@/features/auth/types/token";
 import { Button } from "@/features/shared/components/ui/button";
 import { Card, CardContent } from "@/features/shared/components/ui/card";
 import {
@@ -27,7 +28,6 @@ import {
     type PhoneFormType,
 } from "@/schemas/auth.schema";
 import useAuth from "@/store/auth";
-import type { Token } from "@/types/token";
 
 const RESEND_COOLDOWN = 120;
 

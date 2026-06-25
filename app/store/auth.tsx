@@ -1,9 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+import type { AuthContextType } from "@/features/auth/types/authContext";
+import type { Token } from "@/features/auth/types/token";
 import type { User } from "@/features/auth/types/user.type";
-import type { AuthContextType } from "@/types/authContext";
-import type { Token } from "@/types/token";
 
 const useAuth = create<AuthContextType>()(
     persist(
