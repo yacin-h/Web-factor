@@ -14,9 +14,14 @@ import {
 } from "@/features/invoices/schema/invoice.schema";
 import { useProducts } from "@/features/products/hooks/useProducts";
 import { Button } from "@/features/shared/components/ui/button";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle,
+} from "@/features/shared/components/ui/card";
 import { Input } from "@/features/shared/components/ui/input";
 import { Label } from "@/features/shared/components/ui/label";
-import { Separator } from "@/features/shared/components/ui/separator";
 import { Textarea } from "@/features/shared/components/ui/textarea";
 
 import LoadingSpinner from "../../shared/components/ui/loadingSpinner";
@@ -136,15 +141,16 @@ export default function NewInvoiceForm() {
         <FormProvider {...methods}>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
                 {/* بخش: اطلاعات فاکتور */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="h-6 w-1 rounded-full bg-primary" />
-                        <h2 className="text-lg font-semibold">اطلاعات فاکتور</h2>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                <Card>
+                    <CardHeader>
+                        <CardTitle>اطلاعات فاکتور</CardTitle>
+                    </CardHeader>
+                    <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <Label htmlFor="title" className="text-sm font-medium">
-                                عنوان فاکتور <span className="text-red-500">*</span>
+                            <Label htmlFor="supplier_name">
+                                عنوان فاکتور{" "}
+                                <span className="text-red-500">*</span>
                             </Label>
                             <Input
                                 id="title"
@@ -157,30 +163,27 @@ export default function NewInvoiceForm() {
                                 </span>
                             )}
                         </div>
-                    </div>
-                </div>
-
-                <Separator />
+                    </CardContent>
+                </Card>
 
                 {/* بخش: انتخاب کالاها */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="h-6 w-1 rounded-full bg-primary" />
-                        <h2 className="text-lg font-semibold">انتخاب کالاها</h2>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <ProductMultiSelect products={products} />
-                        <ProductBarcodeInput
-                            products={products}
-                            onProductAdd={handleProductAdd}
-                        />
-                    </div>
-                </div>
-
+                <Card>
+                    <CardHeader>
+                        <CardTitle>انتخاب کالاها</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <ProductMultiSelect products={products} />
+                            <ProductBarcodeInput
+                                products={products}
+                                onProductAdd={handleProductAdd}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
                 {/* جدول کالاها */}
                 {watchedItems.length > 0 && (
                     <>
-                        <Separator />
                         <div className="space-y-4">
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
@@ -198,69 +201,74 @@ export default function NewInvoiceForm() {
                     </>
                 )}
 
-                <Separator />
-
                 {/* بخش: اطلاعات مشتری */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="h-6 w-1 rounded-full bg-primary" />
-                        <h2 className="text-lg font-semibold">اطلاعات مشتری</h2>
-                    </div>
-                    <CustomerComboBox customers={customers} />
-                    <CustomerDetailsFields />
-                </div>
-
-                <Separator />
+                <Card>
+                    <CardHeader>
+                        <CardTitle>اطلاعات مشتری</CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                        <div className="space-y-4">
+                            <CustomerComboBox customers={customers} />
+                            <CustomerDetailsFields />
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* بخش: توضیحات */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="h-6 w-1 rounded-full bg-primary" />
-                        <h2 className="text-lg font-semibold">توضیحات</h2>
-                    </div>
-                    <div className="space-y-2">
-                        <Textarea
-                            {...register("descriptions")}
-                            id="descriptions"
-                            placeholder="توضیحات اضافی برای فاکتور (اختیاری)"
-                            rows={3}
-                        />
-                        {errors.descriptions && (
-                            <span className="text-red-500 text-sm">
-                                {errors.descriptions.message}
-                            </span>
-                        )}
-                    </div>
-                </div>
-
-                <Separator />
+                <Card>
+                    <CardHeader>
+                        <CardTitle>توضیحات</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Textarea
+                                    {...register("descriptions")}
+                                    id="descriptions"
+                                    placeholder="توضیحات اضافی برای فاکتور (اختیاری)"
+                                    rows={3}
+                                />
+                                {errors.descriptions && (
+                                    <span className="text-red-500 text-sm">
+                                        {errors.descriptions.message}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* بخش: وضعیت و روش پرداخت */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="h-6 w-1 rounded-full bg-primary" />
-                        <h2 className="text-lg font-semibold">وضعیت و روش پرداخت</h2>
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <InvoiceStatusSelect />
-                        <InvoicePaymentMethodSelect />
-                    </div>
-                </div>
-
-                <Separator />
+                <Card>
+                    <CardHeader>
+                        <CardTitle>وضعیت و روش پرداخت</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <InvoiceStatusSelect />
+                                <InvoicePaymentMethodSelect />
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* بخش: ارزش افزوده و تخفیف */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-2">
-                        <div className="h-6 w-1 rounded-full bg-primary" />
-                        <h2 className="text-lg font-semibold">ارزش افزوده و تخفیف</h2>
-                    </div>
-                    <VatAndDiscountSection
-                        vatEnabled={vatEnabled}
-                        onVatToggle={setVatEnabled}
-                        addedValue={addedValue}
-                    />
-                </div>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>ارزش افزوده و تخفیف</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="space-y-4">
+                            
+                            <VatAndDiscountSection
+                                vatEnabled={vatEnabled}
+                                onVatToggle={setVatEnabled}
+                                addedValue={addedValue}
+                            />
+                        </div>
+                    </CardContent>
+                </Card>
 
                 {/* دکمه ارسال */}
                 <div className="flex justify-end gap-3 pt-4 border-t">
@@ -271,7 +279,11 @@ export default function NewInvoiceForm() {
                     >
                         انصراف
                     </Button>
-                    <Button type="submit" disabled={isPending} className="min-w-32">
+                    <Button
+                        type="submit"
+                        disabled={isPending}
+                        className="min-w-32"
+                    >
                         {isPending ? (
                             <>
                                 <span className="animate-spin mr-2">⏳</span>
